@@ -9,11 +9,6 @@ module.exports = {
       {
         test: /\.tsx?$/,
         loader: "awesome-typescript-loader"
-      },
-      {
-        test: /\.js?/,
-        exclude: /node_modules/,
-        use: "babel-loader?presets=react"
       }
     ]
   },
