@@ -1,10 +1,11 @@
 import { observable, action } from "mobx";
 import { MaybePromise } from "../utils/types";
 import State, { StateDevOptions } from "./State";
+import Disposer, { DisposeHandler, AddDisposeHandler } from "../utils/disposer";
 
 const $canceled = Symbol("Canceled");
 class InvokeInstance {
-  private readonly _cancelHandlers: (() => void)[] = [];
+  private readonly _disposer = new Disposer();
   private _resolver: null | ((token: typeof $canceled) => void) = null;
   private _isCanceled = false;
   private _isSettled = false;
@@ -17,15 +18,16 @@ class InvokeInstance {
     return this._isCanceled;
   }
 
-  addCancelHandler: AddCancelhandler = handler =>
-    this._cancelHandlers.push(handler);
+  get addCancelHandler() {
+    return this._disposer.addDisposeHandler;
+  }
 
   cancel() {
     if (!this._isCanceled) {
       this._isCanceled = true;
       if (!this._isSettled) {
         this._resolver && this._resolver($canceled);
-        this._cancelHandlers.forEach(handler => handler());
+        this._disposer.dispose();
       }
     }
   }
@@ -115,7 +117,7 @@ export default class Actuator<TArg, TResult> extends State<ActuatorProjection> {
   }
 }
 
-export type AddCancelhandler = (handleCancel: () => any) => void;
+export type AddCancelhandler = AddDisposeHandler;
 
 export interface ActuatorProjection {
   element?: Element;
