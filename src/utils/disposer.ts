@@ -1,0 +1,18 @@
+export default class Disposer {
+  private _handlers: DisposeHandler[] = [];
+  addDisposeHandler: AddDisposeHandler;
+  dispose: () => void;
+
+  constructor() {
+    this.addDisposeHandler = fn => this._handlers.push(fn);
+    this.dispose = () => this._handlers.forEach(fn => fn());
+  }
+}
+
+export interface DisposeHandler {
+  (): any;
+}
+
+export interface AddDisposeHandler {
+  (handler: DisposeHandler): void;
+}
