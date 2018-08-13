@@ -1,7 +1,7 @@
 {
-  "name": "ts-boilerplate",
+  "name": "mobx-ui-statelets",
   "version": "0.0.0",
-  "description": "boilerplate for TypeScript project",
+  "description": "MobX-driven UI state classes",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": "https://github.com/soul-codes/mobx-ui-state",
@@ -14,20 +14,25 @@
     "tsc-watch": "rm -rf dist && tsc --watch",
     "demo-server": "webpack-serve --config ./demo/webpack.config.js --content ./demo --port 9001"
   },
+  "peerDependencies": {
+    "mobx": "^5.0.3"
+  },
   "devDependencies": {
     "@types/react": "^16.3.18",
     "@types/react-dom": "^16.0.6",
+    "@types/jest": "^23.3.1",
     "awesome-typescript-loader": "^5.2.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
     "babel-preset-react": "^6.24.1",
     "concurrently": "^3.5.1",
+    "jest": "^23.5.0",
     "mobx": "^5.0.3",
     "mobx-react": "^5.2.3",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "release-it": "^7.4.7",
-    "typescript": "^2.9.1",
+    "typescript": "^3.0.1",
     "webpack": "^4.12.0",
     "webpack-serve": "^1.0.4"
   }
