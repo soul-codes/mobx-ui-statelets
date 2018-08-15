@@ -43,6 +43,8 @@ export default class DevValidationLabel extends Component<
           display: "inline-block",
           color: isEnabled ? "black" : "lightgray"
         }}
+        onMouseOver={() => validator.reportHover()}
+        onMouseOut={() => validator.reportUnhover()}
       >
         <pre>Correction: {JSON.stringify(validator.correction, null, 2)}</pre>
         <pre>Error: {JSON.stringify(validator.error, null, 2)}</pre>
