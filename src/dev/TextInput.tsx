@@ -19,12 +19,18 @@ export default class DevTextInput extends Component<DevTextInputProps> {
   render() {
     const { input } = this.props;
     const id = randomId();
+    const isHoveredValidator = input.validators.some(
+      validator => validator.isHovered
+    );
+
     return (
       <div
         style={{
-          border: "1px solid black",
+          border: (isHoveredValidator ? 4 : 1) + "px solid black",
           margin: "1em",
-          padding: "0em 1em 0em 1em",
+          padding: isHoveredValidator
+            ? "0em 1em 0em 1em"
+            : "3px calc(1em + 3px) 3px calc(1em + 3px)",
           boxSizing: "border-box",
           display: "inline-block"
         }}

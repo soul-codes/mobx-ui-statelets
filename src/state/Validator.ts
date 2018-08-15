@@ -4,12 +4,15 @@ import { observable, action } from "mobx";
 import InputGroup, { InputGroupContent, InputGroupValue } from "./InputGroup";
 import createLookup from "../utils/lookup";
 import { StateDevOptions } from "./State";
+import withElemen, { ElementProjections } from "../partials/withElement";
+import withHover from "../partials/withHover";
 
-export default class Validator<
+class ProtoValidator<
   TInputs extends InputGroupContent,
   TFormatError = null,
-  TDomainError = null
-> extends InputGroup<TInputs> {
+  TDomainError = null,
+  TProjections extends ElementProjections = ElementProjections
+> extends InputGroup<TInputs, TProjections> {
   constructor(
     inputs: MaybeConstant<() => TInputs>,
     private readonly _options?: ValidatorOptions<
@@ -22,7 +25,7 @@ export default class Validator<
     createLookup(
       this,
       () => this.flattedInputs,
-      input => input.__$$private_validators as Set<this>
+      input => input.__$$private_validators as any
     );
   }
 
@@ -97,6 +100,16 @@ export default class Validator<
     true | BaseValidationResult<InputGroupValue<TInputs>, TDomainError> | Falsy
   >((this._options && this._options.domain) || noopValidator);
 }
+
+export default class Validator<
+  TInputs extends InputGroupContent,
+  TFormatError = null,
+  TDomainError = null
+> extends withElemen(withHover(ProtoValidator))<
+  TInputs,
+  TFormatError,
+  TDomainError
+> {}
 
 export function noopValidator(value: any) {
   return null;
