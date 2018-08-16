@@ -154,9 +154,7 @@ export interface SubmitActionFailure {
   errorType?: string;
 }
 
-type ActionResultConstraint =
-  | { success: true }
-  | { success: false; errorType?: string };
+type ActionResultConstraint = SubmitSuccess<any> | SubmitActionFailure;
 
 export interface FormOptions extends StateDevOptions {
   autoNext?: boolean;
