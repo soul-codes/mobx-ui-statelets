@@ -8,8 +8,8 @@ import withHover from "../partials/withHover";
 
 export default class Validator<
   TInputs extends InputGroupContent,
-  TFormatError = null,
-  TDomainError = null
+  TFormatError,
+  TDomainError
 > extends withHover(InputGroup)<TInputs> {
   constructor(
     inputs: MaybeConstant<() => TInputs>,
