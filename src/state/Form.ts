@@ -1,4 +1,4 @@
-import InputGroup, { InputGroupContent } from "./InputGroup";
+import InputGroup, { InputGroupContent, InputGroupValue } from "./InputGroup";
 import { MaybeConstant } from "../utils/types";
 import Actuator, { ActuatorAction } from "./Actuator";
 import createLookup from "../utils/lookup";
@@ -14,16 +14,19 @@ export default class Form<
 > extends InputGroup<TInputs> {
   constructor(
     inputs: MaybeConstant<() => TInputs>,
-    submitAction: ActuatorAction<null, TActionResult>,
+    submitAction: ActuatorAction<InputGroupValue<TInputs>, TActionResult>,
     readonly options: FormOptions = {}
   ) {
     super(inputs, options);
-    this._actuator = new Actuator(guardSubmit(submitAction, this), {
-      name:
-        options && options.name
-          ? `(form "${options.name}" actuator)`
-          : "(form actuator)"
-    });
+    this._actuator = new Actuator(
+      guardSubmit<TInputs, TActionResult>(submitAction, this),
+      {
+        name:
+          options && options.name
+            ? `(form "${options.name}" actuator)`
+            : "(form actuator)"
+      }
+    );
     createLookup(
       this as Form<any, any>,
       () => this.flattedInputs,
@@ -73,7 +76,7 @@ function guardSubmit<
   TInputs extends InputGroupContent,
   TActionResult extends ActionResultConstraint
 >(
-  submitAction: ActuatorAction<null, TActionResult>,
+  submitAction: ActuatorAction<InputGroupValue<TInputs>, TActionResult>,
   form: Form<TInputs, TActionResult>
 ): ActuatorAction<null, SubmitResult<TActionResult>> {
   return async (arg, addCancelHandler) => {
@@ -100,7 +103,7 @@ function guardSubmit<
       focusedInput.__$$private_forms.has(form)
     )
       focusedInput.blur();
-    const result = await submitAction(null, addCancelHandler);
+    const result = await submitAction(form.value, addCancelHandler);
     return result;
   };
 }
