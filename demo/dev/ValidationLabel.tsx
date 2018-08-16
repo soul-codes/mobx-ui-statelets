@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import Validator from "../state/Validator";
+import Validator from "../../src/state/Validator";
 
 export interface DevValidationLabelProps {
   validator: Validator<any, any, any>;

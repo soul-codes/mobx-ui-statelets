@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import Actuator, { ActuatorArg } from "../state/Actuator";
-import Form, { FormOrActuator, AsActuator } from "../state/Form";
+import Actuator, { ActuatorArg } from "../../src/state/Actuator";
+import Form, { FormOrActuator, AsActuator } from "../../src/state/Form";
 
 interface BaseDevButtonProps<TActuator extends FormOrActuator> {
   actuator: TActuator;

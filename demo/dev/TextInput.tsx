@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import Input from "../state/Input";
-import { stateProjection } from "../partials/stateProjection";
+import Input from "../../src/state/Input";
+import { stateProjection } from "../../src/partials/stateProjection";
 import randomId from "./utils/randomId";
 
 export interface DevTextInputProps {

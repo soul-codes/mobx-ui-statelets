@@ -4,9 +4,9 @@ import Input from "../src/state/Input";
 import Validator from "../src/state/Validator";
 import Form from "../src/state/Form";
 
-import TextInput from "../src/dev/TextInput";
-import ValidationLabel from "../src/dev/ValidationLabel";
-import Button from "../src/dev/Button";
+import TextInput from "./dev/TextInput";
+import ValidationLabel from "./dev/ValidationLabel";
+import Button from "./dev/Button";
 
 const required = (value: string) => !value && { error: "required" };
 const trim = (value: string) => value.trim();
