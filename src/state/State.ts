@@ -1,6 +1,13 @@
-import { Always } from "../utils/types";
+import { action, observable } from "mobx";
+import { Always, Falsy } from "../utils/types";
 
-export default class State<TProjectionAPI extends StateProjectionMap = {}> {
+export const currentFocus = observable.box<State | null>(null, {
+  deep: false
+});
+
+export default class State<
+  TProjectionAPI extends StateProjections = StateProjections
+> {
   constructor(readonly devOptions?: StateDevOptions) {}
 
   addProjection(projection: any, api: TProjectionAPI) {
@@ -11,12 +18,13 @@ export default class State<TProjectionAPI extends StateProjectionMap = {}> {
     this.__$$private_projections.delete(projection);
   }
 
-  project<TKey extends keyof TProjectionAPI>(
+  project<TKey extends keyof (TProjectionAPI)>(
     key: TKey
-  ): Always<TProjectionAPI[TKey]>[] {
-    const result: TProjectionAPI[TKey][] = [];
+  ): Always<(TProjectionAPI)[TKey]>[] {
+    const result: Always<(TProjectionAPI)[TKey]>[] = [];
     for (const [, api] of this.__$$private_projections.entries()) {
-      typeof api[key] !== "undefined" && result.push(api[key]);
+      typeof api[key] !== "undefined" &&
+        result.push(api[key] as Always<(TProjectionAPI)[TKey]>);
     }
     return result;
   }
@@ -25,16 +33,43 @@ export default class State<TProjectionAPI extends StateProjectionMap = {}> {
     return (this.devOptions && this.devOptions.name) || null;
   }
 
+  get elements(): HTMLElement[] {
+    return this.project("element")
+      .map(el => el())
+      .filter(Boolean) as HTMLElement[];
+  }
+  get isFocused(): boolean {
+    return currentFocus.get() === this;
+  }
+
+  @action
+  focus() {
+    return Boolean(this.project("focus").find(fn => Boolean(fn())));
+  }
+
+  @action
+  blur() {
+    return Boolean(this.project("blur").find(fn => Boolean(fn())));
+  }
+
+  @action
+  reportFocus() {
+    currentFocus.set(this);
+  }
+
+  @action
+  reportBlur() {
+    this.isFocused && currentFocus.set(null);
+  }
+
   __$$private_projections = new Map<any, TProjectionAPI>();
 }
 
-export type StateProjectionMap = { [key: string]: any };
-
-export type ProjectionAPI<TState extends State> = TState extends State<
-  infer TProjection
->
-  ? TProjection
-  : never;
+export interface StateProjections {
+  focus?(): boolean;
+  blur?(): boolean;
+  element?(): HTMLElement | Falsy;
+}
 
 export interface StateDevOptions {
   name?: string;

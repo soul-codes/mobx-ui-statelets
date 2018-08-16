@@ -1,17 +1,15 @@
 import { observable, action } from "mobx";
 import Validator from "./Validator";
-import withFocus, { FocusProjections } from "../partials/withFocus";
 import State, { StateDevOptions } from "./State";
-import withElement, { ElementProjections } from "../partials/withElement";
-import withHover from "../partials/withHover";
 import Form from "./Form";
 import { Falsy } from "../utils/types";
+import withHover from "../partials/withHover";
 
 let confirmCounter = 0;
 
-class ProtoInput<TValue extends BaseInputValue> extends State<
-  FocusProjections & ElementProjections
-> {
+export default class Input<TValue extends BaseInputValue> extends withHover(
+  State
+) {
   constructor(
     readonly defaultValue: TValue,
     readonly normalizer?: ((value: TValue) => TValue) | Falsy,
@@ -143,10 +141,6 @@ class ProtoInput<TValue extends BaseInputValue> extends State<
 
   private _confirmId = 0;
 }
-
-export default class Input<TValue extends BaseInputValue> extends withElement(
-  withFocus(withHover(ProtoInput))
-)<TValue> {}
 
 export type BaseInputValue = string | number | boolean;
 export type InputValue<T extends Input<any>> = T extends Input<infer V>

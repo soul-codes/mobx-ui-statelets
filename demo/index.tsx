@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Input from "../src/state/Input";
-import Validator from "../src/state/Validator";
-import Form from "../src/state/Form";
+import Input from "../dist/state/Input";
+import Validator from "../dist/state/Validator";
+import Form from "../dist/state/Form";
 
 import TextInput from "./dev/TextInput";
 import ValidationLabel from "./dev/ValidationLabel";

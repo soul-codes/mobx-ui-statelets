@@ -1,8 +1,7 @@
-export { default as State, ProjectionAPI } from "./state/State";
+export { default as State } from "./state/State";
 export {
   default as Actuator,
   ActuatorAction,
-  ActuatorProjection,
   AddCancelhandler
 } from "./state/Actuator";
 export { default as Input, InputValue, BaseInputValue } from "./state/Input";
@@ -27,11 +26,6 @@ export {
   SubmitValidationFailure
 } from "./state/Form";
 
-export {
-  default as withElement,
-  ElementProjections
-} from "./partials/withElement";
-export { default as withFocus, FocusProjections } from "./partials/withFocus";
 export { default as withHover } from "./partials/withHover";
 
 export { default as stateProjection } from "./partials/stateProjection";

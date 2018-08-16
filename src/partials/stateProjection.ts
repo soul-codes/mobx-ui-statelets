@@ -1,5 +1,5 @@
 import { Component } from "react";
-import State, { ProjectionAPI } from "../state/State";
+import State, { StateProjections } from "../state/State";
 
 const projectionState = new WeakMap<Component, Set<State>>();
 
@@ -61,7 +61,7 @@ function removeSubscription(component: Component) {
 const $subscription = Symbol("Subscription");
 function subscribe<TState extends State>(
   state: TState,
-  subscription: ProjectionAPI<TState>
+  subscription: StateProjections
 ): StateSubscription<TState> {
   const result = { state, subscription };
   Object.defineProperty(result, $subscription, {
@@ -74,6 +74,6 @@ function subscribe<TState extends State>(
 
 interface StateSubscription<TState extends State> {
   state: TState;
-  subscription: ProjectionAPI<TState>;
+  subscription: StateProjections;
   [$subscription]: true;
 }

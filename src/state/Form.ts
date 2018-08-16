@@ -4,9 +4,8 @@ import Actuator, { ActuatorAction } from "./Actuator";
 import createLookup from "../utils/lookup";
 import Input from "./Input";
 import { computed } from "mobx";
-import { currentFocus } from "../partials/withFocus";
 import Validator from "./Validator";
-import { StateDevOptions } from "./State";
+import { StateDevOptions, currentFocus } from "./State";
 
 export default class Form<
   TInputs extends InputGroupContent,

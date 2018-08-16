@@ -1,11 +1,11 @@
 import { MaybeConstant, ArrayItem } from "../utils/types";
 import Input, { InputValue } from "./Input";
-import State, { StateDevOptions, StateProjectionMap } from "./State";
+import State, { StateDevOptions, StateProjections } from "./State";
 import { computed } from "mobx";
 
 export default class InputGroup<
   TInputs extends InputGroupContent,
-  TProjection extends StateProjectionMap = {}
+  TProjection extends StateProjections = {}
 > extends State<TProjection> {
   constructor(inputs: MaybeConstant<() => TInputs>, options?: StateDevOptions) {
     super(options);

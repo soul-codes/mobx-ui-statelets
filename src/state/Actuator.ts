@@ -37,7 +37,7 @@ class InvokeInstance {
   }
 }
 
-export default class Actuator<TArg, TResult> extends State<ActuatorProjection> {
+export default class Actuator<TArg, TResult> extends State {
   constructor(
     readonly action: ActuatorAction<TArg, TResult>,
     options?: StateDevOptions
@@ -118,10 +118,6 @@ export default class Actuator<TArg, TResult> extends State<ActuatorProjection> {
 }
 
 export type AddCancelhandler = AddDisposeHandler;
-
-export interface ActuatorProjection {
-  element?: Element;
-}
 
 export type ActuatorAction<TArg, TResult> = (
   arg: TArg,
