@@ -8,7 +8,6 @@ import Form from "./Form";
 import { Falsy } from "../utils/types";
 
 let confirmCounter = 0;
-export const $inverseLookup = Symbol("Input Friend API");
 
 class ProtoInput<TValue extends BaseInputValue> extends State<
   FocusProjections & ElementProjections
