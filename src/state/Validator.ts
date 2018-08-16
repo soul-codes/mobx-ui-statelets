@@ -4,7 +4,7 @@ import { observable, action } from "mobx";
 import InputGroup, { InputGroupContent, InputGroupValue } from "./InputGroup";
 import createLookup from "../utils/lookup";
 import { StateDevOptions } from "./State";
-import withElemen, { ElementProjections } from "../partials/withElement";
+import withElement, { ElementProjections } from "../partials/withElement";
 import withHover from "../partials/withHover";
 
 class ProtoValidator<
@@ -105,7 +105,7 @@ export default class Validator<
   TInputs extends InputGroupContent,
   TFormatError = null,
   TDomainError = null
-> extends withElemen(withHover(ProtoValidator))<
+> extends withElement(withHover(ProtoValidator))<
   TInputs,
   TFormatError,
   TDomainError
