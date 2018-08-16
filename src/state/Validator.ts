@@ -39,8 +39,14 @@ export default class Validator<
     InputGroupValue<TInputs>,
     TFormatError
   > {
+    return this.validateFormat(this.value);
+  }
+
+  validateFormat(
+    value: InputGroupValue<TInputs>
+  ): BaseValidationResult<InputGroupValue<TInputs>, TFormatError> {
     const rule = (this._options && this._options.format) || noopValidator;
-    const result = rule(this.value) || null;
+    const result = rule(value) || null;
     return result === true ? { error: true as any } : result || {};
   }
 
