@@ -5,7 +5,7 @@ export interface ElementProjections {
   element?(): HTMLElement | Falsy;
 }
 
-export default function withElemen<
+export default function withElement<
   TState extends new (...args: any[]) => State<ElementProjections>
 >(State: TState) {
   class WithElement extends State {
