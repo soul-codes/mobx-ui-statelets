@@ -1,5 +1,6 @@
 import Validator, { ValidatorOptions } from "./Validator";
 import Input, { InputOptions } from "./Input";
+import { computed } from "mobx";
 
 export default class ValidatedInput<
   TValue extends BaseInputValue,
@@ -13,9 +14,14 @@ export default class ValidatedInput<
     super(defaultValue, options);
   }
   validator = new Validator<Input<TValue>, TFormatError, TDomainError>(this, {
-    format: this.options && this.options.formatValidation,
-    domain: this.options && this.options.domainValidation
+    format: this.options && this.options.validateFormat,
+    domain: this.options && this.options.validateDomain
   });
+
+  @computed
+  get normalizedInputValueFormatResult() {
+    return this.validator.validateFormat(this.normalizedInputValue);
+  }
 }
 
 export interface ValidatedInputOptions<
@@ -23,16 +29,8 @@ export interface ValidatedInputOptions<
   TFormat,
   TDomain
 > extends InputOptions<TValue> {
-  formatValidation?: ValidatorOptions<
-    Input<TValue>,
-    TFormat,
-    TDomain
-  >["format"];
-  domainValidation?: ValidatorOptions<
-    Input<TValue>,
-    TFormat,
-    TDomain
-  >["domain"];
+  validateFormat?: ValidatorOptions<Input<TValue>, TFormat, TDomain>["format"];
+  validateDomain?: ValidatorOptions<Input<TValue>, TFormat, TDomain>["domain"];
 }
 
 export type BaseInputValue = string | number | boolean;
