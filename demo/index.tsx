@@ -11,7 +11,7 @@ import Button from "./dev/Button";
 const required = (value: string) => !value && { error: "required" };
 const trim = (value: string) => value.trim();
 
-const street = new Input<string>("", trim, { name: "street" });
+const street = new Input<string>("", { normalizer: trim, name: "street" });
 const validateStreet = new Validator(street, {
   format: required,
   domain: async street => {
@@ -20,13 +20,16 @@ const validateStreet = new Validator(street, {
   }
 });
 
-const houseNo = new Input<string>("", trim, { name: "house number" });
+const houseNo = new Input<string>("", {
+  normalizer: trim,
+  name: "house number"
+});
 const validateHouseNo = new Validator(houseNo, { format: required });
 
-const postCode = new Input<string>("", trim, { name: "post code" });
+const postCode = new Input<string>("", { normalizer: trim, name: "post code" });
 const validatePostCode = new Validator(postCode, { format: required });
 
-const city = new Input<string>("", trim, { name: "city " });
+const city = new Input<string>("", { normalizer: trim, name: "city " });
 const validateCity = new Validator(city, { format: required });
 
 const validateAddress = new Validator(

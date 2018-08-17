@@ -18,6 +18,10 @@ export {
   DomainValidationFunction
 } from "./state/Validator";
 export {
+  default as ValidatedInput,
+  ValidatedInputOptions
+} from "./state/ValidatedInput";
+export {
   default as Form,
   FormOptions,
   FormOrActuator,
