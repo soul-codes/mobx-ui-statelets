@@ -12,10 +12,9 @@ export default class Input<TValue extends BaseInputValue> extends withHover(
 ) {
   constructor(
     readonly defaultValue: TValue,
-    readonly normalizer?: ((value: TValue) => TValue) | Falsy,
-    devOptions?: StateDevOptions
+    readonly options?: InputOptions<TValue>
   ) {
-    super(devOptions);
+    super(options);
     this._value = defaultValue === void 0 ? ("" as TValue) : defaultValue;
   }
 
@@ -23,6 +22,15 @@ export default class Input<TValue extends BaseInputValue> extends withHover(
   input(value: TValue) {
     if (this.isBeingSubmitted) return;
     this._inputValue = value;
+  }
+
+  normalizeValue(value: TValue) {
+    const normalizer = this.options && this.options.normalizer;
+    return normalizer ? (normalizer || 0)(value) : value;
+  }
+
+  get normalizedInputValue() {
+    return this.normalizeValue(this.inputValue);
   }
 
   @action
@@ -34,16 +42,15 @@ export default class Input<TValue extends BaseInputValue> extends withHover(
     const lastValue = this.inputValue;
 
     if (value === void 0) value = lastValue;
-    value = this.normalizer ? (this.normalizer || 0)(value) : value;
+    value = this.normalizeValue(value);
     this._hasEverBeenConfirmed = true;
 
-    const isDifferent = value !== this.value;
+    const shouldValidate = ((this.options && this.options.revalidate) ||
+      defaultShouldValidate)(value, this.value);
     this._value = value;
     this._inputValue = void 0;
 
-    if (isDifferent) {
-      await this.validate();
-    }
+    shouldValidate && (await this.validate());
 
     if (!next) return;
     if (confirmId !== confirmCounter) return;
@@ -140,6 +147,15 @@ export default class Input<TValue extends BaseInputValue> extends withHover(
   __$$private_forms = new Set<Form<any, any>>();
 
   private _confirmId = 0;
+}
+
+function defaultShouldValidate<TValue>(value: TValue, oldValue: TValue) {
+  return value !== oldValue;
+}
+
+export interface InputOptions<TValue> extends StateDevOptions {
+  readonly normalizer?: ((value: TValue) => TValue) | Falsy;
+  revalidate?: (value: TValue, oldValue: TValue) => boolean;
 }
 
 export type BaseInputValue = string | number | boolean;
