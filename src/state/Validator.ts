@@ -37,14 +37,14 @@ export default class Validator<
 
   get formatResult(): BaseValidationResult<
     InputGroupValue<TInputs>,
-    TFormatError
+    TFormatError | null
   > {
     return this.validateFormat(this.value);
   }
 
   validateFormat(
     value: InputGroupValue<TInputs>
-  ): BaseValidationResult<InputGroupValue<TInputs>, TFormatError> {
+  ): BaseValidationResult<InputGroupValue<TInputs>, TFormatError | null> {
     const rule = (this._options && this._options.format) || noopValidator;
     const result = rule(value) || null;
     return result === true ? { error: true as any } : result || {};
@@ -52,7 +52,7 @@ export default class Validator<
 
   get domainResult(): BaseValidationResult<
     InputGroupValue<TInputs>,
-    TDomainError
+    TDomainError | null
   > {
     const result = this._actuator.result;
     return result === true ? { error: true as any } : result || {};
@@ -64,9 +64,17 @@ export default class Validator<
     TDomainError
   > | null {
     if (this.formatResult.error)
-      return { errorType: "format", ...this.formatResult };
+      return {
+        errorType: "format",
+        error: this.formatResult.error,
+        correction: this.formatResult.correction
+      };
     if (this.domainResult.error)
-      return { errorType: "domain", ...this.domainResult };
+      return {
+        errorType: "domain",
+        error: this.domainResult.error,
+        correction: this.domainResult.correction
+      };
     return null;
   }
 
@@ -101,7 +109,9 @@ export default class Validator<
   private _hasValidationEverBeenRequested = false;
   private _actuator = new Actuator<
     InputGroupValue<TInputs>,
-    true | BaseValidationResult<InputGroupValue<TInputs>, TDomainError> | Falsy
+    | true
+    | BaseValidationResult<InputGroupValue<TInputs>, TDomainError | null>
+    | Falsy
   >((this._options && this._options.domain) || noopValidator);
 }
 
@@ -111,7 +121,7 @@ export function noopValidator(value: any) {
 
 export type FormatValidationFunction<TValue, TFormatError> = (
   value: TValue
-) => true | BaseValidationResult<TValue, TFormatError> | Falsy;
+) => true | BaseValidationResult<TValue, TFormatError | null> | Falsy;
 
 export interface BaseValidationResult<TValue, ErrorData> {
   error?: ErrorData;
@@ -126,7 +136,9 @@ export interface FormatValidationError<TValue, TFormatError>
 export type DomainValidationFunction<TValue, TDomainError> = (
   value: TValue,
   addCancelHandler: AddCancelhandler
-) => MaybePromise<true | BaseValidationResult<TValue, TDomainError> | Falsy>;
+) => MaybePromise<
+  true | BaseValidationResult<TValue, TDomainError | null> | Falsy
+>;
 
 export interface DomainValidationError<TValue, TDomainError>
   extends BaseValidationResult<TValue, TDomainError> {
@@ -134,8 +146,8 @@ export interface DomainValidationError<TValue, TDomainError>
 }
 
 export type ValidationError<TValue, TFormatError, TDomainError> =
-  | FormatValidationError<TValue, TFormatError>
-  | DomainValidationError<TValue, TDomainError>;
+  | { error: TFormatError; correction?: TValue; errorType: "format" }
+  | { error: TDomainError; correction?: TValue; errorType: "domain" };
 
 export interface ValidatorOptions<
   TInputs extends InputGroupContent,
