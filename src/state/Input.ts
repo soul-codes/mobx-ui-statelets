@@ -69,6 +69,13 @@ export default class Input<TValue extends BaseInputValue> extends withHover(
   }
 
   @action
+  reset(args?: { value?: TValue }) {
+    const valueToSet = args && args.value !== void 0 ? args.value : this._value;
+    this._value = this.normalizeValue(valueToSet);
+    this._hasEverBeenConfirmed = false;
+  }
+
+  @action
   async validate() {
     const confirmId = this._confirmId;
     const set = new Set<Validator<any, any, any>>();
