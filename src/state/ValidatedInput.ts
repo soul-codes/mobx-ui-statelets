@@ -15,7 +15,8 @@ export default class ValidatedInput<
   }
   validator = new Validator<Input<TValue>, TFormatError, TDomainError>(this, {
     format: this.options && this.options.validateFormat,
-    domain: this.options && this.options.validateDomain
+    domain: this.options && this.options.validateDomain,
+    enabled: this.options && this.options.enableValidation
   });
 
   @computed
@@ -31,6 +32,11 @@ export interface ValidatedInputOptions<
 > extends InputOptions<TValue> {
   validateFormat?: ValidatorOptions<Input<TValue>, TFormat, TDomain>["format"];
   validateDomain?: ValidatorOptions<Input<TValue>, TFormat, TDomain>["domain"];
+  enableValidation?: ValidatorOptions<
+    Input<TValue>,
+    TFormat,
+    TDomain
+  >["enabled"];
 }
 
 export type BaseInputValue = string | number | boolean;
