@@ -7,6 +7,8 @@ import withHover from "../partials/withHover";
 import Actuator from "./Actuator";
 
 let confirmCounter = 0;
+let confirmStack: Input<any>[] = [];
+let validationCandidates: Input<any>[] = [];
 
 export default class Input<
   TValue extends BaseInputValue,
@@ -60,7 +62,19 @@ export default class Input<
     this._value = value;
     this._inputValue = void 0;
 
-    shouldValidate && (await this.validate());
+    const isRootConfirm = !confirmStack.length;
+    shouldValidate && validationCandidates.push(this);
+    const confirmCascade = this.options && this.options.confirmCascade;
+    if (confirmCascade) {
+      confirmStack.push(this);
+      confirmCascade.call(this, value, this);
+      confirmStack.pop();
+    }
+
+    if (!isRootConfirm) return;
+    const inputsToValidate = validationCandidates;
+    validationCandidates = [];
+    await Promise.all(inputsToValidate.map(input => input.validate()));
 
     if (!next) return;
     if (confirmId !== confirmCounter) return;
@@ -252,6 +266,11 @@ export interface InputOptions<
       ) => MaybePromise<InputChoiceQueryResult<TValue, TChoiceEvaluation>>)
     | InputChoice<TValue, TChoiceEvaluation>[];
   choiceQueryLimit?: number;
+  confirmCascade?: (
+    this: Input<TValue>,
+    value: TValue,
+    self: Input<TValue>
+  ) => void;
 }
 
 export type BaseInputValue = string | number | boolean;
