@@ -20,9 +20,11 @@ export default class Input<
     this._value = defaultValue === void 0 ? ("" as TValue) : defaultValue;
 
     const choices = options && options.choices;
-    this._choiceActuator = choices
-      ? new Actuator(typeof choices === "function" ? choices : () => choices)
-      : null;
+    if (typeof choices === "function") {
+      this._choiceActuator = new Actuator(choices);
+    } else {
+      this._choices = choices || [];
+    }
   }
 
   @action
@@ -152,6 +154,10 @@ export default class Input<
     return this._value;
   }
 
+  get choices() {
+    return this._choices;
+  }
+
   get hasMoreChoices() {
     const choiceActuator = this._choiceActuator;
     if (!choiceActuator) return false;
@@ -161,7 +167,7 @@ export default class Input<
 
   get totalChoices() {
     const choiceActuator = this._choiceActuator;
-    if (!choiceActuator) return 0;
+    if (!choiceActuator) return this._choices.length;
     if (!choiceActuator.result) return null;
     const total = choiceActuator.result.stats.total;
     return total === void 0 ? null : total;
@@ -223,7 +229,7 @@ export default class Input<
   private _choiceActuator: Actuator<
     InputChoiceQuery<TValue>,
     InputChoiceQueryResult<TValue, TChoiceEvaluation>
-  > | null;
+  > | null = null;
 
   @observable.shallow
   private _choices: InputChoice<TValue, TChoiceEvaluation>[] = [];
@@ -240,11 +246,11 @@ export interface InputOptions<
 > extends StateDevOptions {
   readonly normalizer?: ((value: TValue) => TValue) | Falsy;
   revalidate?: (value: TValue, oldValue: TValue) => boolean;
-  choices?: MaybeConstant<
-    (
-      query: InputChoiceQuery<TValue>
-    ) => MaybePromise<InputChoiceQueryResult<TValue, TChoiceEvaluation>>
-  >;
+  choices?:
+    | ((
+        query: InputChoiceQuery<TValue>
+      ) => MaybePromise<InputChoiceQueryResult<TValue, TChoiceEvaluation>>)
+    | InputChoice<TValue, TChoiceEvaluation>[];
   choiceQueryLimit?: number;
 }
 
