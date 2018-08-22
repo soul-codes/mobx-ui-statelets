@@ -2,7 +2,8 @@ export { default as State } from "./state/State";
 export {
   default as Actuator,
   ActuatorAction,
-  AddCancelhandler
+  AddCancelhandler,
+  ActuatorArg
 } from "./state/Actuator";
 export { default as Input, InputValue, BaseInputValue } from "./state/Input";
 export {
@@ -32,7 +33,7 @@ export {
 
 export { default as withHover } from "./partials/withHover";
 
-export { default as stateProjection } from "./partials/stateProjection";
+export { stateProjection } from "./partials/stateProjection";
 
 export {
   default as Disposer,
