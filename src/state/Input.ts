@@ -10,7 +10,7 @@ let confirmCounter = 0;
 
 export default class Input<
   TValue extends BaseInputValue,
-  TChoiceEvaluation = never
+  TChoiceEvaluation = any
 > extends withHover(State) {
   constructor(
     readonly defaultValue: TValue,
@@ -242,7 +242,7 @@ function defaultShouldValidate<TValue>(value: TValue, oldValue: TValue) {
 
 export interface InputOptions<
   TValue extends BaseInputValue,
-  TChoiceEvaluation = never
+  TChoiceEvaluation = any
 > extends StateDevOptions {
   readonly normalizer?: ((value: TValue) => TValue) | Falsy;
   revalidate?: (value: TValue, oldValue: TValue) => boolean;
