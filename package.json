@@ -11,7 +11,7 @@
     "prepare": "rm -rf dist && tsc",
     "start": "concurrently --kill-others \"npm run tsc-watch\" \"npm run demo-server\"",
     "release": "release-it",
-    "fluid-release": "fluid-publish devTag=\"inc\"",
+    "nightly": "fluid-publish devTag=\"inc\"",
     "tsc-watch": "rm -rf dist && tsc --watch",
     "demo-server": "webpack-serve --config ./demo/webpack.config.js --content ./demo --port 9001"
   },
