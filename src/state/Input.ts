@@ -54,6 +54,8 @@ export default class Input<
     const lastValue = this.inputValue;
 
     if (value === void 0) value = lastValue;
+    if (value === this.value && !this.hasEverBeenConfirmed) return;
+
     value = this.normalizeValue(value);
     this._hasEverBeenConfirmed = true;
 
