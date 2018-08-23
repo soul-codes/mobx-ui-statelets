@@ -1,6 +1,6 @@
 import { MaybePromise, Falsy, MaybeConstant } from "../utils/types";
 import Actuator, { AddCancelhandler } from "./Actuator";
-import { observable, action } from "mobx";
+import { observable, action, reaction } from "mobx";
 import InputGroup, { InputGroupContent, InputGroupValue } from "./InputGroup";
 import createLookup from "../utils/lookup";
 import { StateDevOptions } from "./State";
@@ -29,10 +29,15 @@ export default class Validator<
 
   @action
   async validate() {
-    this._hasValidationEverBeenRequested = true;
+    this._hasEverValidated = true;
     if (this.formatResult.error) return;
+    const disposeReaction = reaction(
+      () => this.formatResult.error,
+      error => error && this._actuator.cancel()
+    );
     const promise = this._actuator.invoke(this.value);
     await promise;
+    disposeReaction();
   }
 
   get formatResult(): BaseValidationResult<
