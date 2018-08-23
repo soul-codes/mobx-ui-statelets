@@ -93,16 +93,32 @@ export default class Validator<
     return Boolean(this._actuator.isPending);
   }
 
-  get isValidated() {
+  get isConclusivelyValid() {
+    return this.isConclusive && !this.error;
+  }
+
+  get isConclusivelyInvalid() {
+    return this.isConclusive && Boolean(this.error);
+  }
+
+  get isVirgin() {
+    return !this.hasEverValidated || this.hasUnconfirmedInput;
+  }
+
+  get isConclusive() {
     return (
       !this._actuator.isPending &&
-      this._hasValidationEverBeenRequested &&
-      !this.error
+      this._hasEverValidated &&
+      !this.hasUnconfirmedInput
     );
   }
 
-  get hasValidationEverBeenRequested() {
-    return this._hasValidationEverBeenRequested;
+  get hasEverValidated() {
+    return this._hasEverValidated;
+  }
+
+  get hasUnconfirmedInput() {
+    return this.flattedInputs.some(input => !input.isConfirmed);
   }
 
   get isEnabled() {
@@ -111,7 +127,7 @@ export default class Validator<
   }
 
   @observable
-  private _hasValidationEverBeenRequested = false;
+  private _hasEverValidated = false;
   private _actuator = new Actuator<
     InputGroupValue<TInputs>,
     | true

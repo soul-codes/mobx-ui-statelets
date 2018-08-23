@@ -39,7 +39,7 @@ export default class Form<
 
   @computed
   get unconfirmedInputs() {
-    return this.flattedInputs.filter(input => !input.hasEverBeenConfirmed);
+    return this.flattedInputs.filter(input => !input.isConfirmed);
   }
 
   @computed

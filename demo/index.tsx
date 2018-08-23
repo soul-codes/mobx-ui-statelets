@@ -48,10 +48,10 @@ const validateAddress = new Validator(
           : { error: "address" };
     },
     enabled: () =>
-      validateStreet.isValidated &&
-      validateHouseNo.isValidated &&
-      validatePostCode.isValidated &&
-      validateCity.isValidated
+      validateStreet.isConclusivelyValid &&
+      validateHouseNo.isConclusivelyValid &&
+      validatePostCode.isConclusivelyValid &&
+      validateCity.isConclusivelyValid
   }
 );
 

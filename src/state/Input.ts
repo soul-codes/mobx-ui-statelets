@@ -54,10 +54,10 @@ export default class Input<
     const lastValue = this.inputValue;
 
     if (value === void 0) value = lastValue;
-    if (value === this.value && !this.hasEverBeenConfirmed) return;
+    if (value === this.value && !this.isConfirmed) return;
 
     value = this.normalizeValue(value);
-    this._hasEverBeenConfirmed = true;
+    this._isConfirmed = true;
 
     const shouldValidate = ((this.options && this.options.revalidate) ||
       defaultShouldValidate)(value, this.value);
@@ -98,7 +98,7 @@ export default class Input<
   reset(args?: { value?: TValue }) {
     const valueToSet = args && args.value !== void 0 ? args.value : this._value;
     this._value = this.normalizeValue(valueToSet);
-    this._hasEverBeenConfirmed = false;
+    this._isConfirmed = false;
   }
 
   @action
@@ -195,7 +195,7 @@ export default class Input<
 
   get isValidated() {
     for (let validator of this.__$$private_validators) {
-      if (!validator.isValidated) return false;
+      if (!validator.isConclusivelyValid) return false;
     }
     return true;
   }
@@ -221,8 +221,8 @@ export default class Input<
     return false;
   }
 
-  get hasEverBeenConfirmed() {
-    return this._hasEverBeenConfirmed;
+  get isConfirmed() {
+    return this._isConfirmed;
   }
 
   @observable
@@ -232,7 +232,7 @@ export default class Input<
   private _inputValue?: TValue;
 
   @observable
-  private _hasEverBeenConfirmed = false;
+  private _isConfirmed = false;
 
   @observable
   __$$private_validators = new Set<Validator<any, any, any>>();

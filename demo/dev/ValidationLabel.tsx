@@ -12,7 +12,7 @@ export default class DevValidationLabel extends Component<
 > {
   render() {
     const { validator } = this.props;
-    const isVirgin = !validator.hasValidationEverBeenRequested;
+    const isVirgin = validator.isVirgin;
     const isEnabled = validator.isEnabled;
     const bg = !isEnabled
       ? "white"
@@ -20,7 +20,7 @@ export default class DevValidationLabel extends Component<
         ? "#ddd"
         : validator.isValidationPending
           ? "#ffd"
-          : validator.isValidated
+          : validator.isConclusivelyValid
             ? "#dfd"
             : "#fdd";
     const isHoveredInput = validator.flattedInputs.some(
