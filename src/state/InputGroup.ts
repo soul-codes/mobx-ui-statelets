@@ -1,7 +1,7 @@
 import { MaybeConstant, ArrayItem } from "../utils/types";
 import Input, { InputValue } from "./Input";
 import State, { StateDevOptions, StateProjections } from "./State";
-import { computed } from "mobx";
+import { computed, action } from "mobx";
 
 export default class InputGroup<
   TInputs extends InputGroupContent,
@@ -20,6 +20,11 @@ export default class InputGroup<
   @computed
   get value(): InputGroupValue<TInputs> {
     return getValueFromShape(this.inputs);
+  }
+
+  @action
+  reset(args?: { value?: InputGroupValue<TInputs> }) {
+    resetShape(this.structure, args && args.value);
   }
 
   @computed
@@ -52,6 +57,23 @@ function getValueFromShape<TInputs extends InputShape>(
     result[key] = getValueFromShape((inputs as any)[key]);
   }
   return result;
+}
+
+function resetShape<TInputs extends InputGroupContent>(
+  inputs: TInputs,
+  value?: InputGroupValue<TInputs>
+) {
+  if (inputs instanceof Input) inputs.reset({ value });
+  else if (inputs instanceof InputGroup) resetShape(inputs.structure, value);
+  else if (Array.isArray(inputs))
+    inputs.map((input, index) =>
+      resetShape(input, value && (value as Array<any>)[index])
+    );
+  else {
+    for (let key in inputs) {
+      resetShape((inputs as any)[key], value && (value as any)[key]);
+    }
+  }
 }
 
 function flattenInputs<TInputs extends InputShape>(
