@@ -2,14 +2,23 @@ import { MaybeConstant, ArrayItem } from "../utils/types";
 import Input, { InputValue } from "./Input";
 import State, { StateDevOptions, StateProjections } from "./State";
 import { computed, action } from "mobx";
+import createLookup from "../utils/lookup";
 
 export default class InputGroup<
   TInputs extends InputGroupContent,
   TProjection extends StateProjections = {}
 > extends State<TProjection> {
-  constructor(inputs: MaybeConstant<() => TInputs>, options?: StateDevOptions) {
+  constructor(
+    inputs: MaybeConstant<() => TInputs>,
+    readonly options?: InputGroupOptions
+  ) {
     super(options);
     this._inputs = inputs;
+    createLookup(
+      this,
+      () => this.flattedInputs,
+      input => input.__$$private_groups as any
+    );
   }
 
   @computed
@@ -44,6 +53,33 @@ export default class InputGroup<
   }
 
   private _inputs: MaybeConstant<() => TInputs>;
+
+  __$$private__receiveInputEvent(
+    input: Input<any>,
+    kind: "confirm" | "validation",
+    buffer: Set<Input<any> | InputGroup<any>>
+  ) {
+    if (buffer.has(input)) return;
+    buffer.add(input);
+
+    const { handleInputConfirm = void 0, handleInputValidation = void 0 } =
+      this.options || {};
+    kind === "confirm" && handleInputConfirm && handleInputConfirm(input);
+    kind === "validation" &&
+      handleInputValidation &&
+      handleInputValidation(input);
+
+    input.__$$private_groups.forEach(group => {
+      if (buffer.has(group)) return;
+      buffer.add(group);
+      group.__$$private__receiveInputEvent(input, kind, buffer);
+    });
+  }
+}
+
+interface InputGroupOptions extends StateDevOptions {
+  handleInputConfirm?: (input: Input<any>) => void;
+  handleInputValidation?: (input: Input<any>) => void;
 }
 
 function getValueFromShape<TInputs extends InputShape>(

@@ -5,6 +5,7 @@ import Form from "./Form";
 import { Falsy, MaybeConstant, MaybePromise } from "../utils/types";
 import withHover from "../partials/withHover";
 import Actuator from "./Actuator";
+import InputGroup from "./InputGroup";
 
 let confirmCounter = 0;
 let confirmStack: Input<any>[] = [];
@@ -76,6 +77,13 @@ export default class Input<
     if (!isRootConfirm) return;
     const inputsToValidate = validationCandidates;
     validationCandidates = [];
+
+    const buffer = new Set<Input<any>>();
+    inputsToValidate.forEach(input =>
+      input.forms.forEach(form =>
+        form.__$$private__receiveInputEvent(input, "confirm", buffer)
+      )
+    );
     await Promise.all(inputsToValidate.map(input => input.validate()));
 
     if (!next) return;
@@ -239,6 +247,8 @@ export default class Input<
 
   @observable
   __$$private_forms = new Set<Form<any, any>>();
+
+  __$$private_groups = new Set<InputGroup<any>>();
 
   private _confirmId = 0;
 
