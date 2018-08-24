@@ -11,7 +11,7 @@ const trim = (value: string) => value.trim();
 
 const street = new Input<string>("", { normalizer: trim, name: "street" });
 const validateStreet = new Validator(street, {
-  format: required,
+  parse: required,
   domain: async street => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     return !street.startsWith("Wich") && { error: "street domain" };
@@ -22,13 +22,13 @@ const houseNo = new Input<string>("", {
   normalizer: trim,
   name: "house number"
 });
-const validateHouseNo = new Validator(houseNo, { format: required });
+const validateHouseNo = new Validator(houseNo, { parse: required });
 
 const postCode = new Input<string>("", { normalizer: trim, name: "post code" });
-const validatePostCode = new Validator(postCode, { format: required });
+const validatePostCode = new Validator(postCode, { parse: required });
 
 const city = new Input<string>("", { normalizer: trim, name: "city " });
-const validateCity = new Validator(city, { format: required });
+const validateCity = new Validator(city, { parse: required });
 
 const validateAddress = new Validator(
   () => ({ street, houseNo, postCode, city }),
@@ -47,11 +47,10 @@ const validateAddress = new Validator(
           ? null
           : { error: "address" };
     },
-    enabled: () =>
-      validateStreet.isConclusivelyValid &&
-      validateHouseNo.isConclusivelyValid &&
-      validatePostCode.isConclusivelyValid &&
-      validateCity.isConclusivelyValid
+    enabled: validator =>
+      validator.nestedValidators.every(
+        validator => validator.isConclusivelyValid
+      )
   }
 );
 

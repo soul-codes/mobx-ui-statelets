@@ -1,21 +1,24 @@
 import { MaybePromise, Falsy, MaybeConstant } from "../utils/types";
-import Actuator, { AddCancelhandler } from "./Actuator";
+import Actuator, { AddCancelhandler, ActuatorAction } from "./Actuator";
 import { observable, action, reaction } from "mobx";
 import InputGroup, { InputGroupContent, InputGroupValue } from "./InputGroup";
 import createLookup from "../utils/lookup";
 import { StateDevOptions } from "./State";
 import withHover from "../partials/withHover";
+import Input from "./Input";
 
 export default class Validator<
-  TInputs extends InputGroupContent,
-  TFormatError,
-  TDomainError
+  TInputs extends InputGroupContent = any,
+  TDomainValue = InputGroupValue<TInputs>,
+  TParseError = any,
+  TDomainError = any
 > extends withHover(InputGroup)<TInputs> {
   constructor(
     inputs: MaybeConstant<() => TInputs>,
     private readonly _options?: ValidatorOptions<
       TInputs,
-      TFormatError,
+      TDomainValue,
+      TParseError,
       TDomainError
     >
   ) {
@@ -30,51 +33,79 @@ export default class Validator<
   @action
   async validate() {
     this._hasEverValidated = true;
-    if (this.formatResult.error) return;
+    if (this.parseResult.isError) return;
+
     const disposeReaction = reaction(
-      () => this.formatResult.error,
-      error => error && this._actuator.cancel()
+      () => this.parseResult.isError,
+      isError => isError && this._actuator.cancel()
     );
-    const promise = this._actuator.invoke(this.value);
+    const promise = this._actuator.invoke(this.parseResult.domain);
     await promise;
     disposeReaction();
   }
 
-  get formatResult(): BaseValidationResult<
+  get parseResult(): ParseResult<
     InputGroupValue<TInputs>,
-    TFormatError | null
+    TParseError,
+    TDomainValue
   > {
-    return this.validateFormat(this.value);
+    return this.parse(this.value);
   }
 
-  validateFormat(
+  get domainValue(): TDomainValue | void {
+    const { parseResult } = this;
+    return parseResult.isError ? void 0 : parseResult.domain;
+  }
+
+  parse(
     value: InputGroupValue<TInputs>
-  ): BaseValidationResult<InputGroupValue<TInputs>, TFormatError | null> {
-    const rule = (this._options && this._options.format) || noopValidator;
+  ): ParseResult<InputGroupValue<TInputs>, TParseError, TDomainValue> {
+    const rule = (this._options && this._options.parse) || noopValidator;
     const result = rule(value) || null;
-    return result === true ? { error: true as any } : result || {};
+    if (!result) {
+      return {
+        isError: false,
+        isParsed: false,
+        domain: (value as any) as TDomainValue
+      };
+    }
+
+    if ("domain" in result) {
+      return {
+        isError: false,
+        isParsed: Boolean(result),
+        domain: result.domain
+      };
+    }
+
+    return {
+      isError: true,
+      error: result.error,
+      correction: result.correction
+    };
   }
 
-  get domainResult(): BaseValidationResult<
-    InputGroupValue<TInputs>,
-    TDomainError | null
-  > {
+  get domainResult(): DomainResult<TDomainValue, TDomainError> {
     const result = this._actuator.result;
-    return result === true ? { error: true as any } : result || {};
+    if (!result) return { isError: false };
+    return result.error
+      ? { isError: true, error: result.error, correction: result.correction }
+      : { isError: false, correction: result.correction };
   }
 
   get error(): ValidationError<
     InputGroupValue<TInputs>,
-    TFormatError,
+    TDomainValue,
+    TParseError,
     TDomainError
   > | null {
-    if (this.formatResult.error)
+    if (this.parseResult.isError)
       return {
-        errorType: "format",
-        error: this.formatResult.error,
-        correction: this.formatResult.correction
+        errorType: "parse",
+        error: this.parseResult.error,
+        correction: this.parseResult.correction
       };
-    if (this.domainResult.error)
+    if (this.domainResult.isError)
       return {
         errorType: "domain",
         error: this.domainResult.error,
@@ -85,8 +116,21 @@ export default class Validator<
 
   get correction(): InputGroupValue<TInputs> | void {
     if (!this.isEnabled) return void 0;
-    if (this.formatResult.error) return this.formatResult.correction;
-    return this.domainResult.correction;
+    if (this.parseResult.isError) return this.parseResult.correction;
+
+    const { correction } = this.domainResult;
+    if (!correction) return void 0;
+
+    const formatter = this._options && this._options.format;
+    if (!formatter && this.parseResult.isParsed) {
+      throw Error(
+        "A validator that specifies a parser must specify a formatter in order to get a domain correction."
+      );
+    }
+
+    return formatter
+      ? formatter(correction)
+      : ((correction as any) as InputGroupValue<TInputs>);
   }
 
   get isValidationPending() {
@@ -123,59 +167,153 @@ export default class Validator<
 
   get isEnabled() {
     const fn = this._options && this._options.enabled;
-    return fn ? fn(this.value) : true;
+    return fn ? fn.call(this, this) : true;
+  }
+
+  get nestedValidators(): Validator[] {
+    const result = new Set<Validator<any, any, any, any>>();
+    collectNestedValidators(
+      this as Validator<any, any, any, any>,
+      new Set(),
+      result
+    );
+    result.delete(this);
+    return [...result];
   }
 
   @observable
   private _hasEverValidated = false;
   private _actuator = new Actuator<
-    InputGroupValue<TInputs>,
-    | true
-    | BaseValidationResult<InputGroupValue<TInputs>, TDomainError | null>
-    | Falsy
+    TDomainValue,
+    DomainPredicateSuccess | DomainPredicateFailure<TDomainValue, TDomainError>
   >((this._options && this._options.domain) || noopValidator);
 }
 
-export function noopValidator(value: any) {
+function noopValidator() {
   return null;
 }
 
-export type FormatValidationFunction<TValue, TFormatError> = (
-  value: TValue
-) => true | BaseValidationResult<TValue, TFormatError | null> | Falsy;
+function collectNestedValidators(
+  validator: Validator,
+  buffer: Set<Input>,
+  result: Set<Validator>
+) {
+  const { flattedInputs } = validator;
+  for (let i = 0, iLength = flattedInputs.length; i < iLength; i++) {
+    const input = flattedInputs[i];
+    if (buffer.has(input)) continue;
 
-export interface BaseValidationResult<TValue, ErrorData> {
-  error?: ErrorData;
+    const { validators } = input;
+    for (let j = 0, jLength = validators.length; j < jLength; j++) {
+      const validator = validators[j];
+      if (result.has(validator)) continue;
+      result.add(validator);
+      collectNestedValidators(validator, buffer, result);
+    }
+  }
+}
+
+export type ParsePredicate<TValue, TParseError> = (
+  value: TValue
+) => ParsePredicateSuccess | ParsePredicateFailure<TValue, TParseError>;
+
+export type ParsePredicateWithDomain<TValue, TDomainValue, TParseError> = (
+  value: TValue
+) =>
+  | ParsePredicateDomainSuccess<TDomainValue>
+  | ParsePredicateFailure<TValue, TParseError>;
+
+export type ParsePredicateSuccess = Falsy;
+export interface ParsePredicateDomainSuccess<TDomainValue> {
+  domain: TDomainValue;
+}
+
+export interface ParsePredicateFailure<TValue, TParseError> {
+  error: TParseError;
   correction?: TValue;
 }
 
-export interface FormatValidationError<TValue, TFormatError>
-  extends BaseValidationResult<TValue, TFormatError> {
-  errorType: "format";
-}
-
-export type DomainValidationFunction<TValue, TDomainError> = (
-  value: TValue,
-  addCancelHandler: AddCancelhandler
-) => MaybePromise<
-  true | BaseValidationResult<TValue, TDomainError | null> | Falsy
+export type DomainPredicate<TDomainValue, TDomainError> = ActuatorAction<
+  TDomainValue,
+  DomainPredicateSuccess | DomainPredicateFailure<TDomainValue, TDomainError>
 >;
 
-export interface DomainValidationError<TValue, TDomainError>
-  extends BaseValidationResult<TValue, TDomainError> {
-  errorType: "domain";
+export type DomainPredicateSuccess = Falsy;
+
+export interface DomainPredicateFailure<TDomainValue, TDomainError> {
+  error: TDomainError;
+  correction?: TDomainValue;
 }
 
-export type ValidationError<TValue, TFormatError, TDomainError> =
-  | { error: TFormatError; correction?: TValue; errorType: "format" }
-  | { error: TDomainError; correction?: TValue; errorType: "domain" };
+export type ParseResult<TValue, TParseError, TDomainValue> =
+  | ParseFailure<TValue, TParseError>
+  | ParseSuccess<TDomainValue, TValue>;
+
+export interface ParseSuccess<TDomainValue, TValue> {
+  isError: false;
+  isParsed: boolean;
+  domain: TDomainValue;
+  correction?: TValue;
+}
+
+export interface ParseFailure<TValue, TParseError> {
+  isError: true;
+  error: TParseError;
+  correction?: TValue;
+}
+
+export type DomainResult<TDomainValue, TDomainError> =
+  | DomainFailure<TDomainValue, TDomainError>
+  | DomainSuccess<TDomainValue>;
+
+export interface DomainSuccess<TDomainValue> {
+  isError: false;
+  correction?: TDomainValue;
+}
+
+export interface DomainFailure<TDomainValue, TDomainError> {
+  isError: true;
+  error: TDomainError;
+  correction?: TDomainValue;
+}
+
+export type ValidationError<TValue, TDomainValue, TParseError, TDomainError> =
+  | DomainValidationError<TDomainValue, TDomainError>
+  | ParseValidationError<TValue, TParseError>;
+
+export interface ParseValidationError<TValue, TParseError> {
+  errorType: "parse";
+  error: TParseError;
+  correction?: TValue;
+}
+
+export interface DomainValidationError<TDomainValue, TDomainError> {
+  errorType: "domain";
+  error: TDomainError;
+  correction?: TDomainValue;
+}
+
+export interface DomainFormatter<TValue, TDomainValue> {
+  (domainValue: TDomainValue): TValue;
+}
 
 export interface ValidatorOptions<
   TInputs extends InputGroupContent,
-  TFormatError,
+  TDomainValue,
+  TParseError,
   TDomainError
 > extends StateDevOptions {
-  format?: FormatValidationFunction<InputGroupValue<TInputs>, TFormatError>;
-  domain?: DomainValidationFunction<InputGroupValue<TInputs>, TDomainError>;
-  enabled?(value: InputGroupValue<TInputs>): boolean;
+  parse?:
+    | ParsePredicate<InputGroupValue<TInputs>, TParseError>
+    | ParsePredicateWithDomain<
+        InputGroupValue<TInputs>,
+        TDomainValue,
+        TParseError
+      >;
+  format?: DomainFormatter<InputGroupValue<TInputs>, TDomainValue>;
+  domain?: DomainPredicate<TDomainValue, TDomainError>;
+  enabled?(
+    this: Validator<TInputs, TDomainValue, TParseError, TDomainError>,
+    self: Validator<TInputs, TDomainValue, TParseError, TDomainError>
+  ): boolean;
 }

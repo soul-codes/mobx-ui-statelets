@@ -16,7 +16,7 @@ export {
   default as Validator,
   ValidationError,
   DomainValidationError,
-  DomainValidationFunction
+  DomainPredicate
 } from "./state/Validator";
 export {
   default as ValidatedInput,

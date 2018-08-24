@@ -11,7 +11,7 @@ let confirmStack: Input<any>[] = [];
 let validationCandidates: Input<any>[] = [];
 
 export default class Input<
-  TValue extends BaseInputValue,
+  TValue extends BaseInputValue = string,
   TChoiceEvaluation = any
 > extends withHover(State) {
   constructor(

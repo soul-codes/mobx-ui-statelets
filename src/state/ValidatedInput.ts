@@ -4,38 +4,68 @@ import { computed } from "mobx";
 
 export default class ValidatedInput<
   TValue extends BaseInputValue,
-  TFormatError,
-  TDomainError
+  TDomainValue = TValue,
+  TParseError = true,
+  TDomainError = true
 > extends Input<TValue> {
   constructor(
     readonly defaultValue: TValue,
-    readonly options?: ValidatedInputOptions<TValue, TFormatError, TDomainError>
+    readonly options?: ValidatedInputOptions<
+      TValue,
+      TDomainValue,
+      TParseError,
+      TDomainError
+    >
   ) {
     super(defaultValue, options);
   }
-  validator = new Validator<Input<TValue>, TFormatError, TDomainError>(this, {
-    format: this.options && this.options.validateFormat,
+  validator = new Validator<
+    Input<TValue>,
+    TDomainValue,
+    TParseError,
+    TDomainError
+  >(this, {
+    parse: this.options && this.options.parse,
+    format: this.options && this.options.format,
     domain: this.options && this.options.validateDomain,
     enabled: this.options && this.options.enableValidation
   });
 
   @computed
   get normalizedInputValueFormatResult() {
-    return this.validator.validateFormat(this.normalizedInputValue);
+    return this.validator.parse(this.normalizedInputValue);
   }
 }
 
 export interface ValidatedInputOptions<
   TValue extends BaseInputValue,
-  TFormat,
-  TDomain
+  TDomainValue,
+  TParseError,
+  TDomainError
 > extends InputOptions<TValue> {
-  validateFormat?: ValidatorOptions<Input<TValue>, TFormat, TDomain>["format"];
-  validateDomain?: ValidatorOptions<Input<TValue>, TFormat, TDomain>["domain"];
+  parse?: ValidatorOptions<
+    Input<TValue>,
+    TDomainValue,
+    TParseError,
+    TDomainError
+  >["parse"];
+  format?: ValidatorOptions<
+    Input<TValue>,
+    TDomainValue,
+    TParseError,
+    TDomainError
+  >["format"];
+  validateDomain?: ValidatorOptions<
+    Input<TValue>,
+    TDomainValue,
+    TParseError,
+    TDomainError
+  >["domain"];
   enableValidation?: ValidatorOptions<
     Input<TValue>,
-    TFormat,
-    TDomain
+    TDomainValue,
+    TParseError,
+    TDomainError
   >["enabled"];
 }
 
