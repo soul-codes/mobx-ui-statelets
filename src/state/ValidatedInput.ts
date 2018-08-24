@@ -35,6 +35,14 @@ export default class ValidatedInput<
   get normalizedInputValueFormatResult() {
     return this.validator.parse(this.normalizedInputValue);
   }
+
+  requireDomainValue() {
+    const {
+      validator: { parseResult }
+    } = this;
+    if (parseResult.isError) throw Error("Cannot parse the input value.");
+    return parseResult.domain;
+  }
 }
 
 export interface ValidatedInputOptions<
