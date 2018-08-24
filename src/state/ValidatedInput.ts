@@ -37,17 +37,11 @@ export default class ValidatedInput<
   }
 
   requireDomainValue() {
-    const {
-      validator: { parseResult }
-    } = this;
-    if (parseResult.isError) throw Error("Cannot parse the input value.");
-    return parseResult.domain;
+    return this.validator.requireDomainValue();
   }
 
   formatDomainValue(value: TDomainValue) {
-    const formatter = this.options && this.options.format;
-    if (!formatter) return (value as any) as TValue;
-    return formatter(value);
+    return this.validator.formatDomainValue(value);
   }
 }
 

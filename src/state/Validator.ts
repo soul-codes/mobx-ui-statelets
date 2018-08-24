@@ -85,6 +85,18 @@ export default class Validator<
     };
   }
 
+  requireDomainValue() {
+    const { parseResult } = this;
+    if (parseResult.isError) throw Error("Cannot parse the input value.");
+    return parseResult.domain;
+  }
+
+  formatDomainValue(value: TDomainValue): InputGroupValue<TInputs> {
+    const formatter = this._options && this._options.format;
+    if (!formatter) return (value as any) as InputGroupValue<TInputs>;
+    return formatter(value);
+  }
+
   get domainResult(): DomainResult<TDomainValue, TDomainError> {
     const result = this._actuator.result;
     if (!result) return { isError: false };
