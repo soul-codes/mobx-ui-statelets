@@ -56,24 +56,14 @@ export default class InputGroup<
 
   __$$private__receiveInputEvent(
     input: Input<any>,
-    kind: "confirm" | "validation",
-    buffer: Set<Input<any> | InputGroup<any>>
+    kind: "confirm" | "validation"
   ) {
-    if (buffer.has(input)) return;
-    buffer.add(input);
-
     const { handleInputConfirm = void 0, handleInputValidation = void 0 } =
       this.options || {};
     kind === "confirm" && handleInputConfirm && handleInputConfirm(input);
     kind === "validation" &&
       handleInputValidation &&
       handleInputValidation(input);
-
-    input.__$$private_groups.forEach(group => {
-      if (buffer.has(group)) return;
-      buffer.add(group);
-      group.__$$private__receiveInputEvent(input, kind, buffer);
-    });
   }
 }
 

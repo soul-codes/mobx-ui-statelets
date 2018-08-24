@@ -78,11 +78,12 @@ export default class Input<
     const inputsToValidate = validationCandidates;
     validationCandidates = [];
 
-    const buffer = new Set<Input<any>>();
+    const buffer = new Set<InputGroup<any>>();
     inputsToValidate.forEach(input =>
-      input.__$$private_groups.forEach(group =>
-        group.__$$private__receiveInputEvent(input, "confirm", buffer)
-      )
+      input.__$$private_groups.forEach(group => buffer.add(group))
+    );
+    buffer.forEach(group =>
+      group.__$$private__receiveInputEvent(this, "confirm")
     );
     await Promise.all(inputsToValidate.map(input => input.validate()));
 
