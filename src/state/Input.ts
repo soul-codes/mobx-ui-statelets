@@ -80,8 +80,8 @@ export default class Input<
 
     const buffer = new Set<Input<any>>();
     inputsToValidate.forEach(input =>
-      input.forms.forEach(form =>
-        form.__$$private__receiveInputEvent(input, "confirm", buffer)
+      input.__$$private_groups.forEach(group =>
+        group.__$$private__receiveInputEvent(input, "confirm", buffer)
       )
     );
     await Promise.all(inputsToValidate.map(input => input.validate()));
