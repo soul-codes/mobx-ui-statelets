@@ -43,6 +43,12 @@ export default class ValidatedInput<
     if (parseResult.isError) throw Error("Cannot parse the input value.");
     return parseResult.domain;
   }
+
+  formatDomainValue(value: TDomainValue) {
+    const formatter = this.options && this.options.format;
+    if (!formatter) return (value as any) as TValue;
+    return formatter(value);
+  }
 }
 
 export interface ValidatedInputOptions<
