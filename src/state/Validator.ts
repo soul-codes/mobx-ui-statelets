@@ -1,5 +1,5 @@
 import { MaybePromise, Falsy, MaybeConstant } from "../utils/types";
-import Actuator, { AddCancelhandler, ActuatorAction } from "./Actuator";
+import Task, { AddCancelhandler, TaskAction } from "./Task";
 import { observable, action, reaction } from "mobx";
 import InputGroup, { InputGroupContent, InputGroupValue } from "./InputGroup";
 import createLookup from "../utils/lookup";
@@ -37,9 +37,9 @@ export default class Validator<
 
     const disposeReaction = reaction(
       () => this.parseResult.isError,
-      isError => isError && this._actuator.cancel()
+      isError => isError && this._task.cancel()
     );
-    const promise = this._actuator.invoke(this.parseResult.domain);
+    const promise = this._task.invoke(this.parseResult.domain);
     await promise;
     disposeReaction();
   }
@@ -98,7 +98,7 @@ export default class Validator<
   }
 
   get domainResult(): DomainResult<TDomainValue, TDomainError> {
-    const result = this._actuator.result;
+    const result = this._task.result;
     if (!result) return { isError: false };
     return result.error
       ? { isError: true, error: result.error, correction: result.correction }
@@ -146,7 +146,7 @@ export default class Validator<
   }
 
   get isValidationPending() {
-    return Boolean(this._actuator.isPending);
+    return Boolean(this._task.isPending);
   }
 
   get isConclusivelyValid() {
@@ -163,7 +163,7 @@ export default class Validator<
 
   get isConclusive() {
     return (
-      !this._actuator.isPending &&
+      !this._task.isPending &&
       this._hasEverValidated &&
       !this.hasUnconfirmedInput
     );
@@ -195,7 +195,7 @@ export default class Validator<
 
   @observable
   private _hasEverValidated = false;
-  private _actuator = new Actuator<
+  private _task = new Task<
     TDomainValue,
     DomainPredicateSuccess | DomainPredicateFailure<TDomainValue, TDomainError>
   >((this._options && this._options.domain) || noopValidator);
@@ -245,7 +245,7 @@ export interface ParsePredicateFailure<TValue, TParseError> {
   correction?: TValue;
 }
 
-export type DomainPredicate<TDomainValue, TDomainError> = ActuatorAction<
+export type DomainPredicate<TDomainValue, TDomainError> = TaskAction<
   TDomainValue,
   DomainPredicateSuccess | DomainPredicateFailure<TDomainValue, TDomainError>
 >;

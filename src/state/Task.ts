@@ -37,9 +37,9 @@ class InvokeInstance {
   }
 }
 
-export default class Actuator<TArg, TResult> extends State {
+export default class Task<TArg, TResult> extends State {
   constructor(
-    readonly action: ActuatorAction<TArg, TResult>,
+    readonly action: TaskAction<TArg, TResult>,
     options?: StateDevOptions
   ) {
     super(options);
@@ -119,12 +119,12 @@ export default class Actuator<TArg, TResult> extends State {
 
 export type AddCancelhandler = AddDisposeHandler;
 
-export type ActuatorAction<TArg, TResult> = (
+export type TaskAction<TArg, TResult> = (
   arg: TArg,
   addCancelHandler: AddCancelhandler
 ) => MaybePromise<TResult>;
 
-export type ActuatorArg<T extends Actuator<any, any>> = T extends Actuator<
+export type TaskArg<T extends Task<any, any>> = T extends Task<
   infer TArg,
   any
 >

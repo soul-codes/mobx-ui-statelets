@@ -1,36 +1,36 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import { Actuator, ActuatorArg } from "../../src";
-import { Form, FormOrActuator, AsActuator } from "../../src";
+import { Task, TaskArg } from "../../src";
+import { Form, FormOrTask, AsTask } from "../../src";
 
-interface BaseDevButtonProps<TActuator extends FormOrActuator> {
-  actuator: TActuator;
+interface BaseDevButtonProps<TTask extends FormOrTask> {
+  Task: TTask;
 }
 
-type Arg<TActuator extends FormOrActuator> = ActuatorArg<AsActuator<TActuator>>;
-type ArgProp<TActuator extends FormOrActuator> = Arg<TActuator> extends
+type Arg<TTask extends FormOrTask> = TaskArg<AsTask<TTask>>;
+type ArgProp<TTask extends FormOrTask> = Arg<TTask> extends
   | void
   | null
   ? {}
-  : void extends Arg<TActuator>
-    ? { arg?: Arg<TActuator> }
-    : { arg: Arg<TActuator> };
+  : void extends Arg<TTask>
+    ? { arg?: Arg<TTask> }
+    : { arg: Arg<TTask> };
 
-type DevButtonProps<TActuator extends FormOrActuator> = BaseDevButtonProps<
-  TActuator
+type DevButtonProps<TTask extends FormOrTask> = BaseDevButtonProps<
+  TTask
 > &
-  ArgProp<TActuator>;
+  ArgProp<TTask>;
 
 @observer
 export default class DevValidationLabel<
-  TActuator extends FormOrActuator
-> extends Component<DevButtonProps<TActuator>> {
+  TTask extends FormOrTask
+> extends Component<DevButtonProps<TTask>> {
   render() {
-    const actuatorOrForm = this.props.actuator;
-    const arg = (this.props as { arg?: Arg<TActuator> }).arg as any;
-    const actuator = (actuatorOrForm instanceof Form
-      ? actuatorOrForm.submitActuator
-      : actuatorOrForm) as Actuator<any, any>;
+    const TaskOrForm = this.props.Task;
+    const arg = (this.props as { arg?: Arg<TTask> }).arg as any;
+    const Task = (TaskOrForm instanceof Form
+      ? TaskOrForm.submitTask
+      : TaskOrForm) as Task<any, any>;
     return (
       <div
         style={{
@@ -39,11 +39,11 @@ export default class DevValidationLabel<
           padding: "0em 1em 0em 1em",
           boxSizing: "border-box",
           display: "inline-block",
-          backgroundColor: actuator.isPending ? "#bdf" : "white"
+          backgroundColor: Task.isPending ? "#bdf" : "white"
         }}
       >
-        <button type="button" onClick={() => actuator.invoke(arg)}>
-          {actuator.name || "(actuator)"}
+        <button type="button" onClick={() => Task.invoke(arg)}>
+          {Task.name || "(Task)"}
         </button>
       </div>
     );

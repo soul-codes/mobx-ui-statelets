@@ -1,6 +1,6 @@
 import InputGroup, { InputGroupContent, InputGroupValue } from "./InputGroup";
 import { MaybeConstant } from "../utils/types";
-import Actuator, { ActuatorAction } from "./Actuator";
+import Task, { TaskAction } from "./Task";
 import createLookup from "../utils/lookup";
 import Input from "./Input";
 import { computed } from "mobx";
@@ -13,17 +13,17 @@ export default class Form<
 > extends InputGroup<TInputs> {
   constructor(
     inputs: MaybeConstant<() => TInputs>,
-    submitAction: ActuatorAction<InputGroupValue<TInputs>, TActionResult>,
+    submitAction: TaskAction<InputGroupValue<TInputs>, TActionResult>,
     readonly options: FormOptions = {}
   ) {
     super(inputs, options);
-    this._actuator = new Actuator(
+    this._task = new Task(
       guardSubmit<TInputs, TActionResult>(submitAction, this),
       {
         name:
           options && options.name
-            ? `(form "${options.name}" actuator)`
-            : "(form actuator)"
+            ? `(form "${options.name}" Task)`
+            : "(form Task)"
       }
     );
     createLookup(
@@ -34,7 +34,7 @@ export default class Form<
   }
 
   get isSubmitting() {
-    return this._actuator.isPending;
+    return this._task.isPending;
   }
 
   @computed
@@ -61,23 +61,23 @@ export default class Form<
   }
 
   submit() {
-    return this._actuator.invoke(null);
+    return this._task.invoke(null);
   }
 
-  get submitActuator() {
-    return this._actuator;
+  get submitTask() {
+    return this._task;
   }
 
-  private _actuator: Actuator<null, SubmitResult<TActionResult>>;
+  private _task: Task<null, SubmitResult<TActionResult>>;
 }
 
 function guardSubmit<
   TInputs extends InputGroupContent,
   TActionResult extends ActionResultConstraint
 >(
-  submitAction: ActuatorAction<InputGroupValue<TInputs>, TActionResult>,
+  submitAction: TaskAction<InputGroupValue<TInputs>, TActionResult>,
   form: Form<TInputs, TActionResult>
-): ActuatorAction<null, SubmitResult<TActionResult>> {
+): TaskAction<null, SubmitResult<TActionResult>> {
   return async (arg, addCancelHandler) => {
     getValidators(form.unconfirmedInputs).forEach(validator =>
       validator.validate()
@@ -160,8 +160,8 @@ export interface FormOptions extends StateDevOptions {
   autoSubmit?: boolean;
 }
 
-export type AsActuator<T extends FormOrActuator> = T extends Form<any, any>
-  ? T["submitActuator"]
+export type AsTask<T extends FormOrTask> = T extends Form<any, any>
+  ? T["submitTask"]
   : T;
 
-export type FormOrActuator = Form<any, any> | Actuator<any, any>;
+export type FormOrTask = Form<any, any> | Task<any, any>;

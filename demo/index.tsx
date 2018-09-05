@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Input, Validator, Form, Actuator } from "../src";
+import { Input, Validator, Form, Task } from "../src";
 
 import TextInput from "./dev/TextInput";
 import ValidationLabel from "./dev/ValidationLabel";
@@ -63,7 +63,7 @@ const form = new Form(
   }
 );
 
-const reset = new Actuator(() =>
+const reset = new Task(() =>
   form.reset({
     value: {
       street: "",
@@ -94,10 +94,10 @@ ReactDOM.render(
       <ValidationLabel validator={validateCity} />
     </div>
     <div>
-      <Button actuator={form} />
+      <Button Task={form} />
     </div>
     <div>
-      <Button actuator={reset} />
+      <Button Task={reset} />
     </div>
   </div>,
   document.getElementById("react-root")

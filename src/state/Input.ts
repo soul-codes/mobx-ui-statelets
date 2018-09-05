@@ -4,7 +4,7 @@ import State, { StateDevOptions } from "./State";
 import Form from "./Form";
 import { Falsy, MaybeConstant, MaybePromise } from "../utils/types";
 import withHover from "../partials/withHover";
-import Actuator from "./Actuator";
+import Task from "./Task";
 import InputGroup from "./InputGroup";
 
 let confirmCounter = 0;
@@ -24,7 +24,7 @@ export default class Input<
 
     const choices = options && options.choices;
     if (typeof choices === "function") {
-      this._choiceActuator = new Actuator(choices);
+      this._choiceTask = new Task(choices);
     } else {
       this._choices = choices || [];
     }
@@ -112,40 +112,40 @@ export default class Input<
 
   @action
   async queryChoices() {
-    const choiceActuator = this._choiceActuator;
-    if (!choiceActuator) return;
+    const choiceTask = this._choiceTask;
+    if (!choiceTask) return;
 
     const { options, inputValue } = this;
     const choiceQueryLimit = options && options.choiceQueryLimit;
     this._lastQuery = inputValue;
-    await choiceActuator.invoke({
+    await choiceTask.invoke({
       inputValue: this.inputValue,
       limit: choiceQueryLimit === void 0 ? Infinity : choiceQueryLimit,
       offset: 0
     });
-    this._choices = choiceActuator.result ? choiceActuator.result.choices : [];
+    this._choices = choiceTask.result ? choiceTask.result.choices : [];
   }
 
   @action
   async queryMoreChoices() {
-    const choiceActuator = this._choiceActuator;
-    if (!choiceActuator) return;
-    if (choiceActuator.isPending)
-      return choiceActuator.promise as Promise<void>;
-    if (!choiceActuator.result) return this.queryChoices();
+    const choiceTask = this._choiceTask;
+    if (!choiceTask) return;
+    if (choiceTask.isPending)
+      return choiceTask.promise as Promise<void>;
+    if (!choiceTask.result) return this.queryChoices();
 
     const { inputValue } = this;
     if (inputValue !== this._lastQuery) return this.queryChoices();
-    if (choiceActuator.result.stats.isDone) return;
+    if (choiceTask.result.stats.isDone) return;
 
     const { options } = this;
     const choiceQueryLimit = options && options.choiceQueryLimit;
-    await choiceActuator.invoke({
+    await choiceTask.invoke({
       inputValue: this.inputValue,
       limit: choiceQueryLimit === void 0 ? Infinity : choiceQueryLimit,
       offset: this._choices.length
     });
-    this._choices.push(...choiceActuator.result.choices);
+    this._choices.push(...choiceTask.result.choices);
   }
 
   @action
@@ -184,22 +184,22 @@ export default class Input<
   }
 
   get hasMoreChoices() {
-    const choiceActuator = this._choiceActuator;
-    if (!choiceActuator) return false;
-    if (!choiceActuator.result) return true;
-    return !choiceActuator.result.stats.isDone;
+    const choiceTask = this._choiceTask;
+    if (!choiceTask) return false;
+    if (!choiceTask.result) return true;
+    return !choiceTask.result.stats.isDone;
   }
 
   get totalChoices() {
-    const choiceActuator = this._choiceActuator;
-    if (!choiceActuator) return this._choices.length;
-    if (!choiceActuator.result) return null;
-    const total = choiceActuator.result.stats.total;
+    const choiceTask = this._choiceTask;
+    if (!choiceTask) return this._choices.length;
+    if (!choiceTask.result) return null;
+    const total = choiceTask.result.stats.total;
     return total === void 0 ? null : total;
   }
 
   get isQueryingChoices() {
-    return Boolean(this._choiceActuator && this._choiceActuator.isPending);
+    return Boolean(this._choiceTask && this._choiceTask.isPending);
   }
 
   get isValidated() {
@@ -253,7 +253,7 @@ export default class Input<
 
   private _confirmId = 0;
 
-  private _choiceActuator: Actuator<
+  private _choiceTask: Task<
     InputChoiceQuery<TValue>,
     InputChoiceQueryResult<TValue, TChoiceEvaluation>
   > | null = null;

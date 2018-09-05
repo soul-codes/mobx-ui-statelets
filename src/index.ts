@@ -1,10 +1,10 @@
 export { default as State } from "./state/State";
 export {
-  default as Actuator,
-  ActuatorAction,
+  default as Task,
+  TaskAction,
   AddCancelhandler,
-  ActuatorArg
-} from "./state/Actuator";
+  TaskArg
+} from "./state/Task";
 export { default as Input, InputValue, BaseInputValue } from "./state/Input";
 export {
   default as InputGroup,
@@ -25,8 +25,8 @@ export {
 export {
   default as Form,
   FormOptions,
-  FormOrActuator,
-  AsActuator,
+  FormOrTask,
+  AsTask,
   SubmitActionFailure,
   SubmitValidationFailure
 } from "./state/Form";
