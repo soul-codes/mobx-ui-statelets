@@ -1,7 +1,7 @@
 import { observable, action } from "mobx";
 import { MaybePromise } from "../utils/types";
 import State, { StateDevOptions } from "./State";
-import Disposer, { DisposeHandler, AddDisposeHandler } from "../utils/disposer";
+import Disposer, { AddDisposeHandler } from "../utils/disposer";
 
 const $canceled = Symbol("Canceled");
 class InvokeInstance {
@@ -124,9 +124,6 @@ export type TaskAction<TArg, TResult> = (
   addCancelHandler: AddCancelhandler
 ) => MaybePromise<TResult>;
 
-export type TaskArg<T extends Task<any, any>> = T extends Task<
-  infer TArg,
-  any
->
+export type TaskArg<T extends Task<any, any>> = T extends Task<infer TArg, any>
   ? TArg
   : never;
