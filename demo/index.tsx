@@ -54,14 +54,13 @@ const validateAddress = new Validator(
   }
 );
 
-const form = new Form(
-  () => validateAddress,
-  async value => {
+const form = new Form(validateAddress, {
+  action: async value => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     alert(JSON.stringify(value, null, 2));
-    return { success: true as true };
+    return 2;
   }
-);
+});
 
 const reset = new Task(() =>
   form.reset({

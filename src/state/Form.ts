@@ -9,16 +9,15 @@ import { StateDevOptions, currentFocus } from "./State";
 
 export default class Form<
   TInputs extends InputGroupContent,
-  TActionResult extends ActionResultConstraint
+  TActionResult
 > extends InputGroup<TInputs> {
   constructor(
     inputs: MaybeConstant<() => TInputs>,
-    submitAction: TaskAction<InputGroupValue<TInputs>, TActionResult>,
-    readonly options: FormOptions = {}
+    readonly options: FormOptions<TInputs, TActionResult>
   ) {
     super(inputs, options);
     this._task = new Task(
-      guardSubmit<TInputs, TActionResult>(submitAction, this),
+      guardSubmit<TInputs, TActionResult>(options.action, this),
       {
         name:
           options && options.name
@@ -35,6 +34,10 @@ export default class Form<
 
   get isSubmitting() {
     return this._task.isPending;
+  }
+
+  get submitResult() {
+    return this._task.result;
   }
 
   @computed
@@ -68,16 +71,13 @@ export default class Form<
     return this._task;
   }
 
-  private _task: Task<null, SubmitResult<TActionResult>>;
+  private _task: Task<null, SubmitResult<TActionResult> | FormValidationError>;
 }
 
-function guardSubmit<
-  TInputs extends InputGroupContent,
-  TActionResult extends ActionResultConstraint
->(
+function guardSubmit<TInputs extends InputGroupContent, TActionResult>(
   submitAction: TaskAction<InputGroupValue<TInputs>, TActionResult>,
   form: Form<TInputs, TActionResult>
-): TaskAction<null, SubmitResult<TActionResult>> {
+): TaskAction<null, SubmitResult<TActionResult> | FormValidationError> {
   return async (arg, addCancelHandler) => {
     getValidators(form.unconfirmedInputs).forEach(validator =>
       validator.validate()
@@ -103,20 +103,17 @@ function guardSubmit<
     )
       focusedInput.blur();
     const result = await submitAction(form.value, addCancelHandler);
-    return result;
+    return { outcome: "submit" as "submit", result };
   };
 }
 
-function findAndFocusErrors(
-  form: Form<any, any>
-): null | SubmitValidationFailure {
+function findAndFocusErrors(form: Form<any, any>): null | FormValidationError {
   const { inputErrors } = form;
   if (!inputErrors.length) return null;
   inputErrors[0].focus();
   return {
-    inputErrors,
-    errorType: "validation",
-    success: false
+    outcome: "validation-error" as "validation-error",
+    errors: inputErrors
   };
 }
 
@@ -132,30 +129,23 @@ function getValidators(inputs: Input<any>[]): Validator<any, any, any>[] {
   return result;
 }
 
-export type SubmitResult<TActionResult> =
-  | SubmitSuccess<TActionResult>
-  | SubmitValidationFailure
-  | SubmitActionFailure;
-
-export interface SubmitSuccess<TActionResult> {
-  success: true;
-  result?: TActionResult;
+export interface SubmitResult<TActionResult> {
+  outcome: "submit";
+  result: TActionResult;
 }
 
-export interface SubmitValidationFailure {
-  success: false;
-  errorType: "validation";
-  inputErrors: Input<any>[];
+export interface FormValidationError {
+  outcome: "validation-error";
+  errors: Input<any>[];
 }
 
-export interface SubmitActionFailure {
-  success: false;
-  errorType?: string;
-}
-
-type ActionResultConstraint = SubmitSuccess<any> | SubmitActionFailure;
-
-export interface FormOptions extends StateDevOptions {
+export interface FormOptions<TInputs extends InputGroupContent, TActionResult>
+  extends StateDevOptions {
+  /**
+   * Specify the submit action. The outcome of this action will be saved in
+   * the submit result state.
+   */
+  action: TaskAction<InputGroupValue<TInputs>, TActionResult>;
   autoNext?: boolean;
   autoSubmit?: boolean;
 }

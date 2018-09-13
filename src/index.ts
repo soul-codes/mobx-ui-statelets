@@ -27,8 +27,7 @@ export {
   FormOptions,
   FormOrTask,
   AsTask,
-  SubmitActionFailure,
-  SubmitValidationFailure
+  FormValidationError
 } from "./state/Form";
 
 export { default as withHover } from "./partials/withHover";
