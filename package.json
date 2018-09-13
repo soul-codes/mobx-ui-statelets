@@ -1,6 +1,6 @@
 {
   "name": "mobx-ui-statelets",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MobX-driven UI state classes",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
