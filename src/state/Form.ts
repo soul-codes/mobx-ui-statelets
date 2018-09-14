@@ -78,10 +78,12 @@ function guardSubmit<TInputs extends InputGroupContent, TActionResult>(
   submitAction: TaskAction<InputGroupValue<TInputs>, TActionResult>,
   form: Form<TInputs, TActionResult>
 ): TaskAction<null, SubmitResult<TActionResult> | FormValidationError> {
-  return async (arg, addCancelHandler) => {
-    getValidators(form.unconfirmedInputs).forEach(validator =>
-      validator.validate()
-    );
+  return async (unusedArg, addCancelHandler) => {
+    const { unconfirmedInputs } = form;
+    if (form.options.autoConfirm) {
+      unconfirmedInputs.forEach(input => input.markAsConfirmed());
+    }
+    getValidators(unconfirmedInputs).forEach(validator => validator.validate());
 
     await Promise.resolve();
     const immediateErrors = findAndFocusErrors(form);
@@ -148,6 +150,7 @@ export interface FormOptions<TInputs extends InputGroupContent, TActionResult>
   action: TaskAction<InputGroupValue<TInputs>, TActionResult>;
   autoNext?: boolean;
   autoSubmit?: boolean;
+  autoConfirm?: boolean;
 }
 
 export type AsTask<T extends FormOrTask> = T extends Form<any, any>

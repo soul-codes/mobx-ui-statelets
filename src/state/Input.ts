@@ -104,6 +104,11 @@ export default class Input<
   }
 
   @action
+  markAsConfirmed() {
+    this._isConfirmed = true;
+  }
+
+  @action
   reset(args?: { value?: TValue }) {
     const valueToSet = args && args.value !== void 0 ? args.value : this._value;
     this._value = this.normalizeValue(valueToSet);
