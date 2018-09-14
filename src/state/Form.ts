@@ -83,7 +83,9 @@ function guardSubmit<TInputs extends InputGroupContent, TActionResult>(
     if (form.options.autoConfirm) {
       unconfirmedInputs.forEach(input => input.markAsConfirmed());
     }
-    getValidators(unconfirmedInputs).forEach(validator => validator.validate());
+    getValidators(unconfirmedInputs).forEach(
+      validator => validator.isEnabled && validator.validate()
+    );
 
     await Promise.resolve();
     const immediateErrors = findAndFocusErrors(form);
