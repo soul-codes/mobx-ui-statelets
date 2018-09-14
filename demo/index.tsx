@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Input, Validator, Form, Task } from "../src";
+import { Input, Validator, Form, Task, ValidatedInput } from "../src";
 
 import TextInput from "./dev/TextInput";
 import ValidationLabel from "./dev/ValidationLabel";
@@ -9,7 +9,10 @@ import Button from "./dev/Button";
 const required = (value: string) => !value && { error: "required" };
 const trim = (value: string) => value.trim();
 
-const street = new Input<string>("", { normalizer: trim, name: "street" });
+const street = new ValidatedInput("" as string, {
+  normalizer: trim,
+  name: "street"
+});
 const validateStreet = new Validator(street, {
   parse: required,
   domain: async street => {

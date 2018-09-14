@@ -13,11 +13,11 @@ let validationCandidates: Input<any>[] = [];
 
 export default class Input<
   TValue extends BaseInputValue = string,
-  TChoiceEvaluation = any
+  TChoiceMetadata = any
 > extends withHover(State) {
   constructor(
     readonly defaultValue: TValue,
-    readonly options?: InputOptions<TValue, TChoiceEvaluation>
+    readonly options?: InputOptions<TValue, TChoiceMetadata>
   ) {
     super(options);
     this._value = defaultValue === void 0 ? ("" as TValue) : defaultValue;
@@ -130,8 +130,7 @@ export default class Input<
   async queryMoreChoices() {
     const choiceTask = this._choiceTask;
     if (!choiceTask) return;
-    if (choiceTask.isPending)
-      return choiceTask.promise as Promise<void>;
+    if (choiceTask.isPending) return choiceTask.promise as Promise<void>;
     if (!choiceTask.result) return this.queryChoices();
 
     const { inputValue } = this;
@@ -255,11 +254,11 @@ export default class Input<
 
   private _choiceTask: Task<
     InputChoiceQuery<TValue>,
-    InputChoiceQueryResult<TValue, TChoiceEvaluation>
+    InputChoiceQueryResult<TValue, TChoiceMetadata>
   > | null = null;
 
   @observable.shallow
-  private _choices: InputChoice<TValue, TChoiceEvaluation>[] = [];
+  private _choices: InputChoice<TValue, TChoiceMetadata>[] = [];
   private _lastQuery: TValue | null = null;
 }
 
@@ -269,15 +268,15 @@ function defaultShouldValidate<TValue>(value: TValue, oldValue: TValue) {
 
 export interface InputOptions<
   TValue extends BaseInputValue,
-  TChoiceEvaluation = any
+  TChoiceMetadata = any
 > extends StateDevOptions {
   readonly normalizer?: ((value: TValue) => TValue) | Falsy;
   revalidate?: (value: TValue, oldValue: TValue) => boolean;
   choices?:
     | ((
         query: InputChoiceQuery<TValue>
-      ) => MaybePromise<InputChoiceQueryResult<TValue, TChoiceEvaluation>>)
-    | InputChoice<TValue, TChoiceEvaluation>[];
+      ) => MaybePromise<InputChoiceQueryResult<TValue, TChoiceMetadata>>)
+    | InputChoice<TValue, TChoiceMetadata>[];
   choiceQueryLimit?: number;
   confirmCascade?: (
     this: Input<TValue>,
@@ -291,9 +290,9 @@ export type InputValue<T extends Input<any>> = T extends Input<infer V>
   ? V
   : never;
 
-export interface InputChoice<TValue extends BaseInputValue, TChoiceEvaluation> {
+export interface InputChoice<TValue extends BaseInputValue, TChoiceMetadata> {
   value: TValue;
-  evaluation: TChoiceEvaluation;
+  metadata?: TChoiceMetadata;
 }
 
 export interface InputChoiceQuery<TValue extends BaseInputValue> {
