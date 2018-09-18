@@ -3,6 +3,12 @@ import State, { StateProjections } from "../state/State";
 
 const projectionState = new WeakMap<Component, Set<State>>();
 
+/**
+ * Connects A React component to a state as a projection.
+ * @param subscriptions This function should return the subscriptions to the UI
+ * state that should be set up when the state is provided as a prop and torn
+ * down when the state is no longer provided.
+ */
 export function stateProjection<
   TComponent extends Component<any, any, any>,
   TSubscriptions extends StateSubscription<any>[]
@@ -35,6 +41,12 @@ export function stateProjection<
   };
 }
 
+/**
+ * Makes sure that the component is subscribing to a state when it becomes
+ * available and stops subscribing when it's no longer available.
+ * @param component
+ * @param subscriptions
+ */
 function bootstrapSubscription(
   component: Component,
   subscriptions: StateSubscription<State>[]
@@ -53,12 +65,23 @@ function bootstrapSubscription(
   projectionState.set(component, newStates);
 }
 
+/**
+ * Remove all subscriptions to all UI states from the React component.
+ * @param component
+ */
 function removeSubscription(component: Component) {
   const states = projectionState.get(component) as Set<State>;
   states.forEach(state => state.removeProjection(component));
 }
 
 const $subscription = Symbol("Subscription");
+
+/**
+ * Creates a subscription
+ * @param state The state to subscribe to
+ * @param subscription The subscription, which should be a subset of the state's
+ * supported projections.
+ */
 function subscribe<TState extends State>(
   state: TState,
   subscription: StateProjections

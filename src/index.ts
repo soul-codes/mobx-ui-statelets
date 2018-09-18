@@ -31,9 +31,3 @@ export {
 export { default as withHover } from "./partials/withHover";
 
 export { stateProjection } from "./partials/stateProjection";
-
-export {
-  default as Disposer,
-  DisposeHandler,
-  AddDisposeHandler
-} from "./utils/disposer";
