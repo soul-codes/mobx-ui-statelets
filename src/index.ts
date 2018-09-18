@@ -13,8 +13,7 @@ export {
 export {
   default as InputGroup,
   InputGroupContent,
-  InputGroupShape,
-  InputShape
+  InputGroupShape
 } from "./state/InputGroup";
 export { default as Validator, ValidationError } from "./state/Validator";
 export {

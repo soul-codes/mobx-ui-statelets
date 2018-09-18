@@ -1,7 +1,10 @@
 import { Falsy, MaybeConstant } from "../utils/types";
 import Task, { TaskAction } from "./Task";
 import { observable, action, reaction } from "mobx";
-import InputGroup, { InputGroupContent, InputGroupValue } from "./InputGroup";
+import InputGroup, {
+  InputGroupContent,
+  InferInputGroupValue
+} from "./InputGroup";
 import createLookup from "../utils/lookup";
 import { StateDevOptions } from "./State";
 import withHover from "../partials/withHover";
@@ -27,7 +30,7 @@ import Input from "./Input";
  */
 export default class Validator<
   TInputs extends InputGroupContent = any,
-  TDomainValue = InputGroupValue<TInputs>,
+  TDomainValue = InferInputGroupValue<TInputs>,
   TParseError = any,
   TDomainError = any
 > extends withHover(InputGroup)<TInputs> {
@@ -87,7 +90,7 @@ export default class Validator<
    * failed parse (which will give you the parse error).
    */
   get parseResult(): ParseResult<
-    InputGroupValue<TInputs>,
+    InferInputGroupValue<TInputs>,
     TParseError,
     TDomainValue
   > {
@@ -109,8 +112,8 @@ export default class Validator<
    * by the input structure.
    */
   parse(
-    value: InputGroupValue<TInputs>
-  ): ParseResult<InputGroupValue<TInputs>, TParseError, TDomainValue> {
+    value: InferInputGroupValue<TInputs>
+  ): ParseResult<InferInputGroupValue<TInputs>, TParseError, TDomainValue> {
     const rule = (this._options && this._options.parse) || noopValidator;
     const result = rule(value) || null;
     if (!result) {
@@ -152,9 +155,10 @@ export default class Validator<
    * domain correction into meaningful input values.
    * @param domainValue Domain value to format.
    */
-  formatDomainValue(domainValue: TDomainValue): InputGroupValue<TInputs> {
+  formatDomainValue(domainValue: TDomainValue): InferInputGroupValue<TInputs> {
     const formatter = this._options && this._options.format;
-    if (!formatter) return (domainValue as any) as InputGroupValue<TInputs>;
+    if (!formatter)
+      return (domainValue as any) as InferInputGroupValue<TInputs>;
     return formatter(domainValue);
   }
 
@@ -187,7 +191,7 @@ export default class Validator<
    * @see isConclusivelyValid
    */
   get error(): ValidationError<
-    InputGroupValue<TInputs>,
+    InferInputGroupValue<TInputs>,
     TDomainValue,
     TParseError,
     TDomainError
@@ -213,7 +217,7 @@ export default class Validator<
    * is no correctional value (either because the domain validator/parser didn't
    * give any or because the validation succeeded), this returns void.
    */
-  get correction(): InputGroupValue<TInputs> | void {
+  get correction(): InferInputGroupValue<TInputs> | void {
     if (!this.isEnabled) return void 0;
     if (this.parseResult.isError) return this.parseResult.correction;
 
@@ -231,7 +235,7 @@ export default class Validator<
 
     return formatter
       ? formatter(correction)
-      : ((correction as any) as InputGroupValue<TInputs>);
+      : ((correction as any) as InferInputGroupValue<TInputs>);
   }
 
   /**
@@ -524,7 +528,7 @@ export interface ValidatorOptions<
    *   domain value should be the same as the input value.
    */
   parse?(
-    value: InputGroupValue<TInputs>
+    value: InferInputGroupValue<TInputs>
   ):
     | Falsy
     | {
@@ -534,7 +538,7 @@ export interface ValidatorOptions<
          */
         domain: TDomainValue;
       }
-    | ValidationFailure<TParseError, InputGroupValue<TInputs>>;
+    | ValidationFailure<TParseError, InferInputGroupValue<TInputs>>;
 
   /**
    * Specifies how a domain value might be formatted back into the input value
@@ -543,7 +547,7 @@ export interface ValidatorOptions<
    *
    * @param domainValue The domain value to format as input value.
    */
-  format?(domainValue: TDomainValue): InputGroupValue<TInputs>;
+  format?(domainValue: TDomainValue): InferInputGroupValue<TInputs>;
 
   /**
    * Specifies validation for the domain value that is obtained by parsing the

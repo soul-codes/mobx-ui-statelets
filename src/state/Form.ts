@@ -1,4 +1,7 @@
-import InputGroup, { InputGroupContent, InputGroupValue } from "./InputGroup";
+import InputGroup, {
+  InputGroupContent,
+  InferInputGroupValue
+} from "./InputGroup";
 import { MaybeConstant } from "../utils/types";
 import Task, { TaskAction } from "./Task";
 import createLookup from "../utils/lookup";
@@ -75,7 +78,7 @@ export default class Form<
 }
 
 function guardSubmit<TInputs extends InputGroupContent, TActionResult>(
-  submitAction: TaskAction<InputGroupValue<TInputs>, TActionResult>,
+  submitAction: TaskAction<InferInputGroupValue<TInputs>, TActionResult>,
   form: Form<TInputs, TActionResult>
 ): TaskAction<null, SubmitResult<TActionResult> | FormValidationError> {
   return async (unusedArg, addCancelHandler) => {
@@ -149,7 +152,7 @@ export interface FormOptions<TInputs extends InputGroupContent, TActionResult>
    * Specify the submit action. The outcome of this action will be saved in
    * the submit result state.
    */
-  action: TaskAction<InputGroupValue<TInputs>, TActionResult>;
+  action: TaskAction<InferInputGroupValue<TInputs>, TActionResult>;
   autoNext?: boolean;
   autoSubmit?: boolean;
   autoConfirm?: boolean;
