@@ -1,24 +1,18 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import { Task, TaskArg } from "../../src";
+import { Task, InferTaskArg } from "../../src";
 import { Form, FormOrTask, AsTask } from "../../src";
 
 interface BaseDevButtonProps<TTask extends FormOrTask> {
   Task: TTask;
 }
 
-type Arg<TTask extends FormOrTask> = TaskArg<AsTask<TTask>>;
-type ArgProp<TTask extends FormOrTask> = Arg<TTask> extends
-  | void
-  | null
+type Arg<TTask extends FormOrTask> = InferTaskArg<AsTask<TTask>>;
+type ArgProp<TTask extends FormOrTask> = Arg<TTask> extends void | null
   ? {}
-  : void extends Arg<TTask>
-    ? { arg?: Arg<TTask> }
-    : { arg: Arg<TTask> };
+  : void extends Arg<TTask> ? { arg?: Arg<TTask> } : { arg: Arg<TTask> };
 
-type DevButtonProps<TTask extends FormOrTask> = BaseDevButtonProps<
-  TTask
-> &
+type DevButtonProps<TTask extends FormOrTask> = BaseDevButtonProps<TTask> &
   ArgProp<TTask>;
 
 @observer

@@ -37,7 +37,20 @@ class InvokeInstance {
   }
 }
 
+/**
+ * Represents and manages a state of an asynchronous task.
+ *
+ * The task itself can accept one arbitrarily-typed argument.
+ *
+ * @template TArg the task's argument type
+ * @template TResult the task's result type
+ */
 export default class Task<TArg, TResult> extends State {
+  /**
+   * Instantiates the task state with an action.
+   * @param action the task's action.
+   * @param options
+   */
   constructor(
     readonly action: TaskAction<TArg, TResult>,
     options?: StateDevOptions
@@ -45,18 +58,31 @@ export default class Task<TArg, TResult> extends State {
     super(options);
   }
 
+  /**
+   * Returns true if the task is in pending state.
+   */
   get isPending() {
     return this._isPending;
   }
 
+  /**
+   * Returns the result of the last completed task.
+   */
   get result() {
     return this._result;
   }
 
+  /**
+   * Returns the promise that resolves when the task is completed or is canceled.
+   */
   get promise() {
     return this._promise;
   }
 
+  /**
+   * Runs the task.
+   * @param args The arbitrary argument to pass to the task.
+   */
   @action
   invoke(args: TArg): Promise<void> {
     if (this._isPending) {
@@ -91,6 +117,9 @@ export default class Task<TArg, TResult> extends State {
     }
   }
 
+  /**
+   * Cancels the pending task. If there isn't one, this call is no-op.
+   */
   @action
   cancel() {
     this._invokeInstance && this._invokeInstance.cancel();
@@ -117,13 +146,28 @@ export default class Task<TArg, TResult> extends State {
   }
 }
 
+/**
+ * Describes a function where you can register a cancel handler.
+ */
 export type AddCancelhandler = AddDisposeHandler;
 
+/**
+ * Describes a task function.
+ * @param arg the arbitrary argument the task is invoked with.
+ * @param addCancelHandler Call this method to register an arbitrary cancel handler
+ * that is invoked when this particular instance of the task gets canceled.
+ */
 export type TaskAction<TArg, TResult> = (
   arg: TArg,
   addCancelHandler: AddCancelhandler
 ) => MaybePromise<TResult>;
 
-export type TaskArg<T extends Task<any, any>> = T extends Task<infer TArg, any>
+/**
+ * Infers the argument type from a task state type.
+ */
+export type InferTaskArg<T extends Task<any, any>> = T extends Task<
+  infer TArg,
+  any
+>
   ? TArg
   : never;

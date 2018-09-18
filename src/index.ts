@@ -3,7 +3,7 @@ export {
   default as Task,
   TaskAction,
   AddCancelhandler,
-  TaskArg
+  InferTaskArg
 } from "./state/Task";
 export { default as Input, InputValue, BaseInputValue } from "./state/Input";
 export {
