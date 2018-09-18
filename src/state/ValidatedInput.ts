@@ -1,17 +1,34 @@
 import Validator, { ValidatorOptions } from "./Validator";
-import Input, { InputOptions } from "./Input";
+import Input, { InputOptions, BaseInputValue } from "./Input";
 import { computed } from "mobx";
 
+/**
+ * A shorthand for an input with a single validator validating the input value.
+ * @template TInputValue the input value
+ * @template TDomainValue the input validator's domain value.
+ * @template TParseError the input's parse error.
+ * @template TDomainError the input's domain error.
+ */
 export default class ValidatedInput<
-  TValue extends BaseInputValue,
-  TDomainValue = TValue,
+  TInputValue extends BaseInputValue,
+  TDomainValue = TInputValue,
   TParseError = true,
   TDomainError = true
-> extends Input<TValue> {
+> extends Input<TInputValue> {
+  /**
+   * Instantiates a validated input.
+   *
+   * @param defaultValue The input's default value. If using TypeScript,
+   * you can type this value exactly instead of parameterizing the generics
+   * fully.
+   *
+   * @param options The validated input options, which is a combination of the
+   * input options and the validator options.
+   */
   constructor(
-    readonly defaultValue: TValue,
+    readonly defaultValue: TInputValue,
     readonly options?: ValidatedInputOptions<
-      TValue,
+      TInputValue,
       TDomainValue,
       TParseError,
       TDomainError
@@ -20,16 +37,11 @@ export default class ValidatedInput<
     super(defaultValue, options);
   }
   validator = new Validator<
-    Input<TValue>,
+    Input<TInputValue>,
     TDomainValue,
     TParseError,
     TDomainError
-  >(this, {
-    parse: this.options && this.options.parse,
-    format: this.options && this.options.format,
-    domain: this.options && this.options.validateDomain,
-    enabled: this.options && this.options.enableValidation
-  });
+  >(this, this.options);
 
   @computed
   get normalizedInputValueFormatResult() {
@@ -45,39 +57,17 @@ export default class ValidatedInput<
   }
 }
 
-export interface ValidatedInputOptions<
-  TValue extends BaseInputValue,
+/**
+ * Describes a validated input options, which is a combination of the input
+ * options and the validator options.
+ *
+ * @see ValidatorOptions
+ * @see InputOptions
+ */
+export type ValidatedInputOptions<
+  TInputValue extends BaseInputValue,
   TDomainValue,
   TParseError,
   TDomainError
-> extends InputOptions<TValue> {
-  parse?: ValidatorOptions<
-    Input<TValue>,
-    TDomainValue,
-    TParseError,
-    TDomainError
-  >["parse"];
-  format?: ValidatorOptions<
-    Input<TValue>,
-    TDomainValue,
-    TParseError,
-    TDomainError
-  >["format"];
-  validateDomain?: ValidatorOptions<
-    Input<TValue>,
-    TDomainValue,
-    TParseError,
-    TDomainError
-  >["domain"];
-  enableValidation?: ValidatorOptions<
-    Input<TValue>,
-    TDomainValue,
-    TParseError,
-    TDomainError
-  >["enabled"];
-}
-
-export type BaseInputValue = string | number | boolean;
-export type InputValue<T extends Input<any>> = T extends Input<infer V>
-  ? V
-  : never;
+> = InputOptions<TInputValue> &
+  ValidatorOptions<Input<TInputValue>, TDomainValue, TParseError, TDomainError>;
