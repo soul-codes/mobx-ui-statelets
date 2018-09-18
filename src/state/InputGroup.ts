@@ -1,5 +1,5 @@
 import { MaybeConstant, ArrayItem } from "../utils/types";
-import Input, { InputValue } from "./Input";
+import Input, { InferInputValue } from "./Input";
 import State, { StateDevOptions, StateProjections } from "./State";
 import { computed, action } from "mobx";
 import createLookup from "../utils/lookup";
@@ -182,7 +182,7 @@ export type InputGroupValue<T extends InputGroupContent> = ValueOfInputShape<
 >;
 
 type ValueOfInputShape<T extends InputShape> = T extends Input<any>
-  ? InputValue<T>
+  ? InferInputValue<T>
   : T extends $InputShapeObject
     ? { [key in keyof T]: ValueOfInputShape<T[key]> }
     : T extends Array<InputShape> ? $InputShapeArrayValue<T> : never;

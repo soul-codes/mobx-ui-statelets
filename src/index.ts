@@ -5,7 +5,11 @@ export {
   AddCancelhandler,
   InferTaskArg
 } from "./state/Task";
-export { default as Input, InputValue, BaseInputValue } from "./state/Input";
+export {
+  default as Input,
+  InferInputValue,
+  BaseInputValue
+} from "./state/Input";
 export {
   default as InputGroup,
   InputGroupContent,
