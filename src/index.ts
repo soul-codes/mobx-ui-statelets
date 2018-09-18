@@ -12,12 +12,7 @@ export {
   InputGroupShape,
   InputShape
 } from "./state/InputGroup";
-export {
-  default as Validator,
-  ValidationError,
-  DomainValidationError,
-  DomainPredicate
-} from "./state/Validator";
+export { default as Validator, ValidationError } from "./state/Validator";
 export {
   default as ValidatedInput,
   ValidatedInputOptions
