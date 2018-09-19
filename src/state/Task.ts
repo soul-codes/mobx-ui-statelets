@@ -149,7 +149,7 @@ export default class Task<TArg, TResult> extends State {
 /**
  * Describes a function where you can register a cancel handler.
  */
-export type AddCancelhandler = AddDisposeHandler;
+export type AddCancelHandler = AddDisposeHandler;
 
 /**
  * Describes a task function.
@@ -159,7 +159,7 @@ export type AddCancelhandler = AddDisposeHandler;
  */
 export type TaskAction<TArg, TResult> = (
   arg: TArg,
-  addCancelHandler: AddCancelhandler
+  addCancelHandler: AddCancelHandler
 ) => MaybePromise<TResult>;
 
 /**
