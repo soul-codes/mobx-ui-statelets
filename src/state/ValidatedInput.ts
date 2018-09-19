@@ -43,15 +43,29 @@ export default class ValidatedInput<
     TDomainError
   >(this, this.options);
 
+  /**
+   * Returns the parse result for the normalized form of the current input
+   * value.
+   */
   @computed
-  get normalizedInputValueFormatResult() {
+  get normalizedInputValueParseResult() {
     return this.validator.parse(this.normalizedInputValue);
   }
 
+  /**
+   * Obtains the input's domain value assuming that the input can be parsed.
+   * Shorthand for accessing requireDomainValue on the validated input's validator.
+   * @param value
+   */
   requireDomainValue() {
     return this.validator.requireDomainValue();
   }
 
+  /**
+   * Formats the domain value as an input value. Shorthand for calling
+   * formatDomainValue on this validated input's validator.
+   * @param value
+   */
   formatDomainValue(value: TDomainValue) {
     return this.validator.formatDomainValue(value);
   }

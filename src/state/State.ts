@@ -12,6 +12,10 @@ export const currentFocus = observable.box<State | null>(null, {
 export default class State<
   TProjectionAPI extends StateProjections = StateProjections
 > {
+  /**
+   * Instantiates a generic UI state.
+   * @param devOptions Development-time settings
+   */
   constructor(readonly devOptions?: StateDevOptions) {}
 
   /**
