@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import { Validator, InputGroupContent } from "../../src";
+import { Validator } from "../../src";
 
 export interface DevValidationLabelProps {
   validator: Validator<any, any, any, any>;
@@ -46,6 +46,11 @@ export default class DevValidationLabel extends Component<
         onMouseOver={() => validator.reportHover()}
         onMouseOut={() => validator.reportUnhover()}
       >
+        {validator.validatorOptions.validateOnInput ? (
+          <pre>Input: {JSON.stringify(validator.inputValue, null, 2)}</pre>
+        ) : (
+          <pre>Confirmed: {JSON.stringify(validator.value, null, 2)}</pre>
+        )}
         <pre>Domain: {JSON.stringify(validator.domainValue, null, 2)}</pre>
         <pre>Error: {JSON.stringify(validator.error, null, 2)}</pre>
         <pre>Correction: {JSON.stringify(validator.correction, null, 2)}</pre>

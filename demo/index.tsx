@@ -9,13 +9,16 @@ import Button from "./dev/Button";
 const required = (value: string) => !value && { error: "required" };
 const trim = (value: string) => value.trim();
 
-const street = new ValidatedInput("" as string, {
+const street = new Input("" as string, {
   normalizer: trim,
   name: "street"
 });
 const validateStreet = new Validator(street, {
   parse: required,
-  domain: async street => {
+  validateOnInput: true,
+  domain: async (street, onCancel) => {
+    console.log(`validate "${street}"`);
+    onCancel(() => console.log(`canceled "${street}"`));
     await new Promise(resolve => setTimeout(resolve, 1000));
     return !street.startsWith("Wich") && { error: "street domain" };
   }
