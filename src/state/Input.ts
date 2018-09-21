@@ -124,6 +124,7 @@ export default class Input<
     let { value = void 0, next = false } = args || {};
     const confirmId = (this._confirmId = ++confirmCounter);
     const lastValue = this.inputValue;
+    this._inputValue = void 0;
 
     if (value === void 0) value = lastValue;
     if (value === this.value && !this.isConfirmed) return;
@@ -134,7 +135,6 @@ export default class Input<
     const shouldValidate = ((this.options && this.options.revalidate) ||
       defaultShouldValidate)(value, this.value);
     this._value = value;
-    this._inputValue = void 0;
 
     const isRootConfirm = !confirmStack.length;
     shouldValidate && validationCandidates.push(this);
