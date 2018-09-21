@@ -57,6 +57,7 @@ export default class Input<
     if (this.isBeingSubmitted) return;
     this._inputValue = value;
     this.queryChoices();
+    this.validate("input");
   }
 
   /**
@@ -155,7 +156,7 @@ export default class Input<
     buffer.forEach(group =>
       group.__$$private__receiveInputEvent(this, "confirm")
     );
-    await Promise.all(inputsToValidate.map(input => input.validate()));
+    await Promise.all(inputsToValidate.map(input => input.validate("confirm")));
 
     if (!next) return;
     if (confirmId !== confirmCounter) return;
@@ -248,13 +249,21 @@ export default class Input<
    * @see ValidatorOptions.enabled
    */
   @action
-  async validate() {
+  async validate(filter: "input" | "confirm" | null = null) {
     const confirmId = this._confirmId;
     const set = new Set<Validator<any, any, any>>();
     while (true) {
       if (confirmId !== this._confirmId) return;
       const result = await Promise.all(
         this.validators.map(async validator => {
+          const isCandidateValidator =
+            !filter ||
+            (filter === "input" &&
+              validator.validatorOptions.validateOnInput) ||
+            (filter === "confirm" &&
+              !validator.validatorOptions.validateOnInput);
+          if (!isCandidateValidator) return false;
+
           const hasChanged = set.has(validator) !== validator.isEnabled;
           if (validator.isEnabled) {
             set.add(validator);
