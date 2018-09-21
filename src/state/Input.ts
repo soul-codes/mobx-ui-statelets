@@ -288,6 +288,14 @@ export default class Input<
   }
 
   /**
+   * Returns true if the input has put content without confirming it. Essentially
+   * means input() has been called without calling confirm().
+   */
+  get isPending() {
+    return this._inputValue !== void 0;
+  }
+
+  /**
    * Gets the store value. If the user has pending input, that value is not
    * reflected here.
    */

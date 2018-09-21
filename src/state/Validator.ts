@@ -273,12 +273,14 @@ export default class Validator<
   }
 
   /**
-   * Returns true if the validator is "virgin": this is defined to mean that
-   * domain validation has never happened OR the user has not confirmed one of
-   * the inputs that the validator uses.
+   * Returns true if the validator is "virgin": this is defined as follows:
+   *
+   * - For a validator validating on confirmed inputs: this should
    */
   get isVirgin() {
-    return !this.hasEverValidated || this.hasUnconfirmedInput;
+    return this.validatorOptions.validateOnInput
+      ? !this.hasPendingInput && this.hasUnconfirmedInput
+      : this.hasUnconfirmedInput;
   }
 
   /**
@@ -310,6 +312,14 @@ export default class Validator<
    */
   get hasUnconfirmedInput() {
     return this.flattedInputs.some(input => !input.isConfirmed);
+  }
+
+  /**
+   * Returns true if any of the inputs that the validator depends on is in
+   * pending state.
+   */
+  get hasPendingInput() {
+    return this.flattedInputs.some(input => input.isPending);
   }
 
   /**
