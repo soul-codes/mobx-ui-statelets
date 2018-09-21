@@ -574,4 +574,11 @@ export interface ValidatorOptions<
     this: Validator<TInputs, TDomainValue, TParseError, TDomainError>,
     self: Validator<TInputs, TDomainValue, TParseError, TDomainError>
   ): boolean;
+
+  /**
+   * If true, input action on the inputs contributing to this validator will cause
+   * the validator to validate. Otherwise, the default behavior is to only validate
+   * when a contributing input is confirmed.
+   */
+  validateOnInput?: boolean;
 }
