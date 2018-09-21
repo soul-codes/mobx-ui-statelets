@@ -76,8 +76,13 @@ export default class Validator<
     if (this.parseResult.isError) return;
 
     const disposeReaction = reaction(
-      () => this.parseResult.isError,
-      isError => isError && this._task.cancel()
+      () => this.parseResult.isError || !this.isEnabled,
+      shouldCancel => {
+        if (shouldCancel) {
+          this._task.cancel();
+          disposeReaction();
+        }
+      }
     );
     const promise = this._task.invoke(this.parseResult.domain);
     await promise;
