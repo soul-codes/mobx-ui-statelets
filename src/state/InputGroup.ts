@@ -77,6 +77,17 @@ export default class InputGroup<
   }
 
   /**
+   * Same as with `value` but each value is the current input value, normalized
+   * by each input's normalizer.
+   *
+   * @see value
+   */
+  @computed
+  get normalizedInputValue(): InferInputGroupValue<TInputs> {
+    return getValueFromShape(this.inputs, "normalizedInputValue");
+  }
+
+  /**
    * Batch-reset the inputs using the value that is provided in the group.
    * This is the same as calling reset on the individual input instances.
    * @param args
@@ -156,7 +167,7 @@ interface InputGroupOptions extends StateDevOptions {
  */
 function getValueFromShape<TInputs extends InputShape>(
   inputs: TInputs,
-  valueProp: "value" | "inputValue"
+  valueProp: "value" | "inputValue" | "normalizedInputValue"
 ): ValueOfInputShape<TInputs> {
   if (inputs instanceof Input) return inputs[valueProp];
   if (Array.isArray(inputs))

@@ -95,7 +95,9 @@ export default class Validator<
     TDomainValue
   > {
     return this.parse(
-      this.validatorOptions.validateOnInput ? this.inputValue : this.value
+      this.validatorOptions.validateOnInput
+        ? this.normalizedInputValue
+        : this.value
     );
   }
 
