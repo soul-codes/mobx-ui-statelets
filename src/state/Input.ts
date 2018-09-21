@@ -1,6 +1,5 @@
 import { observable, action } from "mobx";
 import Validator from "./Validator";
-import { FormOptions } from "./Form";
 import State, { StateDevOptions } from "./State";
 import Form from "./Form";
 import { Falsy, MaybePromise } from "../utils/types";
@@ -423,14 +422,67 @@ export interface InputOptions<
   TValue extends BaseInputValue,
   TChoiceMetadata = any
 > extends StateDevOptions {
+  /**
+   * Specifies how the input value should be normalized before it gets parsed
+   * into a domain value. You can use this hook to e.g. remove extra spaces
+   * from inputs or converting separating characters into a standardized form.
+   *
+   * Unlike parsing, normalization should never fail: At worst case the input
+   * value should be returned as is.
+   *
+   * @param value input value to normalize
+   */
   readonly normalizer?: ((value: TValue) => TValue) | Falsy;
+
+  /**
+   * specifies if an input should re-validate on confirm. This defaults to
+   * true if the two values are the same.
+   *
+   * @param value the current input value to confirm
+   * @param oldValue the previously confirmed input value
+   */
   revalidate?: (value: TValue, oldValue: TValue) => boolean;
+
+  /**
+   * Specifies the assitive choices that should be made available to the input.
+   * This can be used for inputs that show themselves as dropdowns, radios,
+   * or inputs with autocompletion feature.
+   *
+   * Two forms are allowed:
+   * - The constant form should simply enumerate all choices statically.
+   * - The function form depends on the current input value, and should return
+   *   (or async resolve to) the choices along with stat information that
+   *   indicates in some way how many choices we are anticipating.
+   *
+   * @param query contains extra contextual information that you should use to
+   * determine what choices to fetch.
+   */
   choices?:
     | ((
         query: InputChoiceQuery<TValue>
       ) => MaybePromise<InputChoiceQueryResult<TValue, TChoiceMetadata>>)
     | InputChoice<TValue, TChoiceMetadata>[];
+
+  /**
+   * Specifies an upper limit on how many choices should ever be queried given
+   * any input value.
+   */
   choiceQueryLimit?: number;
+
+  /**
+   * Specifies how confirming this input will synchronously confirm the other
+   * inputs.
+   *
+   * Using cascading over separate confirm() calls make sure that domain validation
+   * depending on either or both inputs are triggered in the same validation
+   * cycle.
+   *
+   * If using an arrow function, the input itself is given back as second argument
+   * for convenience.
+   *
+   * @param value The input value to confirm.
+   * @param self Handy reference to the input itself.
+   */
   confirmCascade?: (
     this: Input<TValue>,
     value: TValue,
