@@ -94,7 +94,9 @@ export default class Validator<
     TParseError,
     TDomainValue
   > {
-    return this.parse(this.value);
+    return this.parse(
+      this.validatorOptions.validateOnInput ? this.inputValue : this.value
+    );
   }
 
   /**

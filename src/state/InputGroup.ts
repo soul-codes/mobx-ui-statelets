@@ -53,14 +53,27 @@ export default class InputGroup<
   }
 
   /**
-   * Returns a structure of input value that corresponds to the input structure
+   * Returns a structure of *confirmed* input value that corresponds to the input structure
    * passed to the constructor. For instance, if the constructor was instantiated
    * with `{ a : someInput, b: someOuterInput }`, the value here will also have the
    * keys `a` and `b` whose value are the respective input values.
+   *
+   * @see inputValue
    */
   @computed
   get value(): InferInputGroupValue<TInputs> {
-    return getValueFromShape(this.inputs);
+    return getValueFromShape(this.inputs, "value");
+  }
+
+  /**
+   * Same as with `value` but each value is the current input value, not the
+   * confirmed input value.
+   *
+   * @see value
+   */
+  @computed
+  get inputValue(): InferInputGroupValue<TInputs> {
+    return getValueFromShape(this.inputs, "inputValue");
   }
 
   /**
@@ -142,14 +155,16 @@ interface InputGroupOptions extends StateDevOptions {
  * @param inputs
  */
 function getValueFromShape<TInputs extends InputShape>(
-  inputs: TInputs
+  inputs: TInputs,
+  valueProp: "value" | "inputValue"
 ): ValueOfInputShape<TInputs> {
-  if (inputs instanceof Input) return inputs.value;
-  if (Array.isArray(inputs)) return inputs.map(getValueFromShape) as any;
+  if (inputs instanceof Input) return inputs[valueProp];
+  if (Array.isArray(inputs))
+    return inputs.map(input => getValueFromShape(input, valueProp)) as any;
 
   const result = Object.create(null);
   for (let key in inputs) {
-    result[key] = getValueFromShape((inputs as any)[key]);
+    result[key] = getValueFromShape((inputs as any)[key], valueProp);
   }
   return result;
 }
