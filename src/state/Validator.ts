@@ -279,7 +279,7 @@ export default class Validator<
    */
   get isVirgin() {
     return this.validatorOptions.validateOnInput
-      ? !this.hasPendingInput && this.hasUnconfirmedInput
+      ? !this.hasChangedInput && this.hasUnconfirmedInput
       : this.hasUnconfirmedInput;
   }
 
@@ -315,11 +315,13 @@ export default class Validator<
   }
 
   /**
-   * Returns true if any of the inputs that the validator depends on is in
-   * pending state.
+   * Returns true if any of the inputs that the validator depends on is in a
+   * "changed" state. Shorthand for checking that at least one input's `hasChanged`
+   * is true.
+   * @see Input~hasChanged
    */
-  get hasPendingInput() {
-    return this.flattedInputs.some(input => input.isPending);
+  get hasChangedInput() {
+    return this.flattedInputs.some(input => input.hasChanged);
   }
 
   /**

@@ -296,6 +296,13 @@ export default class Input<
   }
 
   /**
+   * Returns true if the input value is different from the last confirmed value.
+   */
+  get hasChanged() {
+    return this.isPending && this._inputValue !== this._value;
+  }
+
+  /**
    * Gets the store value. If the user has pending input, that value is not
    * reflected here.
    */
