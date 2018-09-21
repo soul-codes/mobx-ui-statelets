@@ -40,21 +40,21 @@ export default class Validator<
    * @param inputs The input whose values will be needed in validation. This can
    * be any arbitrary structure of input states.
    *
-   * @param _options Specifies additional options for the validator.
+   * @param validatorOptions Specifies additional options for the validator.
    *
    * @see Input
    * @see InputGroup
    */
   constructor(
     inputs: MaybeConstant<() => TInputs>,
-    private readonly _options?: ValidatorOptions<
+    readonly validatorOptions: ValidatorOptions<
       TInputs,
       TDomainValue,
       TParseError,
       TDomainError
-    >
+    > = {}
   ) {
-    super(inputs, _options);
+    super(inputs, validatorOptions);
     createLookup(
       this,
       () => this.flattedInputs,
@@ -114,7 +114,7 @@ export default class Validator<
   parse(
     value: InferInputGroupValue<TInputs>
   ): ParseResult<InferInputGroupValue<TInputs>, TParseError, TDomainValue> {
-    const rule = (this._options && this._options.parse) || noopValidator;
+    const rule = this.validatorOptions.parse || noopValidator;
     const result = rule(value) || null;
     if (!result) {
       return {
@@ -156,7 +156,7 @@ export default class Validator<
    * @param domainValue Domain value to format.
    */
   formatDomainValue(domainValue: TDomainValue): InferInputGroupValue<TInputs> {
-    const formatter = this._options && this._options.format;
+    const formatter = this.validatorOptions.format;
     if (!formatter)
       return (domainValue as any) as InferInputGroupValue<TInputs>;
     return formatter(domainValue);
@@ -226,7 +226,7 @@ export default class Validator<
       : void 0;
     if (correction === void 0) return void 0;
 
-    const formatter = this._options && this._options.format;
+    const formatter = this.validatorOptions.format;
     if (!formatter && this.parseResult.isParsed) {
       throw Error(
         "A validator that specifies a parser must specify a formatter in order to get a domain correction."
@@ -315,7 +315,7 @@ export default class Validator<
    * value is true,
    */
   get isEnabled() {
-    const fn = this._options && this._options.enabled;
+    const fn = this.validatorOptions.enabled;
     return fn ? fn.call(this, this) : true;
   }
 
@@ -339,7 +339,7 @@ export default class Validator<
   private _task = new Task<
     TDomainValue,
     Falsy | ValidationFailure<TDomainError, TDomainValue>
-  >((this._options && this._options.domain) || noopValidator);
+  >(this.validatorOptions.domain || noopValidator);
 }
 
 /**
