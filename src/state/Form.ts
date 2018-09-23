@@ -12,7 +12,7 @@ import { StateDevOptions, currentFocus } from "./State";
 import createWeakProperty from "../utils/weakProp";
 
 export const privateInputForms = createWeakProperty(
-  (instance: Input<any, any>) => observable(new Set<Form<any, any>>())
+  (instance: Input<any, any>) => new Set<Form<any, any>>()
 );
 
 /**

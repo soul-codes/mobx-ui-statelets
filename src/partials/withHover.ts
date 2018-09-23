@@ -1,5 +1,8 @@
 import State from "../state/State";
 import { action, observable } from "mobx";
+import createWeakProperty from "../utils/weakProp";
+
+const privateIsHovered = createWeakProperty((instance: State) => false);
 
 export default function withHover<
   TState extends new (...args: any[]) => State<any>
@@ -10,7 +13,7 @@ export default function withHover<
      * element representing this state is being hovered on.
      */
     get isHovered(): boolean {
-      return this.__$$private_isHovered;
+      return privateIsHovered.get(this);
     }
 
     /**
@@ -19,7 +22,7 @@ export default function withHover<
      */
     @action
     reportHover() {
-      this.__$$private_isHovered = true;
+      privateIsHovered.set(this, true);
     }
 
     /**
@@ -28,11 +31,8 @@ export default function withHover<
      */
     @action
     reportUnhover() {
-      this.__$$private_isHovered = false;
+      privateIsHovered.set(this, false);
     }
-
-    @observable
-    __$$private_isHovered = false;
   }
   return WithHover;
 }

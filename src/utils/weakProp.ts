@@ -1,15 +1,26 @@
+import { observable, IObservableValue } from "mobx";
+
 export default function createWeakProperty<TProperty, TInstance extends Object>(
   newProperty: (instance: TInstance) => TProperty
 ) {
-  const weakMap = new WeakMap<TInstance, TProperty>();
+  const weakMap = new WeakMap<TInstance, IObservableValue<TProperty>>();
   return {
-    get(instance: TInstance) {
+    get(instance: TInstance): TProperty {
       let entry = weakMap.get(instance);
-      if (entry) return entry;
+      if (entry) return entry.get();
 
-      entry = newProperty(instance);
-      weakMap.set(instance, entry);
-      return entry;
+      const newEntry = newProperty(instance);
+      weakMap.set(instance, observable.box(newEntry));
+      return newEntry;
+    },
+
+    set(instance: TInstance, value: TProperty) {
+      let entry = weakMap.get(instance);
+      if (entry) {
+        entry.set(value);
+      } else {
+        weakMap.set(instance, observable.box(value));
+      }
     }
   };
 }

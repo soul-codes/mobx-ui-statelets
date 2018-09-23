@@ -1,9 +1,14 @@
 import { action, observable } from "mobx";
 import { Always, Falsy } from "../utils/types";
+import createWeakProperty from "../utils/weakProp";
 
 export const currentFocus = observable.box<State | null>(null, {
   deep: false
 });
+
+const privateStateProjections = createWeakProperty(
+  (instance: State) => new Map<any, any>()
+);
 
 /**
  * Represents any generic UI state. Other specialized UI states such as inputs
@@ -34,7 +39,7 @@ export default class State<
    * @api The exact projections that the presentational entity should support.
    */
   addProjection(projection: any, api: TProjectionAPI) {
-    this.__$$private_projections.set(projection, api);
+    privateStateProjections.get(this).set(projection, api);
   }
 
   /**
@@ -46,7 +51,7 @@ export default class State<
    * projecting to.
    */
   removeProjection(projection: any) {
-    this.__$$private_projections.delete(projection);
+    privateStateProjections.get(this).delete(projection);
   }
 
   /**
@@ -60,7 +65,7 @@ export default class State<
     key: TKey
   ): Always<(TProjectionAPI)[TKey]>[] {
     const result: Always<(TProjectionAPI)[TKey]>[] = [];
-    for (const [, api] of this.__$$private_projections.entries()) {
+    for (const [, api] of privateStateProjections.get(this).entries()) {
       typeof api[key] !== "undefined" &&
         result.push(api[key] as Always<(TProjectionAPI)[TKey]>);
     }
@@ -132,11 +137,6 @@ export default class State<
   reportBlur() {
     this.isFocused && currentFocus.set(null);
   }
-
-  /**
-   * @private
-   */
-  __$$private_projections = new Map<any, TProjectionAPI>();
 }
 
 /**

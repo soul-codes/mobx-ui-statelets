@@ -12,8 +12,7 @@ import Input from "./Input";
 import createWeakProperty from "../utils/weakProp";
 
 export const privateInputValidators = createWeakProperty(
-  (instance: Input<any, any>) =>
-    observable(new Set<Validator<any, any, any, any>>())
+  (instance: Input<any, any>) => new Set<Validator<any, any, any, any>>()
 );
 
 /**
