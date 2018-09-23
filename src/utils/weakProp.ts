@@ -1,7 +1,15 @@
 import { observable, IObservableValue } from "mobx";
 
+/**
+ * Creates a weak property getter/setter. Use this to establish "friend" property
+ * relationships between TypeScript objects as an alternative to shared private
+ * property between classes, which is not possible otherwise. The implementation
+ * uses a WeakMap to accomplish the weak property.
+ *
+ * @param initializer Initializes the property. Is called lazily on the first get.
+ */
 export default function createWeakProperty<TProperty, TInstance extends Object>(
-  newProperty: (instance: TInstance) => TProperty
+  initializer: (instance: TInstance) => TProperty
 ) {
   const weakMap = new WeakMap<TInstance, IObservableValue<TProperty>>();
   return {
@@ -9,7 +17,7 @@ export default function createWeakProperty<TProperty, TInstance extends Object>(
       let entry = weakMap.get(instance);
       if (entry) return entry.get();
 
-      const newEntry = newProperty(instance);
+      const newEntry = initializer(instance);
       weakMap.set(instance, observable.box(newEntry));
       return newEntry;
     },
