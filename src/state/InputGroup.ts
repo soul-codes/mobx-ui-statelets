@@ -3,6 +3,11 @@ import Input, { InferInputValue } from "./Input";
 import State, { StateDevOptions, StateProjections } from "./State";
 import { computed, action } from "mobx";
 import createLookup from "../utils/lookup";
+import createWeakProperty from "../utils/weakProp";
+
+export const privateInputGroup = createWeakProperty(
+  (instance: Input) => new Set<InputGroup<any>>()
+);
 
 /**
  * Represents any arbitrary structural grouping of inputs.
@@ -31,7 +36,7 @@ export default class InputGroup<
     createLookup(
       this,
       () => this.flattedInputs,
-      input => input.__$$private_groups as any
+      input => privateInputGroup.get(input)
     );
   }
 

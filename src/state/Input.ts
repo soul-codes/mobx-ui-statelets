@@ -5,7 +5,7 @@ import Form from "./Form";
 import { Falsy, MaybePromise } from "../utils/types";
 import withHover from "../partials/withHover";
 import Task from "./Task";
-import InputGroup from "./InputGroup";
+import InputGroup, { privateInputGroup } from "./InputGroup";
 
 let confirmCounter = 0;
 let confirmStack: Input<any>[] = [];
@@ -151,7 +151,9 @@ export default class Input<
 
     const buffer = new Set<InputGroup<any>>();
     inputsToValidate.forEach(input =>
-      input.__$$private_groups.forEach(group => buffer.add(group))
+      privateInputGroup
+        .get(input)
+        .forEach((group: InputGroup<any>) => buffer.add(group))
     );
     buffer.forEach(group => {
       const { handleInputConfirm = void 0 } = group.options || {};
@@ -413,8 +415,6 @@ export default class Input<
 
   @observable
   __$$private_forms = new Set<Form<any, any>>();
-
-  __$$private_groups = new Set<InputGroup<any>>();
 
   private _confirmId = 0;
 
