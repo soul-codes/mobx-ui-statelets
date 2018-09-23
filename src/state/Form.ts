@@ -6,9 +6,14 @@ import { MaybeConstant } from "../utils/types";
 import Task, { TaskAction } from "./Task";
 import createLookup from "../utils/lookup";
 import Input from "./Input";
-import { computed } from "mobx";
+import { computed, observable } from "mobx";
 import Validator from "./Validator";
 import { StateDevOptions, currentFocus } from "./State";
+import createWeakProperty from "../utils/weakProp";
+
+export const privateInputForms = createWeakProperty(
+  (instance: Input<any, any>) => observable(new Set<Form<any, any>>())
+);
 
 /**
  * Represents a form state. A form is essentially an input group that validates
@@ -35,7 +40,7 @@ export default class Form<
     createLookup(
       this as Form<any, any>,
       () => this.flattedInputs,
-      input => input.__$$private_forms
+      input => privateInputForms.get(input)
     );
   }
 
@@ -146,7 +151,7 @@ function guardSubmit<TInputs extends InputGroupContent, TActionResult>(
     const focusedInput = currentFocus.get();
     if (
       focusedInput instanceof Input &&
-      focusedInput.__$$private_forms.has(form)
+      privateInputForms.get(focusedInput).has(form)
     )
       focusedInput.blur();
     const result = await submitAction(form.value, addCancelHandler);

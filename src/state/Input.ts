@@ -1,7 +1,7 @@
 import { observable, action } from "mobx";
 import Validator, { privateInputValidators } from "./Validator";
 import State, { StateDevOptions } from "./State";
-import Form from "./Form";
+import Form, { privateInputForms } from "./Form";
 import { Falsy, MaybePromise } from "../utils/types";
 import withHover from "../partials/withHover";
 import Task from "./Task";
@@ -369,8 +369,8 @@ export default class Input<
   /**
    * Returns all forms associated with this input.
    */
-  get forms() {
-    return [...this.__$$private_forms];
+  get forms(): Form<any, any>[] {
+    return [...privateInputForms.get(this)];
   }
 
   /**
@@ -379,16 +379,15 @@ export default class Input<
    * if the input is not associated to any form or is associated to multiple forms.
    */
   get form() {
-    return this.__$$private_forms.size === 1
-      ? this.__$$private_forms.values().next().value
-      : null;
+    const forms = privateInputForms.get(this);
+    return forms.size === 1 ? forms.values().next().value : null;
   }
 
   /**
    * Returns true if any of the forms that this input belongs is being submitted.
    */
   get isBeingSubmitted() {
-    for (let form of this.__$$private_forms) {
+    for (let form of privateInputForms.get(this)) {
       if (form.isSubmitting) return true;
     }
     return false;
@@ -409,9 +408,6 @@ export default class Input<
 
   @observable
   private _isConfirmed = false;
-
-  @observable
-  __$$private_forms = new Set<Form<any, any>>();
 
   private _confirmId = 0;
 
