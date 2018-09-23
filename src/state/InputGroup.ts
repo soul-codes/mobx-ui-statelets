@@ -143,7 +143,7 @@ export default class InputGroup<
    * the subgroups are not broken down into inputs here.
    */
   @computed
-  get flattenedStructure() {
+  get flattenedStructure(): (Input<any, any> | InputGroup<any, any>)[] {
     return flattenStructure(this.structure);
   }
 
