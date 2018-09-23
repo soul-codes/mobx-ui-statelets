@@ -9,6 +9,12 @@ import createLookup from "../utils/lookup";
 import { StateDevOptions } from "./State";
 import withHover from "../partials/withHover";
 import Input from "./Input";
+import createWeakProperty from "../utils/weakProp";
+
+export const privateInputValidators = createWeakProperty(
+  (instance: Input<any, any>) =>
+    observable(new Set<Validator<any, any, any, any>>())
+);
 
 /**
  * Represents a state for form input validation. This includes bookkeeping of whether
@@ -58,7 +64,7 @@ export default class Validator<
     createLookup(
       this,
       () => this.flattedInputs,
-      input => input.__$$private_validators as any
+      input => privateInputValidators.get(input) as any
     );
   }
 

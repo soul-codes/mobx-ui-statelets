@@ -1,5 +1,5 @@
 import { observable, action } from "mobx";
-import Validator from "./Validator";
+import Validator, { privateInputValidators } from "./Validator";
 import State, { StateDevOptions } from "./State";
 import Form from "./Form";
 import { Falsy, MaybePromise } from "../utils/types";
@@ -353,7 +353,7 @@ export default class Input<
    * @see Validator~isConclusivelyValid
    */
   get isValidated() {
-    for (let validator of this.__$$private_validators) {
+    for (let validator of privateInputValidators.get(this)) {
       if (!validator.isConclusivelyValid) return false;
     }
     return true;
@@ -362,8 +362,8 @@ export default class Input<
   /**
    * Returns all validators associated with this input.
    */
-  get validators() {
-    return [...this.__$$private_validators];
+  get validators(): Validator<any, any, any, any>[] {
+    return [...privateInputValidators.get(this)];
   }
 
   /**
@@ -409,9 +409,6 @@ export default class Input<
 
   @observable
   private _isConfirmed = false;
-
-  @observable
-  __$$private_validators = new Set<Validator<any, any, any>>();
 
   @observable
   __$$private_forms = new Set<Form<any, any>>();
