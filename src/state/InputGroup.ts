@@ -143,11 +143,6 @@ export default class InputGroup<
   }
 
   private _inputs: MaybeConstant<() => TInputs>;
-
-  __$$private__receiveInputEvent(input: Input<any>, kind: "confirm") {
-    const { handleInputConfirm = void 0 } = this.options || {};
-    kind === "confirm" && handleInputConfirm && handleInputConfirm(input);
-  }
 }
 
 /**

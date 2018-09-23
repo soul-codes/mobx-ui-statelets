@@ -153,9 +153,10 @@ export default class Input<
     inputsToValidate.forEach(input =>
       input.__$$private_groups.forEach(group => buffer.add(group))
     );
-    buffer.forEach(group =>
-      group.__$$private__receiveInputEvent(this, "confirm")
-    );
+    buffer.forEach(group => {
+      const { handleInputConfirm = void 0 } = group.options || {};
+      handleInputConfirm && handleInputConfirm(this);
+    });
     await Promise.all(inputsToValidate.map(input => input.validate("confirm")));
 
     if (!next) return;
