@@ -44,16 +44,17 @@ class InvokeInstance {
  *
  * @template TArg the task's argument type
  * @template TResult the task's result type
+ * @template TProgress the task's progress readout type
  */
-export default class Task<TArg, TResult> extends State {
+export default class Task<TArg, TResult, TProgress = void> extends State {
   /**
    * Instantiates the task state with an action.
    * @param action the task's action.
    * @param options
    */
   constructor(
-    readonly action: TaskAction<TArg, TResult>,
-    options?: StateDevOptions
+    readonly action: TaskAction<TArg, TResult, TProgress>,
+    options?: TaskOptions<TProgress>
   ) {
     super(options);
   }
@@ -70,6 +71,14 @@ export default class Task<TArg, TResult> extends State {
    */
   get result() {
     return this._result;
+  }
+
+  /**
+   * Returns the last reported progress of the pending task. Has no meaning if
+   * the task is not in pending state.
+   */
+  get progress() {
+    return this._progress;
   }
 
   /**
@@ -91,10 +100,22 @@ export default class Task<TArg, TResult> extends State {
     }
 
     const invokeInstance = (this._invokeInstance = new InvokeInstance());
+    const reportProgress = (progress: TProgress) => {
+      if (this._invokeInstance === invokeInstance) {
+        this._progress = progress;
+      }
+    };
+
     let result: MaybePromise<TResult>;
 
     this._isPending = false;
-    result = (this.action || 0)(args, invokeInstance.addCancelHandler);
+    this._progress = void 0;
+    result = (this.action || 0)(
+      args,
+      invokeInstance.addCancelHandler,
+      reportProgress
+    );
+
     if (result instanceof Promise) {
       this._isPending = true;
       return (this._promise = Promise.race([
@@ -134,6 +155,9 @@ export default class Task<TArg, TResult> extends State {
   @observable
   private _result: TResult | void = void 0;
 
+  @observable
+  private _progress?: TProgress;
+
   private _invokeInstance: InvokeInstance | null = null;
 
   @action
@@ -143,6 +167,7 @@ export default class Task<TArg, TResult> extends State {
     this._result = result;
     this._promise = null;
     this._invokeInstance = null;
+    this._progress = void 0;
   }
 }
 
@@ -157,17 +182,23 @@ export type AddCancelHandler = AddDisposeHandler;
  * @param addCancelHandler Call this method to register an arbitrary cancel handler
  * that is invoked when this particular instance of the task gets canceled.
  */
-export type TaskAction<TArg, TResult> = (
+export type TaskAction<TArg, TResult, TProgress> = (
   arg: TArg,
-  addCancelHandler: AddCancelHandler
+  addCancelHandler: AddCancelHandler,
+  reportProgress: (progress: TProgress) => void
 ) => MaybePromise<TResult>;
 
 /**
  * Infers the argument type from a task state type.
  */
-export type InferTaskArg<T extends Task<any, any>> = T extends Task<
+export type InferTaskArg<T extends Task<any, any, any>> = T extends Task<
   infer TArg,
+  any,
   any
 >
   ? TArg
   : never;
+
+export interface TaskOptions<TProgress> extends StateDevOptions {
+  initialProgress?: TProgress;
+}
