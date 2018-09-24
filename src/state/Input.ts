@@ -253,12 +253,17 @@ export default class Input<
    */
   @action
   async validate(filter: "input" | "confirm" | null = null) {
-    const confirmId = this._confirmId;
+    const validationId = ++this._validationId;
     const set = new Set<Validator<any, any, any>>();
     while (true) {
-      if (confirmId !== this._confirmId) return;
+      if (validationId !== this._validationId) return;
       const result = await Promise.all(
         this.validators.map(async validator => {
+          if (validator.isValidationPending) {
+            await validator.promise;
+            return true;
+          }
+
           const isCandidateValidator =
             !filter ||
             (filter === "input" &&
@@ -410,6 +415,7 @@ export default class Input<
   private _isConfirmed = false;
 
   private _confirmId = 0;
+  private _validationId = 0;
 
   private _choiceTask: Task<
     InputChoiceQuery<TValue>,
