@@ -19,7 +19,7 @@ export default function createWeakProperty<TProperty, TInstance extends Object>(
 
       const newEntry = initializer(instance);
       weakMap.set(instance, observable.box(newEntry));
-      return newEntry;
+      return this.get(instance);
     },
 
     set(instance: TInstance, value: TProperty) {
