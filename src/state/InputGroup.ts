@@ -109,6 +109,17 @@ export default class InputGroup<
   }
 
   /**
+   * Batch-confirm the inputs using the value that is provided in the group.
+   * Note that unlike individually confirming an input, this does not permit
+   * an option to advance the focus to the "next" input.
+   * @param args
+   */
+  @action
+  confirm(args: { value: InferInputGroupValue<TInputs> }) {
+    confirmShape(this.structure, args && args.value);
+  }
+
+  /**
    * Returns a flattened array of inputs. The order of inputs is not guaranteed.
    *
    * Use `structure` to get the input structure as specified in the constructor
@@ -199,6 +210,29 @@ function resetShape<TInputs extends InputGroupContent>(
   else {
     for (let key in inputs) {
       resetShape((inputs as any)[key], value && (value as any)[key]);
+    }
+  }
+}
+
+/**
+ * Recursively confirms a structure of input based on a corresponding structure
+ * of input values.
+ * @param inputs
+ * @param value
+ */
+function confirmShape<TInputs extends InputGroupContent>(
+  inputs: TInputs,
+  value?: InferInputGroupValue<TInputs>
+) {
+  if (inputs instanceof Input) inputs.confirm({ value });
+  else if (inputs instanceof InputGroup) confirmShape(inputs.structure, value);
+  else if (Array.isArray(inputs))
+    inputs.map((input, index) =>
+      confirmShape(input, value && (value as Array<any>)[index])
+    );
+  else {
+    for (let key in inputs) {
+      confirmShape((inputs as any)[key], value && (value as any)[key]);
     }
   }
 }
