@@ -12,7 +12,7 @@ import { StateDevOptions, currentFocus } from "./State";
 import createWeakProperty from "../utils/weakProp";
 
 export const privateInputForms = createWeakProperty(
-  (instance: Input<any, any>) => new Set<Form<any, any>>()
+  (instance: Input<any, any>) => new Set<Form<any, any, any>>()
 );
 
 /**
@@ -21,16 +21,21 @@ export const privateInputForms = createWeakProperty(
  */
 export default class Form<
   TInputs extends InputGroupContent,
-  TActionResult
+  TActionResult,
+  TActionProgress
 > extends InputGroup<TInputs> {
   constructor(
     inputs: MaybeConstant<() => TInputs>,
-    readonly options: FormOptions<TInputs, TActionResult>
+    readonly options: FormOptions<TInputs, TActionResult, TActionProgress>
   ) {
     super(inputs, options);
     this._task = new Task(
-      guardSubmit<TInputs, TActionResult>(options.action, this),
+      guardSubmit<TInputs, TActionResult, TActionProgress>(
+        options.action,
+        this
+      ),
       {
+        initialProgress: { phase: "validation" },
         name:
           options && options.name
             ? `(form "${options.name}" Task)`
@@ -38,7 +43,7 @@ export default class Form<
       }
     );
     createLookup(
-      this as Form<any, any>,
+      this as Form<any, any, TActionProgress>,
       () => this.flattedInputs,
       input => privateInputForms.get(input)
     );
@@ -112,7 +117,22 @@ export default class Form<
     return this._task;
   }
 
-  private _task: Task<null, SubmitResult<TActionResult> | FormValidationError>;
+  /**
+   * Returns the progress of the submit action. This is null if the submit task
+   * is still in validation phase.
+   */
+  get submitActionProgress() {
+    const progress = this._task.progress;
+    return progress && progress.phase === "action"
+      ? progress.actionProgress
+      : void 0;
+  }
+
+  private _task: Task<
+    null,
+    SubmitResult<TActionResult> | FormValidationError,
+    SubmitProgress<TActionProgress>
+  >;
 }
 
 /**
@@ -122,11 +142,23 @@ export default class Form<
  * @param submitAction
  * @param form
  */
-function guardSubmit<TInputs extends InputGroupContent, TActionResult>(
-  submitAction: TaskAction<InferInputGroupValue<TInputs>, TActionResult>,
-  form: Form<TInputs, TActionResult>
-): TaskAction<null, SubmitResult<TActionResult> | FormValidationError> {
-  return async (unusedArg, addCancelHandler) => {
+function guardSubmit<
+  TInputs extends InputGroupContent,
+  TActionResult,
+  TActionProgress
+>(
+  submitAction: TaskAction<
+    InferInputGroupValue<TInputs>,
+    TActionResult,
+    TActionProgress
+  >,
+  form: Form<TInputs, TActionResult, TActionProgress>
+): TaskAction<
+  null,
+  SubmitResult<TActionResult> | FormValidationError,
+  SubmitProgress<TActionProgress>
+> {
+  return async (unusedArg, addCancelHandler, reportProgress) => {
     const { unconfirmedInputs } = form;
     if (form.options.autoConfirm) {
       unconfirmedInputs.forEach(input => input.markAsConfirmed());
@@ -154,7 +186,19 @@ function guardSubmit<TInputs extends InputGroupContent, TActionResult>(
       privateInputForms.get(focusedInput).has(form)
     )
       focusedInput.blur();
-    const result = await submitAction(form.value, addCancelHandler);
+
+    const innerReportProgress = (actionProgress: TActionProgress) =>
+      void reportProgress({ phase: "action", actionProgress });
+
+    reportProgress({
+      phase: "action",
+      actionProgress: form.options.initialProgress
+    });
+    const result = await submitAction(
+      form.value,
+      addCancelHandler,
+      innerReportProgress
+    );
     return { outcome: "submit" as "submit", result };
   };
 }
@@ -163,7 +207,9 @@ function guardSubmit<TInputs extends InputGroupContent, TActionResult>(
  * Finds an input that has validation error requests that it be focused.
  * @param form
  */
-function findAndFocusErrors(form: Form<any, any>): null | FormValidationError {
+function findAndFocusErrors(
+  form: Form<any, any, any>
+): null | FormValidationError {
   const { inputErrors } = form;
   if (!inputErrors.length) return null;
   inputErrors[0].focus();
@@ -190,6 +236,14 @@ function getValidators(inputs: Input<any>[]): Validator<any, any, any>[] {
 }
 
 /**
+ * Describes a submit progress, which is divided into the validation phase and
+ * the action phase.
+ */
+export type SubmitProgress<TActionProgress> =
+  | { phase: "validation" }
+  | { phase: "action"; actionProgress?: TActionProgress };
+
+/**
  * Describes a submit result whose outcome was execution of the submit action.
  */
 export interface SubmitResult<TActionResult> {
@@ -209,13 +263,25 @@ export interface FormValidationError {
 /**
  * Describes the form's customization.
  */
-export interface FormOptions<TInputs extends InputGroupContent, TActionResult>
-  extends StateDevOptions {
+export interface FormOptions<
+  TInputs extends InputGroupContent,
+  TActionResult,
+  TActionProgress
+> extends StateDevOptions {
   /**
    * Specify the submit action. The outcome of this action will be saved in
    * the submit result state.
    */
-  action: TaskAction<InferInputGroupValue<TInputs>, TActionResult>;
+  action: TaskAction<
+    InferInputGroupValue<TInputs>,
+    TActionResult,
+    TActionProgress
+  >;
+
+  /**
+   * Specify the submit action's initial progress.
+   */
+  initialProgress?: TActionProgress;
 
   /**
    * If true, confirming an input within this form will cause focusing in the
@@ -243,11 +309,11 @@ export interface FormOptions<TInputs extends InputGroupContent, TActionResult>
  * is useful in normalizing a form and a task for presentations that interacts
  * with task states like buttons.
  */
-export type AsTask<T extends FormOrTask> = T extends Form<any, any>
+export type AsTask<T extends FormOrTask> = T extends Form<any, any, any>
   ? T["submitTask"]
   : T;
 
 /**
  * Describes a form or a task.
  */
-export type FormOrTask = Form<any, any> | Task<any, any>;
+export type FormOrTask = Form<any, any, any> | Task<any, any, any>;
