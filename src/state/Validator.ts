@@ -95,6 +95,13 @@ export default class Validator<
   }
 
   /**
+   * Returns the promise that resolves when the validation task is complete.
+   */
+  get promise() {
+    return this._task.promise;
+  }
+
+  /**
    * Gets validator's input parsing result. Use the "isError" key to discriminate
    * between a successful parse (which will give you the domain value) and a
    * failed parse (which will give you the parse error).
