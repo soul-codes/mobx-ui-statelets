@@ -1,10 +1,11 @@
-import React from "react";
+import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Input, Validator, Form, Task, ValidatedInput } from "../src";
 
 import TextInput from "./dev/TextInput";
 import ValidationLabel from "./dev/ValidationLabel";
 import Button from "./dev/Button";
+import { observer } from "mobx-react";
 
 const required = (value: string) => !value && { error: "required" };
 const trim = (value: string) => value.trim();
@@ -61,8 +62,17 @@ const validateAddress = new Validator(
 );
 
 const form = new Form(validateAddress, {
-  action: async value => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+  initialProgress: 0,
+  action: async (value, onCancel, reportProgress) => {
+    let x = 0;
+    await new Promise(resolve => {
+      const interval = setInterval(() => {
+        x++;
+        reportProgress(x);
+        if (x === 50) resolve();
+      }, 100);
+      onCancel(() => clearInterval(interval));
+    });
     alert(JSON.stringify(value, null, 2));
     return 2;
   }
@@ -79,31 +89,38 @@ const reset = new Task(() =>
   })
 );
 
-ReactDOM.render(
-  <div>
-    <div>
-      <TextInput input={street} />
-      <ValidationLabel validator={validateStreet} />
-      <ValidationLabel validator={validateAddress} />
-    </div>
-    <div>
-      <TextInput input={houseNo} />
-      <ValidationLabel validator={validateHouseNo} />
-    </div>
-    <div>
-      <TextInput input={postCode} />
-      <ValidationLabel validator={validatePostCode} />
-    </div>
-    <div>
-      <TextInput input={city} />
-      <ValidationLabel validator={validateCity} />
-    </div>
-    <div>
-      <Button Task={form} />
-    </div>
-    <div>
-      <Button Task={reset} />
-    </div>
-  </div>,
-  document.getElementById("react-root")
-);
+@observer
+class Demo extends Component {
+  render() {
+    return (
+      <div>
+        <div>
+          <TextInput input={street} />
+          <ValidationLabel validator={validateStreet} />
+          <ValidationLabel validator={validateAddress} />
+        </div>
+        <div>
+          <TextInput input={houseNo} />
+          <ValidationLabel validator={validateHouseNo} />
+        </div>
+        <div>
+          <TextInput input={postCode} />
+          <ValidationLabel validator={validatePostCode} />
+        </div>
+        <div>
+          <TextInput input={city} />
+          <ValidationLabel validator={validateCity} />
+        </div>
+        <div>
+          <Button Task={form} />
+          {form.submitActionProgress}
+        </div>
+        <div>
+          <Button Task={reset} />
+        </div>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<Demo />, document.getElementById("react-root"));
