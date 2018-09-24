@@ -588,7 +588,8 @@ export interface ValidatorOptions<
    */
   domain?: TaskAction<
     TDomainValue,
-    Falsy | ValidationFailure<TDomainError, TDomainValue>
+    Falsy | ValidationFailure<TDomainError, TDomainValue>,
+    void
   >;
 
   /**

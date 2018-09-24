@@ -374,7 +374,7 @@ export default class Input<
   /**
    * Returns all forms associated with this input.
    */
-  get forms(): Form<any, any>[] {
+  get forms(): Form<any, any, any>[] {
     return [...privateInputForms.get(this)];
   }
 
