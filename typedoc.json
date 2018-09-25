@@ -1,0 +1,15 @@
+{
+  "mode": "file",
+  "out": "docs",
+  "theme": "minimal",
+  "ignoreCompilerErrors": false,
+  "excludePrivate": true,
+  "excludeNotExported": true,
+  "target": "ES5",
+  "moduleResolution": "node",
+  "preserveConstEnums": true,
+  "stripInternal": true,
+  "suppressExcessPropertyErrors": false,
+  "suppressImplicitAnyIndexErrors": false,
+  "module": "commonjs"
+}
