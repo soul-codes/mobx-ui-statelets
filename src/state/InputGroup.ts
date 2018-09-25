@@ -5,6 +5,9 @@ import { computed, action } from "mobx";
 import createLookup from "../utils/lookup";
 import createWeakProperty from "../utils/weakProp";
 
+/**
+ * @ignore
+ */
 export const privateInputGroup = createWeakProperty(
   (instance: Input) => new Set<InputGroup<any>>()
 );
@@ -45,15 +48,15 @@ export default class InputGroup<
    * was passed in the constructor, it is evaluated here. Subgroups in the
    * structures are collapsed into their structures.
    *
-   * Use `structure` if you need the subgroups preserved.
-   * Use `flattenedInputs` if you don't care about the structure and just want
+   * Use [[structure]] if you need the subgroups preserved.
+   * Use [[flattenedInputs]] if you don't care about the structure and just want
    * the inputs in an array.
    *
-   * @see structure
-   * @see flattenedInputs
+   * @see [[structure]]
+   * @see [[flattenedInputs]]
    */
   @computed
-  get inputs(): InputGroupShape<TInputs> {
+  get inputs(): InferInputGroupShape<TInputs> {
     return unwrapGroups(this.structure);
   }
 
@@ -63,7 +66,7 @@ export default class InputGroup<
    * with `{ a : someInput, b: someOuterInput }`, the value here will also have the
    * keys `a` and `b` whose value are the respective input values.
    *
-   * @see inputValue
+   * @see [[inputValue]]
    */
   @computed
   get value(): InferInputGroupValue<TInputs> {
@@ -74,7 +77,7 @@ export default class InputGroup<
    * Same as with `value` but each value is the current input value, not the
    * confirmed input value.
    *
-   * @see value
+   * @see [[value]]
    */
   @computed
   get inputValue(): InferInputGroupValue<TInputs> {
@@ -85,7 +88,7 @@ export default class InputGroup<
    * Same as with `value` but each value is the current input value, normalized
    * by each input's normalizer.
    *
-   * @see value
+   * @see [[value]]
    */
   @computed
   get normalizedInputValue(): InferInputGroupValue<TInputs> {
@@ -122,11 +125,11 @@ export default class InputGroup<
   /**
    * Returns a flattened array of inputs. The order of inputs is not guaranteed.
    *
-   * Use `structure` to get the input structure as specified in the constructor
-   * including the subgroups, or `inputs` without the subgroups.
+   * Use [[structure]] to get the input structure as specified in the constructor
+   * including the subgroups, or [[inputs]] without the subgroups.
    *
-   * @see structure
-   * @see inputs
+   * @see [[structure]]
+   * @see [[inputs]]
    */
   @computed
   get flattedInputs() {
@@ -137,11 +140,11 @@ export default class InputGroup<
    * Returns the structure of the input group. If the input structure contains
    * subgroups, the subgroups are preserved here.
    *
-   * Use `inputs` to get the input structure without subgroups.
+   * Use [[inputs]] to get the input structure without subgroups.
    *
-   * Use `flattenedInputs` to get an array of inputs whose order does not matter.
-   * @see flattedInputs
-   * @see inputs
+   * Use [[flattenedInputs]] to get an array of inputs whose order does not matter.
+   * @see [[flattedInputs]]
+   * @see [[inputs]]
    */
   @computed
   get structure() {
@@ -150,7 +153,7 @@ export default class InputGroup<
   }
 
   /**
-   * Returns an array of the input group's structural items. Unlike `flattenedInputs`,
+   * Returns an array of the input group's structural items. Unlike [[flattenedInputs]],
    * the subgroups are not broken down into inputs here.
    */
   @computed
@@ -286,7 +289,7 @@ function flattenStructure<TInputs extends InputGroupContent>(
  */
 function unwrapGroups<TInputs extends InputGroupContent>(
   inputs: TInputs
-): InputGroupShape<TInputs> {
+): InferInputGroupShape<TInputs> {
   if (inputs instanceof InputGroup) return unwrapGroups(inputs.inputs);
   else if (inputs instanceof Input) return inputs as any;
   else if (Array.isArray(inputs)) return inputs.map(unwrapGroups) as any;
@@ -301,8 +304,8 @@ function unwrapGroups<TInputs extends InputGroupContent>(
 
 /**
  * Describes the valid structure for an input group content, which is:
- * - an input
- * - an input group
+ * - an [[Input]]
+ * - an [[InputGroup]]
  * - an array of inputs or input groups
  * - an object of inputs or input groups
  * - a nested structure of values above.
@@ -310,29 +313,32 @@ function unwrapGroups<TInputs extends InputGroupContent>(
 export type InputGroupContent =
   | Input<any>
   | InputGroup<any>
-  | $InputGroupContentObject
-  | $InputGroupContentArray;
+  | InputGroupContentObject
+  | InputGroupContentArray;
 
-interface $InputGroupContentObject {
+interface InputGroupContentObject {
   [key: string]: InputGroupContent;
 }
-interface $InputGroupContentArray extends Array<InputGroupContent> {}
+interface InputGroupContentArray extends Array<InputGroupContent> {}
 
 /**
  * Infer the shape of inputs (with subgroups collapsed) from an input group
  * content type.
+ * @ignore
  */
-export type InputGroupShape<T extends InputGroupContent> = T extends Input<any>
+export type InferInputGroupShape<T extends InputGroupContent> = T extends Input<
+  any
+>
   ? T
   : T extends InputGroup<any>
     ? T["inputs"]
-    : T extends $InputGroupContentObject
-      ? { [key in keyof T]: InputGroupShape<T[key]> }
-      : T extends $InputGroupContentArray
+    : T extends InputGroupContentObject
+      ? { [key in keyof T]: InferInputGroupShape<T[key]> }
+      : T extends InputGroupContentArray
         ? $InputShapeOfGroupContentArray<T>
         : never;
-interface $InputShapeOfGroupContentArray<T extends $InputGroupContentArray>
-  extends Array<InputGroupShape<ArrayItem<T>>> {}
+interface $InputShapeOfGroupContentArray<T extends InputGroupContentArray>
+  extends Array<InferInputGroupShape<ArrayItem<T>>> {}
 
 type InputShape = Input<any> | $InputShapeObject | $InputShapeArray;
 interface $InputShapeObject {
@@ -342,10 +348,11 @@ interface $InputShapeArray extends Array<InputShape> {}
 
 /**
  * Infers the structure of input values from a structure of input group content.
+ * @ignore
  */
 export type InferInputGroupValue<
   T extends InputGroupContent
-> = ValueOfInputShape<InputGroupShape<T>>;
+> = ValueOfInputShape<InferInputGroupShape<T>>;
 
 type ValueOfInputShape<T extends InputShape> = T extends Input<any>
   ? InferInputValue<T>

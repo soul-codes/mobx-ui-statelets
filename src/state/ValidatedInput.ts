@@ -4,10 +4,10 @@ import { computed } from "mobx";
 
 /**
  * A shorthand for an input with a single validator validating the input value.
- * @template TInputValue the input value
- * @template TDomainValue the input validator's domain value.
- * @template TParseError the input's parse error.
- * @template TDomainError the input's domain error.
+ * @typeparam TInputValue the input value
+ * @typeparam TDomainValue the input validator's domain value.
+ * @typeparam TParseError the input's parse error.
+ * @typeparam TDomainError the input's domain error.
  */
 export default class ValidatedInput<
   TInputValue extends BaseInputValue,
@@ -75,8 +75,9 @@ export default class ValidatedInput<
  * Describes a validated input options, which is a combination of the input
  * options and the validator options.
  *
- * @see ValidatorOptions
- * @see InputOptions
+ * @see [[ValidatorOptions]]
+ * @see [[InputOptions]]
+ * @see {{https://google.com}}
  */
 export type ValidatedInputOptions<
   TInputValue extends BaseInputValue,

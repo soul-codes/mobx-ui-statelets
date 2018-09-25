@@ -11,6 +11,9 @@ import withHover from "../partials/withHover";
 import Input from "./Input";
 import createWeakProperty from "../utils/weakProp";
 
+/**
+ * @ignore
+ */
 export const privateInputValidators = createWeakProperty(
   (instance: Input<any, any>) => new Set<Validator<any, any, any, any>>()
 );
@@ -20,17 +23,17 @@ export const privateInputValidators = createWeakProperty(
  * the validation has ever happened, what the most recent validation result was,
  * and whether asynchronous validation is happening on right now.
  *
- * @template TInputs the type of the "input shape". This can be an input type,
+ * @typeparam TInputs the type of the "input shape". This can be an input type,
  * an object of inputs, an array of inputs, or a nested structure thereof, or
  * a function returning such a structure.
  *
- * @template TDomainValue the type of the domain value that is extracted from the
+ * @typeparam TDomainValue the type of the domain value that is extracted from the
  * input value for domain validation.
  *
- * @template TParseError the type that describes the error when trying to parse
+ * @typeparam TParseError the type that describes the error when trying to parse
  * the input value into a domain value.
  *
- * @template TDomainError the type that describes the error resulting from
+ * @typeparam TDomainError the type that describes the error resulting from
  * validating the domain value.
  */
 export default class Validator<
@@ -327,7 +330,7 @@ export default class Validator<
   /**
    * Returns true if any of the inputs that the validator depends on has not
    * been confirmed by the user.
-   * @see Input~isConfirmed
+   * @see [[Input.isConfirmed]]
    */
   get hasUnconfirmedInput() {
     return this.flattedInputs.some(input => !input.isConfirmed);
@@ -337,7 +340,7 @@ export default class Validator<
    * Returns true if any of the inputs that the validator depends on is in a
    * "changed" state. Shorthand for checking that at least one input's `hasChanged`
    * is true.
-   * @see Input~hasChanged
+   * @see [[Input.hasChanged]]
    */
   get hasChangedInput() {
     return this.flattedInputs.some(input => input.hasChanged);
@@ -429,9 +432,9 @@ export interface ValidationFailure<TError, TCorrection> {
 
 /**
  * Describes the result of parsing an input value.
- * @template TInputValue the input value
- * @template TParseError the parse error
- * @template TDomainValue the resulting domain value the from parsing
+ * @typeparam TInputValue the input value
+ * @typeparam TParseError the parse error
+ * @typeparam TDomainValue the resulting domain value the from parsing
  */
 export type ParseResult<TInputValue, TParseError, TDomainValue> =
   | ParseFailure<TInputValue, TParseError>
@@ -535,12 +538,12 @@ export type ValidationError<TValue, TDomainValue, TParseError, TDomainError> =
 
 /**
  * Describes the settings of a validator.
- * @template TInputs the type of the validator's input structure.
- * @template TDomainValue the type of the validator's domain interpretation of the
+ * @typeparam TInputs the type of the validator's input structure.
+ * @typeparam TDomainValue the type of the validator's domain interpretation of the
  * inputs.
- * @template TParseError the type of the validator's description of input format
+ * @typeparam TParseError the type of the validator's description of input format
  * error.
- * @template TDomainError the type of the validator's description of the domain
+ * @typeparam TDomainError the type of the validator's description of the domain
  * value error.
  */
 export interface ValidatorOptions<
@@ -601,8 +604,8 @@ export interface ValidatorOptions<
    * @param self reflects back the validator instance when specifying an arrow
    * function as predicate.
    *
-   * @see Input~confirm
-   * @see Form~submit
+   * @see [[Input.confirm]]
+   * @see [[Form.submit]]
    */
   enabled?(
     this: Validator<TInputs, TDomainValue, TParseError, TDomainError>,

@@ -7,6 +7,7 @@ import { observable, IObservableValue } from "mobx";
  * uses a WeakMap to accomplish the weak property.
  *
  * @param initializer Initializes the property. Is called lazily on the first get.
+ * @ignore
  */
 export default function createWeakProperty<TProperty, TInstance extends Object>(
   initializer: (instance: TInstance) => TProperty

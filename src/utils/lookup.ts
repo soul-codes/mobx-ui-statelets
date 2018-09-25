@@ -1,5 +1,9 @@
 import { reaction } from "mobx";
 
+/**
+ * @ignore
+ * @ignore
+ */
 export default function createLookup<TDest, TSrc>(
   src: TSrc,
   query: () => TDest[],

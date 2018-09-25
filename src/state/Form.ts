@@ -11,19 +11,31 @@ import Validator from "./Validator";
 import { StateDevOptions, currentFocus } from "./State";
 import createWeakProperty from "../utils/weakProp";
 
+/**
+ * @ignore
+ */
 export const privateInputForms = createWeakProperty(
   (instance: Input<any, any>) => new Set<Form<any, any, any>>()
 );
 
 /**
- * Represents a form state. A form is essentially an input group that validates
+ * Represents a form state. A form is essentially an [[InputGroup]] that validates
  * over its member inputs before performing a form-specific action.
+ *
+ * @see [[InputGroup]] Input Group
+ * @typeparam TInputs content of an input group. This is typically inferred
+ *            at instantiation time from the [[constructor]].
  */
 export default class Form<
   TInputs extends InputGroupContent,
   TActionResult,
   TActionProgress
 > extends InputGroup<TInputs> {
+  /**
+   *
+   * @param inputs
+   * @param options Form-specific options
+   */
   constructor(
     inputs: MaybeConstant<() => TInputs>,
     readonly options: FormOptions<TInputs, TActionResult, TActionProgress>
@@ -104,7 +116,7 @@ export default class Form<
   }
 
   /**
-   * Submits the form.
+   * Submits the form.export type
    */
   submit() {
     return this._task.invoke(null);

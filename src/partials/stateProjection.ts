@@ -95,7 +95,7 @@ function subscribe<TState extends State>(
   return result as StateSubscription<TState>;
 }
 
-interface StateSubscription<TState extends State> {
+export interface StateSubscription<TState extends State> {
   state: TState;
   subscription: StateProjections;
   [$subscription]: true;

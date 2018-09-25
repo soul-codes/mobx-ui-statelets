@@ -2,6 +2,9 @@ import { action, observable } from "mobx";
 import { Always, Falsy } from "../utils/types";
 import createWeakProperty from "../utils/weakProp";
 
+/**
+ * @ignore
+ */
 export const currentFocus = observable.box<State | null>(null, {
   deep: false
 });
@@ -36,7 +39,7 @@ export default class State<
    *
    * @param projection The presentational entity that the state should project
    * to.
-   * @api The exact projections that the presentational entity should support.
+   * @param api The exact projections that the presentational entity should support.
    */
   addProjection(projection: any, api: TProjectionAPI) {
     privateStateProjections.get(this).set(projection, api);
@@ -61,13 +64,13 @@ export default class State<
    *
    * @param key The projection key.
    */
-  project<TKey extends keyof (TProjectionAPI)>(
+  project<TKey extends keyof TProjectionAPI>(
     key: TKey
-  ): Always<(TProjectionAPI)[TKey]>[] {
-    const result: Always<(TProjectionAPI)[TKey]>[] = [];
+  ): Always<TProjectionAPI[TKey]>[] {
+    const result: Always<TProjectionAPI[TKey]>[] = [];
     for (const [, api] of privateStateProjections.get(this).entries()) {
       typeof api[key] !== "undefined" &&
-        result.push(api[key] as Always<(TProjectionAPI)[TKey]>);
+        result.push(api[key] as Always<TProjectionAPI[TKey]>);
     }
     return result;
   }

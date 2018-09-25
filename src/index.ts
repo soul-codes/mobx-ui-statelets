@@ -13,7 +13,7 @@ export {
 export {
   default as InputGroup,
   InputGroupContent,
-  InputGroupShape
+  InferInputGroupShape
 } from "./state/InputGroup";
 export { default as Validator, ValidationError } from "./state/Validator";
 export {
@@ -30,4 +30,4 @@ export {
 
 export { default as withHover } from "./partials/withHover";
 
-export { stateProjection } from "./partials/stateProjection";
+export { stateProjection, StateSubscription } from "./partials/stateProjection";

@@ -42,9 +42,9 @@ class InvokeInstance {
  *
  * The task itself can accept one arbitrarily-typed argument.
  *
- * @template TArg the task's argument type
- * @template TResult the task's result type
- * @template TProgress the task's progress readout type
+ * @typeparam TArg the task's argument type
+ * @typeparam TResult the task's result type
+ * @typeparam TProgress the task's progress readout type
  */
 export default class Task<TArg, TResult, TProgress = void> extends State {
   /**
@@ -173,8 +173,9 @@ export default class Task<TArg, TResult, TProgress = void> extends State {
 
 /**
  * Describes a function where you can register a cancel handler.
+ * @param handler The handler function to be called when a task is canceled.
  */
-export type AddCancelHandler = AddDisposeHandler;
+export type AddCancelHandler = (handler: () => void) => void;
 
 /**
  * Describes a task function.
@@ -190,6 +191,7 @@ export type TaskAction<TArg, TResult, TProgress> = (
 
 /**
  * Infers the argument type from a task state type.
+ * @ignore
  */
 export type InferTaskArg<T extends Task<any, any, any>> = T extends Task<
   infer TArg,
@@ -199,6 +201,14 @@ export type InferTaskArg<T extends Task<any, any, any>> = T extends Task<
   ? TArg
   : never;
 
+/**
+ * Specifies customization of a task state.
+ */
 export interface TaskOptions<TProgress> extends StateDevOptions {
+  /**
+   * Specifies the value of the initial progress of the task when it starts. If
+   * using TypeScript, specfiying this value has the side effect of TypeScript
+   * inferring the progress value type from this value.
+   */
   initialProgress?: TProgress;
 }

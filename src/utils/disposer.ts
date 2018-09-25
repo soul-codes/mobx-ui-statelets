@@ -1,3 +1,6 @@
+/**
+ * @ignore
+ */
 export default class Disposer {
   private _handlers: DisposeHandler[] = [];
   addDisposeHandler: AddDisposeHandler;
@@ -9,10 +12,16 @@ export default class Disposer {
   }
 }
 
+/**
+ * @ignore
+ */
 export interface DisposeHandler {
   (): any;
 }
 
+/**
+ * @ignore
+ */
 export interface AddDisposeHandler {
   (handler: DisposeHandler): void;
 }

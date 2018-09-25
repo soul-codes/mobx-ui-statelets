@@ -15,8 +15,8 @@ let validationCandidates: Input<any>[] = [];
  * Represents an input UI state. It acts as a domain store but also provides
  * a separate input value state and state for querying assistive input choices.
  *
- * @template TValue the input's value type.
- * @template TChoiceMetadata optional type for the metadata of input choices.
+ * @typeparam TValue the input's value type.
+ * @typeparam TChoiceMetadata optional type for the metadata of input choices.
  */
 export default class Input<
   TValue extends BaseInputValue = string,
@@ -64,8 +64,8 @@ export default class Input<
    * Normalizes an input value using the normalizer provided in the input options.
    * @param value
    *
-   * @see InputOptions.normalizer
-   * @see normalizedInputValue
+   * @see [[InputOptions.normalizer]]
+   * @see [[normalizedInputValue]]
    */
   normalizeValue(value: TValue) {
     const normalizer = this.options && this.options.normalizer;
@@ -97,9 +97,9 @@ export default class Input<
    *
    * @param args Customizes the nature of the confirm interaction.
    *
-   * @see InputOptions.normalizer
-   * @see InputOptions.revalidate
-   * @see InputOptions.confirmCascade
+   * @see [[InputOptions.normalizer]]
+   * @see [[InputOptions.revalidate]]
+   * @see [[InputOptions.confirmCascade]]
    */
   @action
   async confirm(args?: {
@@ -114,8 +114,8 @@ export default class Input<
      * either by focusing the next input in the form or by attempting to submit
      * the form. Note that for this to work, the input must be associated with
      * a form and the form must configure autoNext and/or autoSubmit.
-     * @see FormOptions.autoNext
-     * @see FormOptions.autoSubmit
+     * @see [[FormOptions.autoNext]]
+     * @see [[FormOptions.autoSubmit]]
      */
     next?: boolean;
   }) {
@@ -249,7 +249,7 @@ export default class Input<
    * enabled validators have completed. You can exploit this behavior to write
    * validators that are only enabled based on validity of other validators.
    *
-   * @see ValidatorOptions.enabled
+   * @see [[ValidatorOptions.enabled]]
    */
   @action
   async validate(filter: "input" | "confirm" | null = null) {
@@ -355,7 +355,7 @@ export default class Input<
 
   /**
    * Returns true if all validators on this input are conclusively valid.
-   * @see Validator~isConclusivelyValid
+   * @see [[Validator.isConclusivelyValid]]
    */
   get isValidated() {
     for (let validator of privateInputValidators.get(this)) {
@@ -439,8 +439,8 @@ function defaultShouldValidate<TValue>(value: TValue, oldValue: TValue) {
 
 /**
  * Describes options customizing an input UI state.
- * @template TValue the input's value type
- * @template TChoiceMetadata the input's choice metadata type.
+ * @typeparam TValue the input's value type
+ * @typeparam TChoiceMetadata the input's choice metadata type.
  */
 export interface InputOptions<
   TValue extends BaseInputValue,
@@ -507,11 +507,11 @@ export interface InputOptions<
    * @param value The input value to confirm.
    * @param self Handy reference to the input itself.
    */
-  confirmCascade?: (
+  confirmCascade?(
     this: Input<TValue>,
     value: TValue,
     self: Input<TValue>
-  ) => void;
+  ): void;
 }
 
 /**
@@ -521,6 +521,7 @@ export type BaseInputValue = string | number | boolean;
 
 /**
  * Infers the input value type from the input type.
+ * @ignore
  */
 export type InferInputValue<T extends Input<any>> = T extends Input<infer V>
   ? V
@@ -528,8 +529,8 @@ export type InferInputValue<T extends Input<any>> = T extends Input<infer V>
 
 /**
  * Describes an input choice
- * @template TValue the input's value type
- * @template TChoiceMetadata the input's choice metadata type.
+ * @typeparam TValue the input's value type
+ * @typeparam TChoiceMetadata the input's choice metadata type.
  */
 export interface InputChoice<TValue extends BaseInputValue, TChoiceMetadata> {
   /**
@@ -566,8 +567,8 @@ export interface InputChoiceQuery<TValue extends BaseInputValue> {
 
 /**
  * Describes input's choice query result.
- * @template TValue the input's value type
- * @template TChoiceMetadata the input's choice metadata type.
+ * @typeparam TValue the input's value type
+ * @typeparam TChoiceMetadata the input's choice metadata type.
  */
 export interface InputChoiceQueryResult<
   TValue extends BaseInputValue,
