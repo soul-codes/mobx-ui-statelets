@@ -10,16 +10,16 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Headless state management with MobX" />
 <meta property="og:description" content="Headless state management with MobX" />
-<link rel="canonical" href="/" />
-<meta property="og:url" content="/" />
+<link rel="canonical" href="/mobx-ui-statelets/" />
+<meta property="og:url" content="/mobx-ui-statelets/" />
 <meta property="og:site_name" content="mobx-ui-statelets" />
 <script type="application/ld+json">
-{"headline":"mobx-ui-statelets","@type":"WebSite","url":"/","name":"mobx-ui-statelets","description":"Headless state management with MobX","@context":"http://schema.org"}</script>
+{"description":"Headless state management with MobX","@type":"WebSite","url":"/mobx-ui-statelets/","name":"mobx-ui-statelets","headline":"mobx-ui-statelets","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#157878">
-    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/mobx-ui-statelets/assets/css/style.css?v=">
   </head>
   <body>
     <section class="page-header">
@@ -36,18 +36,21 @@
 needed UI states. It currently has a large emphasis on form state entities, but
 the plan is to extend it to other common state entities too.</p>
 
-<p><strong>:warning: This package is still in 0.x.y stage, so do expect incomplete documentation and API changes.</strong></p>
+<p><strong><img class="emoji" title=":warning:" alt=":warning:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png" height="20" width="20"> This package is still in 0.x.y stage, so do expect incomplete documentation and API changes.</strong></p>
 
 <h2 id="whats-on-offer">What’s on offer?</h2>
 
 <p>Currently the package offers the following basic state classes:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">Task</code> stores progress state of any asynchronous task (think placing orders,
+  <li>
+<code class="highlighter-rouge">Task</code> stores progress state of any asynchronous task (think placing orders,
 logging in, fetching data).</li>
-  <li><code class="highlighter-rouge">Input</code> stores form input values and a simple mechanics for querying choices,
+  <li>
+<code class="highlighter-rouge">Input</code> stores form input values and a simple mechanics for querying choices,
 (think text inputs, dropdowns with autocompletes).</li>
-  <li><code class="highlighter-rouge">Validator</code> stores asynchronous validation state that can be linked to one or
+  <li>
+<code class="highlighter-rouge">Validator</code> stores asynchronous validation state that can be linked to one or
 several inputs.</li>
 </ul>
 
