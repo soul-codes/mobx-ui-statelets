@@ -1036,6 +1036,159 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<div class="tsd-panel tsd-typography">
+			<h1 id="mobx-ui-statelets-state-classes-for-headless-state-management-">mobx-ui-statelets: state classes for headless state management.</h1>
+			<p><code>mobx-ui-statelets</code> is a set of <a href="">MobX</a>-decorated classes for managing commonly
+				needed UI states. It currently has a large emphasis on form state entities, but
+			the plan is to extend it to other common state entities too.</p>
+			<p><strong>:warning: This package is still in 0.x.y stage, so do expect incomplete documentation and API changes.</strong></p>
+			<h2 id="what-s-on-offer-">What&#39;s on offer?</h2>
+			<p>Currently the package offers the following basic state classes:</p>
+			<ul>
+				<li><code>Task</code> stores progress state of any asynchronous task (think placing orders,
+				logging in, fetching data).</li>
+				<li><code>Input</code> stores form input values and a simple mechanics for querying choices,
+				(think text inputs, dropdowns with autocompletes).</li>
+				<li><code>Validator</code> stores asynchronous validation state that can be linked to one or
+				several inputs.</li>
+			</ul>
+			<h2 id="how-do-i-use-it-">How do I use it?</h2>
+			<h3 id="1-install-the-package-and-its-peer-dependencies">1. Install the package and its peer dependencies</h3>
+			<pre><code>yarn <span class="hljs-keyword">add</span><span class="bash"> -D mobx-ui-statelets
+</span>yarn <span class="hljs-keyword">add</span><span class="bash"> -D react react-dom mobx mobx-react</span></code></pre><h3 id="2-create-your-state-class">2. Create your state class</h3>
+			<pre><code class="language-ts"><span class="hljs-comment">// State.tsx</span>
+<span class="hljs-keyword">import</span> { Input } <span class="hljs-keyword">from</span> <span class="hljs-string">"mobx-ui-statelets"</span>;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> MyGreeterState {
+  nameInput = <span class="hljs-keyword">new</span> Input(<span class="hljs-string">""</span> <span class="hljs-keyword">as</span> <span class="hljs-built_in">string</span>);
+}</code></pre>
+			<h3 id="3-create-the-presentation-layer">3. Create the presentation layer</h3>
+			<pre><code class="language-tsx">// Component.tsx
+import React, { Component } from &quot;react&quot;;
+import { observer } from &quot;mobx-react&quot;;
+import { MyGreeterState } from &quot;./State&quot;;
+
+@observer
+export class MyGreeter extends Component&lt;{
+  state: MyGreeterState;
+}&gt; {
+  render() {
+    const { state } = this.props;
+    return (
+      &lt;input
+        type=&quot;text&quot;
+        value={state.nameInput.inputValue}
+        onChange={ev =&gt; state.nameInput.input({ value: ev.target.value })}
+        onBlur={ev =&gt; state.nameInput.confirm({ value: ev.target.value })}
+      /&gt;
+    );
+  }
+}</code></pre>
+			<h3 id="4-link-it-all-up-">4. Link it all up!</h3>
+			<pre><code class="language-tsx">import React from &quot;react&quot;;
+import { render } from &quot;react-dom&quot;;
+import { MyGreeterState } from &quot;./State&quot;;
+import { MyGreeter } from &quot;./Component&quot;;
+
+render(
+  &lt;MyGreeter state={new MyGreeterState()} /&gt;,
+  document.getElementById(&quot;your-react-root&quot;)
+);</code></pre>
+			<h3 id="5-continue-the-journey-on-our-tutorial-pages-todo-link-">5. Continue the journey on our <a href="">tutorial pages</a> <code>@todo link</code>.</h3>
+			<h2 id="what-headless-state-">What headless state?</h2>
+			<p>The idea here is to manage most of the application state and microstate --
+			both domain and UI -- without mounting React components.</p>
+			<p>If you create a React application without any state management like MobX or
+				Redux, you could tie your UI state to React components by using the component&#39;s
+				own <code>state</code>. However, this requires that the state&#39;s consumption and persistence
+				is the same with the component that hosts it. If state information is
+				shared between components or needs to persist beyond the component
+				lifecycle, React recommends <a href="https://reactjs.org/docs/lifting-state-up.html">lifting the state up</a>
+			to restore that parity.</p>
+			<p>The premise of headless state management is that you lift virtually all state
+				information -- except those you are absolutely certain to never leave the component --
+				out of the React component hierarchy altogether. You would then reason about the
+			application mostly through this isolated state hierarchy.</p>
+			<h2 id="why-headless-state-">Why headless state?</h2>
+			<h3 id="code-resilience">Code resilience</h3>
+			<p>While the state lifting pattern works, it exposes your codebase to a pretty hefty
+				internal API change each time your state consumption landscape changes. This makes
+				it difficult for your codebase to embrace requirement changes, which are
+			nowadays the expected nature of continuous delivery.</p>
+			<p>A headless state hierarchy, on the other hand, is uncoupled from the React component.
+				So any change happening on the presentational side does not affect the state hierarchy,
+				and changes in the state hierarchy consumption changes at best the passing of a
+			single state object down the React component hierarchy.</p>
+			<h3 id="logical-clarity">Logical clarity</h3>
+			<p>It also means that in order to reason about -- and indeed test -- the UI state,
+				you&#39;ll need to mount React components, dig through the component hierarchy, create
+				mocks, stubs, spies of components or props you are interested in and somehow
+				<em>infer</em> your application state from such assertions. This is demonstrated in the
+			Jest/enzyme pseudocode below.</p>
+			<pre><code class="language-tsx">test(&quot;submitting increment a counter after a disabled state&quot;, async () =&gt; {
+  const fixture = mount(&lt;MyFeature /&gt;);
+  expect(fixture.find(Counter).prop(&quot;children&quot;)).toBe(0);
+  fixture.find(SubmitButton).click();
+
+  expect(fixture.find(SubmitButton).prop(&quot;disabled&quot;)).toBe(true);
+  await waitUntil(() =&gt; fixture.find(SubmitButton.prop(&quot;disabled&quot;) === false));
+
+  expect(fixture.find(Counter).prop(&quot;children&quot;)).toBe(1);
+});</code></pre>
+			<p>An application with headless state can be tested with more clarity, precision and
+				expressivity, while suffering less technical overhead. You simply instantiate the
+				state class of choice and invoke the actions that are usually delegated to the
+				human users via the React components. All assertions can be done separately from
+			the React component hierarchy.</p>
+			<pre><code class="language-tsx">test(&quot;submitting increments a counter after the pending state&quot;, async () =&gt; {
+  const state = new MyFeatureState();
+  expect(state.counter).toBe(0);
+
+  state.submit();
+  expect(state.myTask.isPending).toBe(true);
+
+  await state.myTask.promise;
+  expect(state.myTask.isPending).toBe(false);
+  expect(state.counter).toBe(1);
+});</code></pre>
+			<p>Maintaining a headless state hierarchy not only makes state test code to the point,
+				it also makes the React components almost always dumb. The &quot;smartest&quot; of React
+				components themselves are the connectors between the headless state and the
+				truly dumb stateless component. Such connections can now be tested in a unit
+			manner, isolated from how the state actually transitions.</p>
+			<pre><code class="language-tsx">test(&quot;Button is in disabled state if task is in pending state&quot;, () =&gt; {
+  const state = new MyFeatureState();
+  const fixture = mount(&lt;MyFeature state={state} /&gt;);
+  expect(fixture.find(SubmitButton).prop(&quot;disabled&quot;)).toBe(false);
+
+  state.submit();
+  expect(fixture.find(SubmitButton).prop(&quot;disabled&quot;)).toBe(true);
+});
+
+test(&quot;Counter reflects the state counter value&quot;, async () =&gt; {
+  const state = new MyFeatureState();
+  const fixture = mount(&lt;MyFeature state={state} /&gt;);
+  expect(fixture.find(Counter).prop(&quot;children&quot;)).toBe(0);
+
+  await state.submit();
+  expect(fixture.find(Counter).prop(&quot;children&quot;)).toBe(1);
+});</code></pre>
+			<h2 id="i-could-create-headless-state-myself">I could create headless state myself</h2>
+			<p>Of course you can!</p>
+			<p>If you do, one important component of maintaining headless state to bear in mind
+				is to make sure that any final source of truth for state that usually lives in
+				the DOM (like hover, focus, input and selection state) needs to be delegated
+			(or at least kept in sync) in our headless state.</p>
+			<p>In fact, React&#39;s
+				<a href="https://reactjs.org/docs/forms.html#controlled-components">controlled component</a>
+				pattern does exactly this with the input element state; the only difference is that
+			the delegation is between the DOM element an a React component.</p>
+			<p>This package extends on the idea and provides methods on the state classes that
+				your React components can hook to to keep the other DOM state in sync. Then you
+			would be able to reason about these DOM state without mounting any DOM element!</p>
+			<p>You can use this package for inspiration on what to build if you have custom
+			state management needs.</p>
+		</div>
+		<div style="position:relative;"><a name="typedoc-main-index" class="tsd-anchor"></a></div>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
 			<section class="tsd-panel tsd-index-panel">
