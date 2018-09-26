@@ -1,42 +1,50 @@
 <!DOCTYPE html>
 <html lang="en-US">
-  <head>
+
+<head>
+
+    
     <meta charset="UTF-8">
 
-<!-- Begin Jekyll SEO tag v2.5.0 -->
-<title>mobx-ui-statelets | Headless state management with MobX</title>
+    <!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>mobx-ui-statelets | Headless state essentials for MobX</title>
 <meta name="generator" content="Jekyll v3.8.4" />
 <meta property="og:title" content="mobx-ui-statelets" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Headless state management with MobX" />
-<meta property="og:description" content="Headless state management with MobX" />
+<meta name="description" content="Headless UI state essentials" />
+<meta property="og:description" content="Headless UI state essentials" />
 <link rel="canonical" href="/mobx-ui-statelets/" />
 <meta property="og:url" content="/mobx-ui-statelets/" />
 <meta property="og:site_name" content="mobx-ui-statelets" />
 <script type="application/ld+json">
-{"description":"Headless state management with MobX","@type":"WebSite","url":"/mobx-ui-statelets/","name":"mobx-ui-statelets","headline":"mobx-ui-statelets","@context":"http://schema.org"}</script>
+{"@type":"WebSite","url":"/mobx-ui-statelets/","name":"mobx-ui-statelets","headline":"mobx-ui-statelets","description":"Headless UI state essentials","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="/mobx-ui-statelets/assets/css/style.css?v=">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">mobx-ui-statelets</h1>
-      <h2 class="project-tagline">Headless state management with MobX</h2>
-      
-      
-    </section>
+</head>
 
-    <section class="main-content">
-      <h1 id="mobx-ui-statelets-state-classes-for-headless-state-management">mobx-ui-statelets: state classes for headless state management.</h1>
+<body>
+    <header class="page-header top-header">
+        <a class="repo-name" href="/mobx-ui-statelets"> mobx-ui-statelets </a>
+    </header>
+    
+    <header class="page-header" role="banner">
+        <h1 class="project-name">mobx-ui-statelets</h1>
+        <h2 class="project-tagline">Headless state essentials for MobX</h2>
+        <a href="https://github.com/soul-codes/mobx-ui-statelets" class="btn">View on GitHub</a>
+        
+    </header>
+    
 
-<p><code class="highlighter-rouge">mobx-ui-statelets</code> is a set of <a href="">MobX</a>-decorated classes for managing commonly
+    <main id="content" class="main-content" role="main">
+        <p><strong><img class="emoji" title=":warning:" alt=":warning:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png" height="20" width="20"> This package is still in 0.x.y stage, so do expect incomplete documentation and API changes.</strong></p>
+
+<p><code class="highlighter-rouge">mobx-ui-statelets</code> is a set of <a href="https://github.com/mobxjs/mobx">MobX</a>-decorated classes for managing commonly
 needed UI states. It currently has a large emphasis on form state entities, but
 the plan is to extend it to other common state entities too.</p>
-
-<p><strong><img class="emoji" title=":warning:" alt=":warning:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png" height="20" width="20"> This package is still in 0.x.y stage, so do expect incomplete documentation and API changes.</strong></p>
 
 <h2 id="whats-on-offer">What’s on offer?</h2>
 
@@ -54,188 +62,24 @@ logging in, fetching data).</li>
 several inputs.</li>
 </ul>
 
-<h2 id="how-do-i-use-it">How do I use it?</h2>
+<h2 id="getting-started">Getting started</h2>
 
-<h3 id="1-install-the-package-and-its-peer-dependencies">1. Install the package and its peer dependencies</h3>
+<p>Follow the <a href="/mobx-ui-statelets/getting-started.html">getting started guide</a>.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yarn add -D mobx-ui-statelets
-yarn add -D react react-dom mobx mobx-react
-</code></pre></div></div>
+<h2 id="documentation">Documentation</h2>
 
-<h3 id="2-create-your-state-class">2. Create your state class</h3>
-
-<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// State.tsx</span>
-<span class="k">import</span> <span class="p">{</span> <span class="nx">Input</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-ui-statelets"</span><span class="p">;</span>
-<span class="k">export</span> <span class="kd">class</span> <span class="nx">MyGreeterState</span> <span class="p">{</span>
-  <span class="nx">nameInput</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Input</span><span class="p">(</span><span class="s2">""</span> <span class="k">as</span> <span class="nx">string</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<h3 id="3-create-the-presentation-layer">3. Create the presentation layer</h3>
-
-<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Component.tsx</span>
-<span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"react"</span><span class="p">;</span>
-<span class="k">import</span> <span class="p">{</span> <span class="nx">observer</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-react"</span><span class="p">;</span>
-<span class="k">import</span> <span class="p">{</span> <span class="nx">MyGreeterState</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"./State"</span><span class="p">;</span>
-
-<span class="p">@</span><span class="nd">observer</span>
-<span class="k">export</span> <span class="kd">class</span> <span class="nx">MyGreeter</span> <span class="kd">extends</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="p">{</span>
-  <span class="na">state</span><span class="p">:</span> <span class="nx">MyGreeterState</span><span class="p">;</span>
-<span class="p">}</span><span class="o">&gt;</span> <span class="p">{</span>
-  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">const</span> <span class="p">{</span> <span class="nx">state</span> <span class="p">}</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">;</span>
-    <span class="k">return</span> <span class="p">(</span>
-      <span class="p">&lt;</span><span class="nt">input</span>
-        <span class="na">type=</span><span class="s2">"text"</span>
-        <span class="na">value=</span><span class="si">{</span><span class="nx">state</span><span class="p">.</span><span class="nx">nameInput</span><span class="p">.</span><span class="nx">inputValue</span><span class="si">}</span>
-        <span class="na">onChange=</span><span class="si">{</span><span class="nx">ev</span> <span class="o">=&gt;</span> <span class="nx">state</span><span class="p">.</span><span class="nx">nameInput</span><span class="p">.</span><span class="nx">input</span><span class="p">({</span> <span class="na">value</span><span class="p">:</span> <span class="nx">ev</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span> <span class="p">})</span><span class="si">}</span>
-        <span class="na">onBlur=</span><span class="si">{</span><span class="nx">ev</span> <span class="o">=&gt;</span> <span class="nx">state</span><span class="p">.</span><span class="nx">nameInput</span><span class="p">.</span><span class="nx">confirm</span><span class="p">({</span> <span class="na">value</span><span class="p">:</span> <span class="nx">ev</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span> <span class="p">})</span><span class="si">}</span>
-      <span class="p">/&gt;</span>
-    <span class="p">);</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<h3 id="4-link-it-all-up">4. Link it all up!</h3>
-
-<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="s2">"react"</span><span class="p">;</span>
-<span class="k">import</span> <span class="p">{</span> <span class="nx">render</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"react-dom"</span><span class="p">;</span>
-<span class="k">import</span> <span class="p">{</span> <span class="nx">MyGreeterState</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"./State"</span><span class="p">;</span>
-<span class="k">import</span> <span class="p">{</span> <span class="nx">MyGreeter</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"./Component"</span><span class="p">;</span>
-
-<span class="nx">render</span><span class="p">(</span>
-  <span class="p">&lt;</span><span class="nc">MyGreeter</span> <span class="na">state=</span><span class="si">{</span><span class="k">new</span> <span class="nx">MyGreeterState</span><span class="p">()</span><span class="si">}</span> <span class="p">/&gt;,</span>
-  <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"your-react-root"</span><span class="p">)</span>
-<span class="p">);</span>
-</code></pre></div></div>
-
-<h3 id="5-continue-the-journey-on-our-tutorial-pages-todo-link">5. Continue the journey on our <a href="">tutorial pages</a> <code class="highlighter-rouge">@todo link</code>.</h3>
-
-<h2 id="what-headless-state">What headless state?</h2>
-
-<p>The idea here is to manage most of the application state and microstate –
-both domain and UI – without mounting React components.</p>
-
-<p>If you create a React application without any state management like MobX or
-Redux, you could tie your UI state to React components by using the component’s
-own <code class="highlighter-rouge">state</code>. However, this requires that the state’s consumption and persistence
-is the same with the component that hosts it. If state information is
-shared between components or needs to persist beyond the component
-lifecycle, React recommends <a href="https://reactjs.org/docs/lifting-state-up.html">lifting the state up</a>
-to restore that parity.</p>
-
-<p>The premise of headless state management is that you lift virtually all state
-information – except those you are absolutely certain to never leave the component –
-out of the React component hierarchy altogether. You would then reason about the
-application mostly through this isolated state hierarchy.</p>
-
-<h2 id="why-headless-state">Why headless state?</h2>
-
-<h3 id="code-resilience">Code resilience</h3>
-
-<p>While the state lifting pattern works, it exposes your codebase to a pretty hefty
-internal API change each time your state consumption landscape changes. This makes
-it difficult for your codebase to embrace requirement changes, which are
-nowadays the expected nature of continuous delivery.</p>
-
-<p>A headless state hierarchy, on the other hand, is uncoupled from the React component.
-So any change happening on the presentational side does not affect the state hierarchy,
-and changes in the state hierarchy consumption changes at best the passing of a
-single state object down the React component hierarchy.</p>
-
-<h3 id="logical-clarity">Logical clarity</h3>
-
-<p>It also means that in order to reason about – and indeed test – the UI state,
-you’ll need to mount React components, dig through the component hierarchy, create
-mocks, stubs, spies of components or props you are interested in and somehow
-<em>infer</em> your application state from such assertions. This is demonstrated in the
-Jest/enzyme pseudocode below.</p>
-
-<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">test</span><span class="p">(</span><span class="s2">"submitting increment a counter after a disabled state"</span><span class="p">,</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-  <span class="kd">const</span> <span class="nx">fixture</span> <span class="o">=</span> <span class="nx">mount</span><span class="p">(&lt;</span><span class="nc">MyFeature</span> <span class="p">/&gt;);</span>
-  <span class="nx">expect</span><span class="p">(</span><span class="nx">fixture</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">Counter</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s2">"children"</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-  <span class="nx">fixture</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">SubmitButton</span><span class="p">).</span><span class="nx">click</span><span class="p">();</span>
-
-  <span class="nx">expect</span><span class="p">(</span><span class="nx">fixture</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">SubmitButton</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s2">"disabled"</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-  <span class="kr">await</span> <span class="nx">waitUntil</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">fixture</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">SubmitButton</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s2">"disabled"</span><span class="p">)</span> <span class="o">===</span> <span class="kc">false</span><span class="p">));</span>
-
-  <span class="nx">expect</span><span class="p">(</span><span class="nx">fixture</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">Counter</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s2">"children"</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-<span class="p">});</span>
-</code></pre></div></div>
-
-<p>An application with headless state can be tested with more clarity, precision and
-expressivity, while suffering less technical overhead. You simply instantiate the
-state class of choice and invoke the actions that are usually delegated to the
-human users via the React components. All assertions can be done separately from
-the React component hierarchy.</p>
-
-<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">test</span><span class="p">(</span><span class="s2">"submitting increments a counter after the pending state"</span><span class="p">,</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-  <span class="kd">const</span> <span class="nx">state</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MyFeatureState</span><span class="p">();</span>
-  <span class="nx">expect</span><span class="p">(</span><span class="nx">state</span><span class="p">.</span><span class="nx">counter</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-
-  <span class="nx">state</span><span class="p">.</span><span class="nx">submit</span><span class="p">();</span>
-  <span class="nx">expect</span><span class="p">(</span><span class="nx">state</span><span class="p">.</span><span class="nx">myTask</span><span class="p">.</span><span class="nx">isPending</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-
-  <span class="kr">await</span> <span class="nx">state</span><span class="p">.</span><span class="nx">myTask</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
-  <span class="nx">expect</span><span class="p">(</span><span class="nx">state</span><span class="p">.</span><span class="nx">myTask</span><span class="p">.</span><span class="nx">isPending</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
-  <span class="nx">expect</span><span class="p">(</span><span class="nx">state</span><span class="p">.</span><span class="nx">counter</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-<span class="p">});</span>
-</code></pre></div></div>
-
-<p>Maintaining a headless state hierarchy not only makes state test code to the point,
-it also makes the React components almost always dumb. The “smartest” of React
-components themselves are the connectors between the headless state and the
-truly dumb stateless component. Such connections can now be tested in a unit
-manner, isolated from how the state actually transitions.</p>
-
-<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">test</span><span class="p">(</span><span class="s2">"Button is in disabled state if task is in pending state"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-  <span class="kd">const</span> <span class="nx">state</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MyFeatureState</span><span class="p">();</span>
-  <span class="kd">const</span> <span class="nx">fixture</span> <span class="o">=</span> <span class="nx">mount</span><span class="p">(&lt;</span><span class="nc">MyFeature</span> <span class="na">state=</span><span class="si">{</span><span class="nx">state</span><span class="si">}</span> <span class="p">/&gt;);</span>
-  <span class="nx">expect</span><span class="p">(</span><span class="nx">fixture</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">SubmitButton</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s2">"disabled"</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
-
-  <span class="nx">state</span><span class="p">.</span><span class="nx">submit</span><span class="p">();</span>
-  <span class="nx">expect</span><span class="p">(</span><span class="nx">fixture</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">SubmitButton</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s2">"disabled"</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-<span class="p">});</span>
-
-<span class="nx">test</span><span class="p">(</span><span class="s2">"Counter reflects the state counter value"</span><span class="p">,</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-  <span class="kd">const</span> <span class="nx">state</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MyFeatureState</span><span class="p">();</span>
-  <span class="kd">const</span> <span class="nx">fixture</span> <span class="o">=</span> <span class="nx">mount</span><span class="p">(&lt;</span><span class="nc">MyFeature</span> <span class="na">state=</span><span class="si">{</span><span class="nx">state</span><span class="si">}</span> <span class="p">/&gt;);</span>
-  <span class="nx">expect</span><span class="p">(</span><span class="nx">fixture</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">Counter</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s2">"children"</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-
-  <span class="kr">await</span> <span class="nx">state</span><span class="p">.</span><span class="nx">submit</span><span class="p">();</span>
-  <span class="nx">expect</span><span class="p">(</span><span class="nx">fixture</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">Counter</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s2">"children"</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-<span class="p">});</span>
-</code></pre></div></div>
-
-<h2 id="i-could-create-headless-state-myself">I could create headless state myself</h2>
-
-<p>Of course you can!</p>
-
-<p>If you do, one important component of maintaining headless state to bear in mind
-is to make sure that any final source of truth for state that usually lives in
-the DOM (like hover, focus, input and selection state) needs to be delegated
-(or at least kept in sync) in our headless state.</p>
-
-<p>In fact, React’s
-<a href="https://reactjs.org/docs/forms.html#controlled-components">controlled component</a>
-pattern does exactly this with the input element state; the only difference is that
-the delegation is between the DOM element an a React component.</p>
-
-<p>This package extends on the idea and provides methods on the state classes that
-your React components can hook to to keep the other DOM state in sync. Then you
-would be able to reason about these DOM state without mounting any DOM element!</p>
-
-<p>You can use this package for inspiration on what to build if you have custom
-state management needs.</p>
+<ul>
+  <li><a href="/mobx-ui-statelets/headless.html">Introduction to headless state management</a></li>
+  <li><a href="./api">API documentation</a></li>
+</ul>
 
 
+        <footer class="site-footer">
+            
+            <span class="site-footer-owner"><a href="https://github.com/soul-codes/mobx-ui-statelets">mobx-ui-statelets</a> is maintained by <a href="https://github.com/soul-codes">Soul Codes Webentwicklung</a>.</span>
+            
+        </footer>
+    </main>
+</body>
 
-      <footer class="site-footer">
-        
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.</span>
-      </footer>
-    </section>
-
-    
-  </body>
 </html>

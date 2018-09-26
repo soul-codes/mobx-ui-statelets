@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+
+    
+    <meta charset="UTF-8">
+
+    <!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Introduction to headless state management | mobx-ui-statelets</title>
+<meta name="generator" content="Jekyll v3.8.4" />
+<meta property="og:title" content="Introduction to headless state management" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Headless state essentials for MobX" />
+<meta property="og:description" content="Headless state essentials for MobX" />
+<link rel="canonical" href="/mobx-ui-statelets/headless.html" />
+<meta property="og:url" content="/mobx-ui-statelets/headless.html" />
+<meta property="og:site_name" content="mobx-ui-statelets" />
+<script type="application/ld+json">
+{"@type":"WebPage","url":"/mobx-ui-statelets/headless.html","headline":"Introduction to headless state management","description":"Headless state essentials for MobX","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="/mobx-ui-statelets/assets/css/style.css?v=">
+</head>
+
+<body>
+    <header class="page-header top-header">
+        <a class="repo-name" href="/mobx-ui-statelets"> mobx-ui-statelets </a>
+    </header>
+    
+
+    <main id="content" class="main-content" role="main">
+        <h1 id="introduction-to-headless-state-management">Introduction to headless state management</h1>
+
+<p>This article describes the basic idea of headless state management that is the
+principle behind mobx-ui-statelets.</p>
+
+<h2 id="the-basic-idea">The basic idea</h2>
+
+<blockquote>
+  <p><em>Never trust anything that can think for itself if you can’t see where it keeps its brain</em>.</p>
+
+  <p>– J.K. Rowling, Harry Potter and the Chamber of Secrets</p>
+</blockquote>
+
+<p>React components encapsulate their own state, so it’s completely possible to
+write a web application using React itself to do state management.</p>
+
+<p>When an application grows and and the state landscape becomes more complex,
+storing state in components can become unwieldy. For this reason, state
+management libraries such as <a href="https://github.com/mobxjs/mobx">MobX</a> and
+<a href="https://redux.js.org/">Redux</a> offer ways to define application state out of
+the React component hierarchy.</p>
+
+<p>This creates a situation where some of the application state lives inside React
+components, and others live in isolated stores (or in case of Redux, one single store).
+Opinions vary on which state lives where, but one prevailing consensus is:
+put <em>domain state</em> (state to do with the application’s <em>data</em>) in the isolated
+stores, and keep the <em>UI state</em> on the components.</p>
+
+<p>Headless state management encourages a more aggressive use of isolated state stores
+for <em>both</em> domain and UI state. In some plausible extreme case, React components
+may be fully stateless.</p>
+
+<p>The objective is to give developers a full perspective of the application’s domain
+<em>and</em> UI state without coupling any of it to React components.</p>
+
+<h2 id="criteria-for-making-state-headless">Criteria for making state headless</h2>
+
+<p>With headless state management, we move state out of React components if the
+nature of that state matches any of the following criteria:</p>
+
+<ol>
+  <li>The state is consumed by a sibling, a parent or a cousin component.</li>
+  <li>The state persists after the component unmounts.</li>
+  <li>The state affects how other headless state gets updated.</li>
+</ol>
+
+<p>The rationale is that each of these criteria violates the encapsulation
+characteristics intended of React component state: private to the component
+and its chilldren, and dies with the component. This violation is in fact
+a rationale for moving domain state out of the React component hierarchy.
+What we do now is to do the same for any qualifying UI state.</p>
+
+<h2 id="the-elements-of-headless-state-management">The elements of headless state management</h2>
+
+<p>To obtain maximal benefits, a headless state architecture should:</p>
+
+<ol>
+  <li>describe the application as fully a possible</li>
+  <li>provide clear “user entry” methods that executes the entire sequence of
+state transition as a consequence of a user interaction.</li>
+  <li>keep its knowledge of any relevant DOM state in sync.</li>
+  <li>allow manipulation of DOM state while being agnostic of any visual component.</li>
+</ol>
+
+<h3 id="user-entry-methods">User entry methods</h3>
+
+<p>There should be methods that update the application state exactly the same way
+as if a user were actually interact with the application.</p>
+
+<p>For instance, in a hypothetical “todo” application, the user may be able to add
+a new todo item by clicking on an “add” button, or by hitting enter key while
+focused on a text input that has the new todo item. We would provide a method
+outside the React component hierarchy to handle the consequence: updating the
+list of todos (domain state) as well as clearing the last input value (UI state).</p>
+
+<h3 id="keeping-dom-state-in-sync">Keeping DOM state in sync</h3>
+
+<p>One obstacle in the way of handling an application state headlessly is that
+some application state has its single source of truth in the DOM. To name a few:</p>
+
+<ul>
+  <li>Hover state</li>
+  <li>Focus state</li>
+  <li>Scroll state</li>
+  <li>Text selection state</li>
+  <li>Media playback state</li>
+</ul>
+
+<p>If there is application logic that depends on these kinds of DOM state, we
+provide a way for React components to report changes back into our
+headless state hierarchy, so that we can handle all logic in one place. This
+can be achieved by simple callbacks.</p>
+
+<h3 id="manipulating-dom-state-from-headless-state">Manipulating DOM state from headless state</h3>
+
+<p>Another obstcale is the reverse: we want to be able to reflect the update of
+headless state in the corresponding DOM state.</p>
+
+<p>However, we want to do this without actually knowing anything about the
+visual components reflecting our state. This can be solved with a pattern where
+a React component registers itself as a “projection” of our application state and
+subscribe callbacks that manipulate the DOM on command of our user entry
+methods.</p>
+
+<h2 id="advantages-of-headless-state-management">Advantages of headless state management</h2>
+
+<h3 id="simple-components">Simple components</h3>
+
+<p>By going fully headless, we remove any need to perform <a href="https://reactjs.org/docs/lifting-state-up.html">state lifting</a>, which can generate a large
+technical footprint in the code relative to the actual UI logic.</p>
+
+<p>With full headlessness, the only components that remain are simple stateless
+components, and the components that map the headless state into them.</p>
+
+<h3 id="simple-tests">Simple tests</h3>
+
+<p>When state is inside React components, we test consequence of interactions by
+simulating events and inspecting the effects on various component props. This
+can involve complex digging through the component hierarchy. Integration test
+becomes difficult, and gets more difficult as the state gets lifted higher
+and higher.</p>
+
+<p>Headless state management lets us write tests about the application without
+needing to mount React components. Instead, we directly test the state transitions
+by invoking user entry methods and then inspecting the consequences at state-level.
+This allows for very expressive and wide-ranging integration tests on the
+application logic. <em>Then</em> we only need to unit-test the individual mapper
+components that they are talking to these state entities properly.</p>
+
+<h3 id="simple-debugging">Simple debugging</h3>
+
+<p>By exporting our headless state as a global in development time, we no longer
+need to dig through the React component hierarchy to find the right state to
+manipulate or inspect. Your headless state object will contain all the information
+we need to know about the expected state of the application, and ideally also the
+methods needed to manipulate them.</p>
+
+<h3 id="resilience-to-requirement-changes">Resilience to requirement changes</h3>
+
+<p>With state lifting, if the components that consume a common state moves owing to
+requirement changes, we need to rewiring the state lifting. In addition,
+if a shared state is no longer shared, we feel tempted to move it back into a
+local component state, where it becomes easier to reason about. Each such change
+requires as many API changes on components as needed to traverse the
+component hierarchy.</p>
+
+<p>Headless state management gives us another level of concern separation that removes
+these problems completely. It doesn’t matter if a state is used once, twice or
+not at all. Their existence are separate from the React components, so changes
+at visual level will touch at most what state gets provided to the components.</p>
+
+<h3 id="empowering-experimentation">Empowering experimentation</h3>
+
+<p>Since headless state describes the application fully, it becomes easy to produce
+an “ugly but functionally accurate prototype” by taking time to engineer the
+state transitions in isolation – which becomes a lot easier – and wiring them
+into half-finished visual components.</p>
+
+<h2 id="you-might-not-need-headless-state">You might not need headless state</h2>
+
+<p>If the scope of your project is small, simple with fixed requirements, headless
+state management might just add an unnecessary overhead. Use
+<a href="#criteria-for-making-state-headless">the criteria above</a> to determine if state
+lifting is appropriate.</p>
+
+<p>Typically, an application that involves form components will eventually reach
+the kind of UI state complexity that headless state can help simplify. This is
+especially true if you intend to refine form user experience.</p>
+
+
+        <footer class="site-footer">
+            
+            <span class="site-footer-owner"><a href="https://github.com/soul-codes/mobx-ui-statelets">mobx-ui-statelets</a> is maintained by <a href="https://github.com/soul-codes">Soul Codes Webentwicklung</a>.</span>
+            
+        </footer>
+    </main>
+</body>
+
+</html>
