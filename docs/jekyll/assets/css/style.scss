@@ -1,0 +1,25 @@
+---
+---
+
+// https://help.github.com/articles/customizing-css-and-html-in-your-jekyll-theme/#customizing-your-jekyll-themes-css
+@import "{{ site.theme }}";
+.page-header {
+  background-color: #000428;
+  background-image: linear-gradient(120deg, #004e92, #000428);
+}
+.top-header {
+  display: flex;
+  padding: 0em;
+  position: sticky;
+  top: 0;
+  left: 0;
+  box-shadow: 0px 10px 10px rgba(black, 0.5);
+  z-index: 1000;
+  .repo-name {
+    font-size: 125%;
+    font-weight: bold;
+    color: white;
+    margin: 10px;
+    text-decoration: none;
+  }
+}
