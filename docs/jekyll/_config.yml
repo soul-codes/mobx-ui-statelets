@@ -25,6 +25,9 @@ github:
   repository_url: https://github.com/soul-codes/mobx-ui-statelets
   owner_url: https://github.com/soul-codes
 
+exclude:
+  - api
+
 keep_files:
   - api
 

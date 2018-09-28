@@ -14,4 +14,4 @@ Follow the [getting started guide](./getting-started.md).
 ## Documentation
 
 - [Introduction to headless state management](./headless.md)
-- [API documentation](./api)
+- [API documentation](./api/index.html)
