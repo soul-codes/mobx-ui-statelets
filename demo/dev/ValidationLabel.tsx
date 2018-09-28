@@ -24,7 +24,7 @@ export default class DevValidationLabel extends Component<
             ? "#dfd"
             : "#fdd";
     const isHoveredInput = validator.flattedInputs.some(
-      input => input.isHovered
+      input => input.hoverState.isHovered
     );
 
     return (
@@ -43,8 +43,8 @@ export default class DevValidationLabel extends Component<
           display: "inline-block",
           color: isEnabled ? "black" : "lightgray"
         }}
-        onMouseOver={() => validator.reportHover()}
-        onMouseOut={() => validator.reportUnhover()}
+        onMouseOver={() => validator.hoverState.reportHover()}
+        onMouseOut={() => validator.hoverState.reportUnhover()}
       >
         {validator.validatorOptions.validateOnInput ? (
           <pre>Input: {JSON.stringify(validator.inputValue, null, 2)}</pre>

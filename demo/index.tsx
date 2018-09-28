@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import { Input, Validator, Form, Task, ValidatedInput } from "../src";
+import { Input, Validator, Form, Task, FocusState } from "../src";
 
 import TextInput from "./dev/TextInput";
 import ValidationLabel from "./dev/ValidationLabel";
@@ -89,6 +89,8 @@ const reset = new Task(() =>
   })
 );
 
+street.focusState.focus();
+
 @observer
 class Demo extends Component {
   render() {
@@ -124,3 +126,9 @@ class Demo extends Component {
 }
 
 ReactDOM.render(<Demo />, document.getElementById("react-root"));
+
+Object.assign(window, {
+  state: {
+    street
+  }
+});
