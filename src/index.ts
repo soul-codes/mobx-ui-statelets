@@ -27,7 +27,16 @@ export {
   AsTask,
   FormValidationError
 } from "./state/Form";
+export { default as HoverState } from "./state/Hover";
+export { default as FocusState } from "./state/Focus";
+export { default as MediaQueryState } from "./state/MediaQuery";
 
-export { default as withHover } from "./partials/withHover";
+export { default as DOMQuery } from "./domQuery/DomQuery";
+export { default as BoundsState } from "./domQuery/Bounds";
 
-export { stateProjection, StateSubscription } from "./partials/stateProjection";
+export {
+  resolveDOMQuery,
+  DOMQueryResolution
+} from "./domResolver/resolveDOMQuery";
+export { syncDOMState } from "./sync/syncDOMState";
+export { syncFocusState } from "./sync/syncFocusState";

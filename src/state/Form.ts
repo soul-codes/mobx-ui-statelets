@@ -6,10 +6,11 @@ import { MaybeConstant } from "../utils/types";
 import Task, { TaskAction } from "./Task";
 import createLookup from "../utils/lookup";
 import Input from "./Input";
-import { computed, observable } from "mobx";
+import { computed } from "mobx";
 import Validator from "./Validator";
-import { StateDevOptions, currentFocus } from "./State";
+import { StateDevOptions } from "./State";
 import createWeakProperty from "../utils/weakProp";
+import FocusState from "../state/Focus";
 
 /**
  * @ignore
@@ -192,12 +193,12 @@ function guardSubmit<
     const lateErrors = findAndFocusErrors(form);
     if (lateErrors) return lateErrors;
 
-    const focusedInput = currentFocus.get();
+    const focusedInput = FocusState.currentFocus;
     if (
       focusedInput instanceof Input &&
       privateInputForms.get(focusedInput).has(form)
     )
-      focusedInput.blur();
+      focusedInput.focusState.blur();
 
     const innerReportProgress = (actionProgress: TActionProgress) =>
       void reportProgress({ phase: "action", actionProgress });
@@ -224,7 +225,7 @@ function findAndFocusErrors(
 ): null | FormValidationError {
   const { inputErrors } = form;
   if (!inputErrors.length) return null;
-  inputErrors[0].focus();
+  inputErrors[0].focusState.focus();
   return {
     outcome: "validation-error" as "validation-error",
     errors: inputErrors

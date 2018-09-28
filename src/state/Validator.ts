@@ -7,9 +7,9 @@ import InputGroup, {
 } from "./InputGroup";
 import createLookup from "../utils/lookup";
 import { StateDevOptions } from "./State";
-import withHover from "../partials/withHover";
 import Input from "./Input";
 import createWeakProperty from "../utils/weakProp";
+import HoverState from "../state/Hover";
 
 /**
  * @ignore
@@ -41,7 +41,7 @@ export default class Validator<
   TDomainValue = InferInputGroupValue<TInputs>,
   TParseError = any,
   TDomainError = any
-> extends withHover(InputGroup)<TInputs> {
+> extends InputGroup<TInputs> {
   /**
    * Instantiates a validator.
    *
@@ -376,6 +376,8 @@ export default class Validator<
     TDomainValue,
     Falsy | ValidationFailure<TDomainError, TDomainValue>
   >(this.validatorOptions.domain || noopValidator);
+
+  readonly hoverState = new HoverState();
 }
 
 /**

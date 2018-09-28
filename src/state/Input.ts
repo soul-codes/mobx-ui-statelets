@@ -3,9 +3,11 @@ import Validator, { privateInputValidators } from "./Validator";
 import State, { StateDevOptions } from "./State";
 import Form, { privateInputForms } from "./Form";
 import { Falsy, MaybePromise } from "../utils/types";
-import withHover from "../partials/withHover";
 import Task from "./Task";
 import InputGroup, { privateInputGroup } from "./InputGroup";
+import FocusState from "../state/Focus";
+import HoverState from "../state/Hover";
+import BoundsQuery from "../domQuery/Bounds";
 
 let confirmCounter = 0;
 let confirmStack: Input<any>[] = [];
@@ -21,7 +23,7 @@ let validationCandidates: Input<any>[] = [];
 export default class Input<
   TValue extends BaseInputValue = string,
   TChoiceMetadata = any
-> extends withHover(State) {
+> extends State {
   /**
    * Instantiates the input state.
    * @param defaultValue Specifies the input's initial value.
@@ -167,11 +169,11 @@ export default class Input<
     const { form } = this;
     if (!form) return;
     if (!this.isValidated) return;
-    if (!((this as any) as Input<any>).isFocused) return;
+    if (!((this as any) as Input<any>).focusState.isFocused) return;
 
     const { nextInput } = form;
     if (nextInput) {
-      form.options.autoNext && nextInput.focus();
+      form.options.autoNext && nextInput.focusState.focus();
     } else {
       form.options.autoSubmit && form.submit();
     }
@@ -404,6 +406,10 @@ export default class Input<
   get isConfirmed() {
     return this._isConfirmed;
   }
+
+  readonly focusState = new FocusState();
+  readonly hoverState = new HoverState();
+  readonly boundsQuery = new BoundsQuery();
 
   @observable
   private _value: TValue;

@@ -1,6 +1,6 @@
 import { MaybeConstant, ArrayItem } from "../utils/types";
 import Input, { InferInputValue } from "./Input";
-import State, { StateDevOptions, StateProjections } from "./State";
+import State, { StateDevOptions } from "./State";
 import { computed, action } from "mobx";
 import createLookup from "../utils/lookup";
 import createWeakProperty from "../utils/weakProp";
@@ -19,9 +19,8 @@ export const privateInputGroup = createWeakProperty(
  * forms (whose action can depend on several inputs).
  */
 export default class InputGroup<
-  TInputs extends InputGroupContent,
-  TProjection extends StateProjections = {}
-> extends State<TProjection> {
+  TInputs extends InputGroupContent
+> extends State {
   /**
    * Instantiates an input group
    * @param inputs The structure of inputs. This maybe a single input, an object
@@ -157,7 +156,7 @@ export default class InputGroup<
    * the subgroups are not broken down into inputs here.
    */
   @computed
-  get flattenedStructure(): (Input<any, any> | InputGroup<any, any>)[] {
+  get flattenedStructure(): (Input<any, any> | InputGroup<any>)[] {
     return flattenStructure(this.structure);
   }
 
