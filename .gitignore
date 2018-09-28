@@ -1,5 +1,6 @@
 node_modules
 dist
+docs/jekyll/api
 docs/public
 .vscode
 .sass-cache

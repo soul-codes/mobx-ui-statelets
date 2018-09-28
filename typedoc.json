@@ -1,6 +1,6 @@
 {
   "mode": "file",
-  "out": "docs/public/api",
+  "out": "docs/jekyll/api",
   "theme": "minimal",
   "ignoreCompilerErrors": false,
   "excludePrivate": true,
