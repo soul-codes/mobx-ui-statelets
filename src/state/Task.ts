@@ -146,16 +146,16 @@ export default class Task<TArg, TResult, TProgress = void> extends State {
     this._invokeInstance && this._invokeInstance.cancel();
   }
 
-  @observable
+  @observable.ref
   private _promise: Promise<void> | null = null;
 
   @observable
   private _isPending = false;
 
-  @observable
+  @observable.ref
   private _result: TResult | void = void 0;
 
-  @observable
+  @observable.ref
   private _progress?: TProgress;
 
   private _invokeInstance: InvokeInstance | null = null;
