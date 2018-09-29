@@ -1,7 +1,7 @@
 import { observable, action } from "mobx";
 import { MaybePromise } from "../utils/types";
 import State, { StateDevOptions } from "./State";
-import Disposer, { AddDisposeHandler } from "../utils/disposer";
+import Disposer from "../utils/disposer";
 
 const $canceled = Symbol("Canceled");
 class InvokeInstance {
