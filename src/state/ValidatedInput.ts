@@ -1,5 +1,5 @@
 import Validator, { ValidatorOptions } from "./Validator";
-import Input, { InputOptions, BaseInputValue } from "./Input";
+import Input, { InputOptions } from "./Input";
 import { computed } from "mobx";
 
 /**
@@ -10,7 +10,7 @@ import { computed } from "mobx";
  * @typeparam TDomainError the input's domain error.
  */
 export default class ValidatedInput<
-  TInputValue extends BaseInputValue,
+  TInputValue,
   TDomainValue = TInputValue,
   TParseError = true,
   TDomainError = true
@@ -77,10 +77,9 @@ export default class ValidatedInput<
  *
  * @see [[ValidatorOptions]]
  * @see [[InputOptions]]
- * @see {{https://google.com}}
  */
 export type ValidatedInputOptions<
-  TInputValue extends BaseInputValue,
+  TInputValue,
   TDomainValue,
   TParseError,
   TDomainError

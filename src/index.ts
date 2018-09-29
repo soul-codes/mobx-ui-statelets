@@ -5,11 +5,7 @@ export {
   AddCancelHandler,
   InferTaskArg
 } from "./state/Task";
-export {
-  default as Input,
-  InferInputValue,
-  BaseInputValue
-} from "./state/Input";
+export { default as Input, InferInputValue } from "./state/Input";
 export {
   default as DataQuery,
   DataQueryOptions,

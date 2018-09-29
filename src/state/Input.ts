@@ -8,6 +8,7 @@ import FocusState from "../state/Focus";
 import HoverState from "../state/Hover";
 import BoundsQuery from "../domQuery/Bounds";
 import DataQuery from "./DataQuery";
+import deepEqual from "../utils/deepEqual";
 
 let confirmCounter = 0;
 let confirmStack: Input<any>[] = [];
@@ -20,10 +21,7 @@ let validationCandidates: Input<any>[] = [];
  * @typeparam TValue the input's value type.
  * @typeparam TChoiceMetadata optional type for the metadata of input choices.
  */
-export default class Input<
-  TValue extends BaseInputValue = string,
-  TChoiceMetadata = any
-> extends State {
+export default class Input<TValue = any, TChoiceMetadata = any> extends State {
   /**
    * Instantiates the input state.
    * @param defaultValue Specifies the input's initial value.
@@ -35,7 +33,7 @@ export default class Input<
     readonly options?: InputOptions<TValue, TChoiceMetadata>
   ) {
     super(options);
-    this._value = defaultValue === void 0 ? ("" as TValue) : defaultValue;
+    this._value = defaultValue;
 
     const choices = options && options.choices;
     if (choices instanceof DataQuery) {
@@ -131,7 +129,7 @@ export default class Input<
     this._inputValue = void 0;
 
     if (value === void 0) value = lastValue;
-    if (value === this.value && !this.isConfirmed) return;
+    if (deepEqual(value, this._inputValue) && !this.isConfirmed) return;
 
     value = this.normalizeValue(value);
     this._isConfirmed = true;
@@ -349,10 +347,10 @@ export default class Input<
   readonly hoverState = new HoverState();
   readonly boundsQuery = new BoundsQuery();
 
-  @observable
+  @observable.shallow
   private _value: TValue;
 
-  @observable
+  @observable.shallow
   private _inputValue?: TValue;
 
   @observable
@@ -373,7 +371,7 @@ export default class Input<
  * @param oldValue
  */
 function defaultShouldValidate<TValue>(value: TValue, oldValue: TValue) {
-  return value !== oldValue;
+  return !deepEqual(value, oldValue);
 }
 
 /**
@@ -381,10 +379,8 @@ function defaultShouldValidate<TValue>(value: TValue, oldValue: TValue) {
  * @typeparam TValue the input's value type
  * @typeparam TChoiceMetadata the input's choice metadata type.
  */
-export interface InputOptions<
-  TValue extends BaseInputValue,
-  TChoiceMetadata = any
-> extends StateDevOptions {
+export interface InputOptions<TValue = any, TChoiceMetadata = any>
+  extends StateDevOptions {
   /**
    * Specifies how the input value should be normalized before it gets parsed
    * into a domain value. You can use this hook to e.g. remove extra spaces
@@ -444,11 +440,6 @@ export interface InputOptions<
 }
 
 /**
- * Specifies the constraints of an input value.
- */
-export type BaseInputValue = string | number | boolean;
-
-/**
  * Infers the input value type from the input type.
  * @ignore
  */
@@ -461,7 +452,7 @@ export type InferInputValue<T extends Input<any>> = T extends Input<infer V>
  * @typeparam TValue the input's value type
  * @typeparam TChoiceMetadata the input's choice metadata type.
  */
-export interface InputChoice<TValue extends BaseInputValue, TChoiceMetadata> {
+export interface InputChoice<TValue = any, TChoiceMetadata = any> {
   /**
    * The choice value
    */
