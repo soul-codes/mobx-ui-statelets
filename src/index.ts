@@ -36,7 +36,7 @@ export { default as BoundsState } from "./domQuery/Bounds";
 
 export {
   resolveDOMQuery,
-  DOMQueryResolution
+  DOMQueryResolutionMapping
 } from "./domResolver/resolveDOMQuery";
 export { syncDOMState } from "./sync/syncDOMState";
 export { syncFocusState } from "./sync/syncFocusState";

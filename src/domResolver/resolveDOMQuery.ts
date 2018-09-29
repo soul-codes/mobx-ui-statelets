@@ -4,16 +4,21 @@ import DOMQuery, { InferDOMQueryAPI } from "../domQuery/DomQuery";
 const domQuerySources = new WeakMap<Component, Set<DOMQuery>>();
 
 /**
+ * Creates a React component decoator that sets up headless DOM query resolution
+ * within the life-cycle of the component.
+ *
+ * @param resolutions The method should use the component context to emit
+ * DOM query resolutions that should be active while the component is active.
+ * This method will automatically be called on component mount as well as on
+ * component update.
+ *
+ * @typeparam TComponent The type of the component that will resolve the DOM query.
+ * @typeparam TMapping The type of the resolution mapping.
  */
 export function resolveDOMQuery<
   TComponent extends Component<any, any, any>,
-  TResolutions extends DOMQueryResolution<any>[]
->(
-  resolutions: (
-    component: TComponent,
-    resolveFn: typeof resolve
-  ) => TResolutions
-) {
+  TMapping extends DOMQueryResolutionMapping<any>[]
+>(resolutions: (component: TComponent, resolveFn: typeof resolve) => TMapping) {
   return (Class: new (...args: any[]) => TComponent) => {
     const componentDidMount = Class.prototype.componentDidMount;
     const componentDidUpdate = Class.prototype.componentDidUpdate;
@@ -45,7 +50,7 @@ export function resolveDOMQuery<
  */
 function bootstrapResolution(
   component: Component,
-  resolutions: DOMQueryResolution<DOMQuery>[]
+  resolutions: DOMQueryResolutionMapping<DOMQuery>[]
 ) {
   const states = domQuerySources.get(component) as Set<DOMQuery>;
   const newStates = new Set<DOMQuery>();
@@ -81,17 +86,17 @@ const $resolution = Symbol("Subscription");
 function resolve<TDOMQuery extends DOMQuery>(
   domQuery: TDOMQuery,
   resolution: InferDOMQueryAPI<TDOMQuery>
-): DOMQueryResolution<TDOMQuery> {
+): DOMQueryResolutionMapping<TDOMQuery> {
   const result = { domQuery, resolution };
   Object.defineProperty(result, $resolution, {
     value: true,
     enumerable: false,
     configurable: false
   });
-  return result as DOMQueryResolution<TDOMQuery>;
+  return result as DOMQueryResolutionMapping<TDOMQuery>;
 }
 
-export interface DOMQueryResolution<TDOMQuery extends DOMQuery> {
+export interface DOMQueryResolutionMapping<TDOMQuery extends DOMQuery> {
   domQuery: TDOMQuery;
   resolution: InferDOMQueryAPI<TDOMQuery>;
   [$resolution]: true;
