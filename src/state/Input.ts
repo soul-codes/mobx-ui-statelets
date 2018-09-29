@@ -117,9 +117,10 @@ export default class Input<TValue = any> extends State {
     this._inputValue = void 0;
 
     if (value === void 0) value = lastValue;
-    if (deepEqual(value, this._inputValue) && !this.isConfirmed) return;
 
     value = this.normalizeValue(value);
+    if (deepEqual(value, this.value) && !this.isConfirmed) return;
+
     this._isConfirmed = true;
 
     const shouldValidate = ((this.options && this.options.revalidate) ||
