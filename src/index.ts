@@ -11,6 +11,12 @@ export {
   BaseInputValue
 } from "./state/Input";
 export {
+  default as DataQuery,
+  DataQueryOptions,
+  FetchQuery,
+  FetchResult
+} from "./state/DataQuery";
+export {
   default as InputGroup,
   InputGroupContent,
   InferInputGroupShape

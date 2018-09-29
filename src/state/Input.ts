@@ -2,12 +2,12 @@ import { observable, action } from "mobx";
 import Validator, { privateInputValidators } from "./Validator";
 import State, { StateDevOptions } from "./State";
 import Form, { privateInputForms } from "./Form";
-import { Falsy, MaybePromise } from "../utils/types";
-import Task from "./Task";
+import { Falsy } from "../utils/types";
 import InputGroup, { privateInputGroup } from "./InputGroup";
 import FocusState from "../state/Focus";
 import HoverState from "../state/Hover";
 import BoundsQuery from "../domQuery/Bounds";
+import DataQuery from "./DataQuery";
 
 let confirmCounter = 0;
 let confirmStack: Input<any>[] = [];
@@ -38,10 +38,12 @@ export default class Input<
     this._value = defaultValue === void 0 ? ("" as TValue) : defaultValue;
 
     const choices = options && options.choices;
-    if (typeof choices === "function") {
-      this._choiceTask = new Task(choices);
+    if (choices instanceof DataQuery) {
+      this._choiceQuery = choices;
     } else {
-      this._choices = choices || [];
+      this._choiceQuery = new DataQuery({
+        fetch: choices
+      });
     }
   }
 
@@ -58,7 +60,7 @@ export default class Input<
   input(value: TValue) {
     if (this.isBeingSubmitted) return;
     this._inputValue = value;
-    this.queryChoices();
+    this._choiceQuery && this._choiceQuery.fetch(value);
     this.validate("input");
   }
 
@@ -200,49 +202,6 @@ export default class Input<
   }
 
   /**
-   * Force querying of input choices.
-   */
-  @action
-  async queryChoices() {
-    const choiceTask = this._choiceTask;
-    if (!choiceTask) return;
-
-    const { options, inputValue } = this;
-    const choiceQueryLimit = options && options.choiceQueryLimit;
-    this._lastQuery = inputValue;
-    await choiceTask.invoke({
-      inputValue: this.inputValue,
-      limit: choiceQueryLimit === void 0 ? Infinity : choiceQueryLimit,
-      offset: 0
-    });
-    this._choices = choiceTask.result ? choiceTask.result.choices : [];
-  }
-
-  /**
-   * Query more choices based on the current input value.
-   */
-  @action
-  async queryMoreChoices() {
-    const choiceTask = this._choiceTask;
-    if (!choiceTask) return;
-    if (choiceTask.isPending) return choiceTask.promise as Promise<void>;
-    if (!choiceTask.result) return this.queryChoices();
-
-    const { inputValue } = this;
-    if (inputValue !== this._lastQuery) return this.queryChoices();
-    if (choiceTask.result.stats.isDone) return;
-
-    const { options } = this;
-    const choiceQueryLimit = options && options.choiceQueryLimit;
-    await choiceTask.invoke({
-      inputValue: this.inputValue,
-      limit: choiceQueryLimit === void 0 ? Infinity : choiceQueryLimit,
-      offset: this._choices.length
-    });
-    this._choices.push(...choiceTask.result.choices);
-  }
-
-  /**
    * Request validation on the input. This goes through all validators that
    * are associated with the input.
    *
@@ -328,31 +287,10 @@ export default class Input<
   }
 
   /**
-   * Returns true if it is possible to load more choices.
+   * Gets choice query state.
    */
-  get hasMoreChoices() {
-    const choiceTask = this._choiceTask;
-    if (!choiceTask) return false;
-    if (!choiceTask.result) return true;
-    return !choiceTask.result.stats.isDone;
-  }
-
-  /**
-   * Returns the total number of choices.
-   */
-  get totalChoices() {
-    const choiceTask = this._choiceTask;
-    if (!choiceTask) return this._choices.length;
-    if (!choiceTask.result) return null;
-    const total = choiceTask.result.stats.total;
-    return total === void 0 ? null : total;
-  }
-
-  /**
-   * Returns true if the choices are being asynchronously fetched.
-   */
-  get isQueryingChoices() {
-    return Boolean(this._choiceTask && this._choiceTask.isPending);
+  get choiceQueryState() {
+    return this._choiceQuery;
   }
 
   /**
@@ -423,14 +361,9 @@ export default class Input<
   private _confirmId = 0;
   private _validationId = 0;
 
-  private _choiceTask: Task<
-    InputChoiceQuery<TValue>,
-    InputChoiceQueryResult<TValue, TChoiceMetadata>
-  > | null = null;
-
   @observable.shallow
   private _choices: InputChoice<TValue, TChoiceMetadata>[] = [];
-  private _lastQuery: TValue | null = null;
+  private _choiceQuery: DataQuery<TValue, InputChoice<TValue, TChoiceMetadata>>;
 }
 
 /**
@@ -480,24 +413,14 @@ export interface InputOptions<
    *
    * Two forms are allowed:
    * - The constant form should simply enumerate all choices statically.
-   * - The function form depends on the current input value, and should return
-   *   (or async resolve to) the choices along with stat information that
-   *   indicates in some way how many choices we are anticipating.
+   * - A DataQuery state that would enumerate the choices.
    *
    * @param query contains extra contextual information that you should use to
    * determine what choices to fetch.
    */
   choices?:
-    | ((
-        query: InputChoiceQuery<TValue>
-      ) => MaybePromise<InputChoiceQueryResult<TValue, TChoiceMetadata>>)
-    | InputChoice<TValue, TChoiceMetadata>[];
-
-  /**
-   * Specifies an upper limit on how many choices should ever be queried given
-   * any input value.
-   */
-  choiceQueryLimit?: number;
+    | InputChoice<TValue, TChoiceMetadata>[]
+    | DataQuery<TValue, InputChoice<TValue, TChoiceMetadata>>;
 
   /**
    * Specifies how confirming this input will synchronously confirm the other
@@ -549,56 +472,4 @@ export interface InputChoice<TValue extends BaseInputValue, TChoiceMetadata> {
    * sorting properties.
    */
   metadata?: TChoiceMetadata;
-}
-
-/**
- * Describes the input choice query
- */
-export interface InputChoiceQuery<TValue extends BaseInputValue> {
-  /**
-   * The input value from which the choices should be queried
-   */
-  inputValue: TValue;
-
-  /**
-   * The start index where the choices should be queried
-   */
-  offset: number;
-
-  /**
-   * How many choices should be obtained within this round.
-   */
-  limit: number;
-}
-
-/**
- * Describes input's choice query result.
- * @typeparam TValue the input's value type
- * @typeparam TChoiceMetadata the input's choice metadata type.
- */
-export interface InputChoiceQueryResult<
-  TValue extends BaseInputValue,
-  TChoiceMetadata
-> {
-  /**
-   * The choices that were found in the query.
-   */
-  choices: InputChoice<TValue, TChoiceMetadata>[];
-
-  /**
-   * Describes the query statistics (if the total number of choices is known,
-   * or if there are no more choices). When either of the stats is fullfilled
-   * then the input will not query any more choices for that input value.
-   */
-  stats: {
-    /**
-     * Specifies true if there are no more choices to query.
-     */
-    isDone?: boolean;
-
-    /**
-     * Specifies a total number of choices.
-     */
-    total?: number;
-  };
 }
