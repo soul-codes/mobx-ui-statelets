@@ -82,7 +82,7 @@ export default class DataQuery<TQuery, TItem> extends State {
     return Boolean(this._fetchTask && this._fetchTask.isPending);
   }
 
-  @observable.shallow
+  @observable.ref
   private _items: TItem[] = [];
   private _lastQuery?: TQuery;
   private _fetchTask?: Task<FetchQuery<TQuery>, FetchResult<TItem>>;

@@ -321,10 +321,10 @@ export default class Input<TValue = any> extends State {
   readonly hoverState = new HoverState();
   readonly boundsQuery = new BoundsQuery();
 
-  @observable.shallow
+  @observable.ref
   private _value: TValue;
 
-  @observable.shallow
+  @observable.ref
   private _inputValue?: TValue;
 
   @observable
