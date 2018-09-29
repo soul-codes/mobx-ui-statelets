@@ -7,7 +7,6 @@ import InputGroup, { privateInputGroup } from "./InputGroup";
 import FocusState from "../state/Focus";
 import HoverState from "../state/Hover";
 import BoundsQuery from "../domQuery/Bounds";
-import DataQuery from "./DataQuery";
 import deepEqual from "../utils/deepEqual";
 
 let confirmCounter = 0;
@@ -19,9 +18,8 @@ let validationCandidates: Input<any>[] = [];
  * a separate input value state and state for querying assistive input choices.
  *
  * @typeparam TValue the input's value type.
- * @typeparam TChoiceMetadata optional type for the metadata of input choices.
  */
-export default class Input<TValue = any, TChoiceMetadata = any> extends State {
+export default class Input<TValue = any> extends State {
   /**
    * Instantiates the input state.
    * @param defaultValue Specifies the input's initial value.
@@ -30,19 +28,10 @@ export default class Input<TValue = any, TChoiceMetadata = any> extends State {
    */
   constructor(
     readonly defaultValue: TValue,
-    readonly options?: InputOptions<TValue, TChoiceMetadata>
+    readonly options?: InputOptions<TValue>
   ) {
     super(options);
     this._value = defaultValue;
-
-    const choices = options && options.choices;
-    if (choices instanceof DataQuery) {
-      this._choiceQuery = choices;
-    } else {
-      this._choiceQuery = new DataQuery({
-        fetch: choices
-      });
-    }
   }
 
   /**
@@ -58,7 +47,6 @@ export default class Input<TValue = any, TChoiceMetadata = any> extends State {
   input(value: TValue) {
     if (this.isBeingSubmitted) return;
     this._inputValue = value;
-    this._choiceQuery && this._choiceQuery.fetch(value);
     this.validate("input");
   }
 
@@ -278,20 +266,6 @@ export default class Input<TValue = any, TChoiceMetadata = any> extends State {
   }
 
   /**
-   * Gets the current set of available choices.
-   */
-  get choices() {
-    return this._choices;
-  }
-
-  /**
-   * Gets choice query state.
-   */
-  get choiceQueryState() {
-    return this._choiceQuery;
-  }
-
-  /**
    * Returns true if all validators on this input are conclusively valid.
    * @see [[Validator.isConclusivelyValid]]
    */
@@ -358,10 +332,6 @@ export default class Input<TValue = any, TChoiceMetadata = any> extends State {
 
   private _confirmId = 0;
   private _validationId = 0;
-
-  @observable.shallow
-  private _choices: InputChoice<TValue, TChoiceMetadata>[] = [];
-  private _choiceQuery: DataQuery<TValue, InputChoice<TValue, TChoiceMetadata>>;
 }
 
 /**
@@ -377,10 +347,8 @@ function defaultShouldValidate<TValue>(value: TValue, oldValue: TValue) {
 /**
  * Describes options customizing an input UI state.
  * @typeparam TValue the input's value type
- * @typeparam TChoiceMetadata the input's choice metadata type.
  */
-export interface InputOptions<TValue = any, TChoiceMetadata = any>
-  extends StateDevOptions {
+export interface InputOptions<TValue = any> extends StateDevOptions {
   /**
    * Specifies how the input value should be normalized before it gets parsed
    * into a domain value. You can use this hook to e.g. remove extra spaces
@@ -401,22 +369,6 @@ export interface InputOptions<TValue = any, TChoiceMetadata = any>
    * @param oldValue the previously confirmed input value
    */
   revalidate?: (value: TValue, oldValue: TValue) => boolean;
-
-  /**
-   * Specifies the assitive choices that should be made available to the input.
-   * This can be used for inputs that show themselves as dropdowns, radios,
-   * or inputs with autocompletion feature.
-   *
-   * Two forms are allowed:
-   * - The constant form should simply enumerate all choices statically.
-   * - A DataQuery state that would enumerate the choices.
-   *
-   * @param query contains extra contextual information that you should use to
-   * determine what choices to fetch.
-   */
-  choices?:
-    | InputChoice<TValue, TChoiceMetadata>[]
-    | DataQuery<TValue, InputChoice<TValue, TChoiceMetadata>>;
 
   /**
    * Specifies how confirming this input will synchronously confirm the other
@@ -446,21 +398,3 @@ export interface InputOptions<TValue = any, TChoiceMetadata = any>
 export type InferInputValue<T extends Input<any>> = T extends Input<infer V>
   ? V
   : never;
-
-/**
- * Describes an input choice
- * @typeparam TValue the input's value type
- * @typeparam TChoiceMetadata the input's choice metadata type.
- */
-export interface InputChoice<TValue = any, TChoiceMetadata = any> {
-  /**
-   * The choice value
-   */
-  value: TValue;
-
-  /**
-   * The choice metadata describing, for example, presentational properties or
-   * sorting properties.
-   */
-  metadata?: TChoiceMetadata;
-}

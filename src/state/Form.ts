@@ -16,7 +16,7 @@ import FocusState from "../state/Focus";
  * @ignore
  */
 export const privateInputForms = createWeakProperty(
-  (instance: Input<any, any>) => new Set<Form<any, any, any>>()
+  (instance: Input<any>) => new Set<Form<any, any, any>>()
 );
 
 /**

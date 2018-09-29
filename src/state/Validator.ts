@@ -15,7 +15,7 @@ import HoverState from "../state/Hover";
  * @ignore
  */
 export const privateInputValidators = createWeakProperty(
-  (instance: Input<any, any>) => new Set<Validator<any, any, any, any>>()
+  (instance: Input<any>) => new Set<Validator<any, any, any, any>>()
 );
 
 /**
