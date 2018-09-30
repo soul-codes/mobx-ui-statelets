@@ -80,7 +80,6 @@ export default class Validator<
    */
   @action
   async validate() {
-    this._hasEverValidated = true;
     if (this.parseResult.isError) return;
 
     const disposeReaction = reaction(
@@ -313,18 +312,7 @@ export default class Validator<
    * - the inputs the validator depend on have been confirmed.
    */
   get isConclusive() {
-    return (
-      !this._task.isPending &&
-      this._hasEverValidated &&
-      !this.hasUnconfirmedInput
-    );
-  }
-
-  /**
-   * Returns true if domain validation has ever fully happened.
-   */
-  get hasEverValidated() {
-    return this._hasEverValidated;
+    return !this._task.isPending && !this.hasUnconfirmedInput;
   }
 
   /**
@@ -370,8 +358,6 @@ export default class Validator<
     return [...result];
   }
 
-  @observable
-  private _hasEverValidated = false;
   private _task = new Task<
     TDomainValue,
     Falsy | ValidationFailure<TDomainError, TDomainValue>
