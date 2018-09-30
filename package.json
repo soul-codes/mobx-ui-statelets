@@ -18,7 +18,7 @@
     "doc:build": "yarn doc:install && yarn doc:ts && yarn doc:jekyll",
     "doc:deploy": "gh-pages -d docs/public",
     "release": "release-it",
-    "nightly": "fluid-publish devTag=\"inc\"",
+    "nightly": "yarn prepare && fluid-publish devTag=\"dev\"",
     "tsc-watch": "rm -rf dist && tsc --watch",
     "demo-server": "webpack-serve --config ./demo/webpack.config.js --content ./demo --port 9001"
   },
