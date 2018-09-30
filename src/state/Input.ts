@@ -360,7 +360,7 @@ export interface InputOptions<TValue = any> extends StateDevOptions {
    *
    * @param value input value to normalize
    */
-  readonly normalizer?: ((value: TValue) => TValue) | Falsy;
+  readonly normalizer?: ((value: TValue) => TValue);
 
   /**
    * specifies if an input should re-validate on confirm. This defaults to
