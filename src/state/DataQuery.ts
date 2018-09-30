@@ -1,7 +1,7 @@
 import { observable, action, runInAction } from "mobx";
 import State, { StateDevOptions } from "./State";
-import { MaybePromise, Falsy } from "../utils/types";
-import Task, { AddCancelHandler, TaskAction } from "./Task";
+import { Falsy } from "../utils/types";
+import Task, { TaskAction } from "./Task";
 import deepEqual from "../utils/deepEqual";
 
 export default class DataQuery<TQuery, TItem> extends State {
