@@ -2,6 +2,7 @@ export { default as State } from "./state/State";
 export {
   default as Task,
   TaskAction,
+  TaskHelpers,
   AddCancelHandler,
   InferTaskArg
 } from "./state/Task";
