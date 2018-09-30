@@ -171,7 +171,7 @@ function guardSubmit<
   SubmitResult<TActionResult> | FormValidationError,
   SubmitProgress<TActionProgress>
 > {
-  return async (unusedArg, addCancelHandler, reportProgress) => {
+  return async (unusedArg, helpers) => {
     const { unconfirmedInputs } = form;
     if (form.options.autoConfirm) {
       unconfirmedInputs.forEach(input => input.markAsConfirmed());
@@ -201,17 +201,16 @@ function guardSubmit<
       focusedInput.focusState.blur();
 
     const innerReportProgress = (actionProgress: TActionProgress) =>
-      void reportProgress({ phase: "action", actionProgress });
+      void helpers.reportProgress({ phase: "action", actionProgress });
 
-    reportProgress({
+    helpers.reportProgress({
       phase: "action",
       actionProgress: form.options.initialProgress
     });
-    const result = await submitAction(
-      form.value,
-      addCancelHandler,
-      innerReportProgress
-    );
+    const result = await submitAction(form.value, {
+      ...helpers,
+      reportProgress: innerReportProgress
+    });
     return { outcome: "submit" as "submit", result };
   };
 }

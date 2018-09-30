@@ -110,11 +110,15 @@ export default class Task<TArg, TResult, TProgress = void> extends State {
 
     this._isPending = false;
     this._progress = void 0;
-    result = (this.action || 0)(
-      args,
-      invokeInstance.addCancelHandler,
+    const helpers: TaskHelpers<TProgress> = {
+      onCancel: invokeInstance.addCancelHandler,
+      get isCanceled() {
+        return invokeInstance.isCanceled;
+      },
       reportProgress
-    );
+    };
+
+    result = (this.action || 0)(args, helpers);
 
     if (result instanceof Promise) {
       this._isPending = true;
@@ -185,9 +189,14 @@ export type AddCancelHandler = (handler: () => void) => void;
  */
 export type TaskAction<TArg, TResult, TProgress> = (
   arg: TArg,
-  addCancelHandler: AddCancelHandler,
-  reportProgress: (progress: TProgress) => void
+  helpers: TaskHelpers<TProgress>
 ) => MaybePromise<TResult>;
+
+export interface TaskHelpers<TProgress> {
+  onCancel: AddCancelHandler;
+  isCanceled: boolean;
+  reportProgress: (progress: TProgress) => void;
+}
 
 /**
  * Infers the argument type from a task state type.
