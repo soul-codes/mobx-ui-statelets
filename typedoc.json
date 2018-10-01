@@ -3,6 +3,7 @@
   "out": "docs/jekyll/api",
   "theme": "docs/typedoc-theme/src/default",
   "gaID": "UA-126202302-2",
+  "readme": "none",
   "ignoreCompilerErrors": false,
   "excludePrivate": true,
   "excludeNotExported": true,
