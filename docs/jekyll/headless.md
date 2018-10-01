@@ -46,7 +46,8 @@ nature of that state matches any of the following criteria:
 1. The state is reasonably re-usable as the logic of other visual components.
 1. The state affects how other headless state gets updated.
 
-The rationale is that each of these criteria violates the encapsulation
+The rationale is that, except for the reusability criterion, each of these
+criteria violates the encapsulation
 characteristics intended of React component state: private to the component
 and its chilldren, and dies with the component. This violation is in fact
 a rationale for moving domain state out of the React component hierarchy.
