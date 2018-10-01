@@ -1,0 +1,112 @@
+* {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+
+a {
+  transition: text-shadow 0.2s;
+}
+a:hover,
+a:active {
+  text-shadow: 0px 0px 0.15em;
+  text-decoration: none !important;
+}
+
+.tsd-page-toolbar {
+  background: linear-gradient(120deg, #004e92, #000428);
+  color: white;
+  border: none;
+  box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.4);
+}
+
+.tsd-page-toolbar a {
+  color: white;
+}
+
+.tsd-page-title {
+  background: linear-gradient(120deg, #004e92, #000428);
+  color: white;
+}
+
+.tsd-page-title h1 {
+  margin-top: 0.5em;
+  font-size: 1.5em;
+  font-weight: normal;
+}
+
+.tsd-breadcrumb a {
+  color: #eeeeee;
+  text-decoration: none;
+  transition: color 0.2s, text-shadow 0.2s;
+}
+
+.tsd-breadcrumb a:hover {
+  color: #88bbff;
+}
+
+.tsd-panel {
+  position: relative;
+  top: 0px;
+  left: 0px;
+  background-color: #004e9202;
+  box-shadow: -4px 4px 10px rgba(0, 0, 0, 0.25);
+  transition: top 0.1s, left 0.1s, box-shadow 0.1s, background-color 0.1s;
+}
+
+.tsd-panel:hover {
+  top: -4px;
+  left: 4px;
+  box-shadow: -8px 8px 10px rgba(0, 0, 0, 0.25);
+  background-color: #004e9210;
+}
+
+.tsd-index-panel {
+  background-color: #004e9210;
+}
+
+.tsd-signature-type {
+  color: green;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  line-height: 1.5em;
+}
+
+.tsd-member .tsd-anchor + h3 {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  color: #004e92;
+}
+
+.tsd-is-not-exported {
+  display: block;
+}
+
+table.tsd-type-parameters {
+  display: table;
+  width: 100%;
+}
+
+table.tsd-type-parameters > tbody > tr > td {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+td > .tsd-typography p:last-child {
+  margin-top: 0px;
+}
+td > .tsd-typography p:first-child {
+  margin-bottom: 0px;
+}
+
+.tsd-type-parameter-name {
+  color: green;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-weight: bold;
+  font-style: normal;
+  width: 1px;
+  max-width: 33%;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.tsd-navigation a {
+  transition: text-shadow 0.2s;
+}

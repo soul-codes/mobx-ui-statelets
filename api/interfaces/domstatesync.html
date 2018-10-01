@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ValidationFailure | mobx-ui-statelets</title>
+	<title>DOMStateSync | mobx-ui-statelets</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -27,10 +27,10 @@
 					<a href="../globals.html">(package)</a>
 				</li>
 				<li>
-					<a href="validationfailure.html">ValidationFailure</a>
+					<a href="domstatesync.html">DOMStateSync</a>
 				</li>
 			</ul>
-			<h1>Interface ValidationFailure</h1>
+			<h1>Interface DOMStateSync</h1>
 		</div>
 	</div>
 </header>
@@ -40,8 +40,14 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Describes a validation error, both for parsing and for domain logic.</p>
+						<p>A DOM state sync function that can be used as an imperative update method
+						from within a DOM state sync callback, but also as a decorator factory.</p>
 					</div>
+					<dl class="tsd-comment-tags">
+						<dt>see</dt>
+						<dd><p><a href="../globals.html#syncdomstate">syncDOMState</a></p>
+						</dd>
+					</dl>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-type-parameters">
@@ -59,48 +65,137 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td class="tsd-type-parameter-name">TError            </td>
+							<td class="tsd-type-parameter-name">TElement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLElement</span>            </td>
 							<td>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>the kind of HTML element that can be synced.</p>
+									</div>
+								</div>
 							</td>
 						</tr>
 						<tr>
-							<td class="tsd-type-parameter-name">TCorrection            </td>
+							<td class="tsd-type-parameter-name">TState            </td>
 							<td>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>the shape of the DOM state that is needed to sync.</p>
+									</div>
+								</div>
 							</td>
 						</tr>
 					</tbody>
 				</table>
 			</section>
-			<section class="tsd-panel-group tsd-index-group">
-				<section class="tsd-panel tsd-index-panel">
-					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-kind-interface tsd-has-type-parameter tsd-is-external">
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="validationfailure.html#correction" class="tsd-kind-icon">correction</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="validationfailure.html#error" class="tsd-kind-icon">error</a></li>
-							</ul>
-						</section>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-				<a name="correction" class="tsd-anchor"></a>
-				<h3>correction</h3>
-				<div class="tsd-signature tsd-kind-icon">correction<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">TCorrection</a></div>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Optionally provides the correction of the error.</p>
-					</div>
-				</div>
-				</section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-				<a name="error" class="tsd-anchor"></a>
-				<h3>error</h3>
-				<div class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TError</span></div>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Describes the error.</p>
-					</div>
-				</div>
+			<section class="tsd-panel">
+				<h3 class="tsd-before-signature">Callable</h3>
+				<ul class="tsd-signatures ">
+					<li class="tsd-signature tsd-kind-icon">__call<span class="tsd-signature-symbol">(</span>el<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TElement</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#falsy" class="tsd-signature-type">Falsy</a>, state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>This overloads imperatively updates the DOM element state based on the
+								supplied state information.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>el: <span class="tsd-signature-type">TElement</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#falsy" class="tsd-signature-type">Falsy</a></h5>
+							</li>
+							<li>
+								<h5>state: <span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></h5>
+								<div class="tsd-comment tsd-typography">
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+				<ul class="tsd-signatures ">
+					<li class="tsd-signature tsd-kind-icon">__call&lt;TComponent&gt;<span class="tsd-signature-symbol">(</span>syncProps<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>This overload creates a React component class decorator that syncs the
+								specified element&#39;s state.</p>
+							</div>
+						</div>
+						<table class="tsd-type-parameters">
+							<thead>
+								<tr>
+									<th>
+										Type parameter
+									</th>
+									<th>
+										Description
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="tsd-type-parameter-name">TComponent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Component</span>            </td>
+									<td>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>syncProps: <span class="tsd-signature-type">function</span></h5>
+								<div class="tsd-comment tsd-typography">
+								</div>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-siganture">
+										<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>component<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TComponent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#falsy" class="tsd-signature-type">Falsy</a></li>
+										</ul>
+										<ul class="tsd-descriptions">
+											<li class="tsd-description">
+												<h4 class="tsd-parameters-title">Parameters</h4>
+												<ul class="tsd-parameters">
+													<li>
+														<h5>component: <span class="tsd-signature-type">TComponent</span></h5>
+													</li>
+												</ul>
+												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span>
+													<span class="tsd-signature-symbol"> | </span>
+													<a href="../globals.html#falsy" class="tsd-signature-type">Falsy</a>
+												</h4>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">function</span></h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-siganture">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>component<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>component: <span class="tsd-signature-type">object</span></h5>
+												<ul class="tsd-parameters">
+												</ul>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -109,15 +204,7 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-has-type-parameter tsd-is-external">
-						<a href="validationfailure.html" class="tsd-kind-icon">Validation<wbr>Failure</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="validationfailure.html#correction" class="tsd-kind-icon">correction</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="validationfailure.html#error" class="tsd-kind-icon">error</a>
-							</li>
-						</ul>
+						<a href="domstatesync.html" class="tsd-kind-icon">DOMState<wbr>Sync</a>
 					</li>
 				</ul>
 				<ul class="after-current">
