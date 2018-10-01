@@ -18,7 +18,7 @@ export interface DevTextInputProps {
 })
 @syncFocusState((component: DevTextInput) => ({
   el: component.el,
-  focusState: component.props.input.focusState
+  state: component.props.input.focusState
 }))
 export default class DevTextInput extends Component<DevTextInputProps> {
   render() {

@@ -12,7 +12,7 @@ export interface DevComboBoxProps<TValue> {
 
 @syncFocusState((component: DecComboBox<any>) => ({
   el: component.el,
-  focusState: component.props.input.focusState
+  state: component.props.input.focusState
 }))
 export default class DecComboBox<TValue> extends Component<
   DevComboBoxProps<TValue>
