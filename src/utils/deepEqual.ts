@@ -3,6 +3,11 @@ import { isObservableArray } from "mobx";
 const hasOwnProperty = (obj: Object, prop: string) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
+/**
+ * @ignore
+ * @param a
+ * @param b
+ */
 export default function deepEqual(a: any, b: any): boolean {
   if (isEffectivelyArray(a)) {
     if (!isEffectivelyArray(b) || a.length !== b.length) return false;
