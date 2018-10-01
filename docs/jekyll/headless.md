@@ -43,6 +43,7 @@ nature of that state matches any of the following criteria:
 
 1. The state is consumed by a sibling, a parent or a cousin component.
 1. The state persists after the component unmounts.
+1. The state is reasonably re-usable as the logic of other visual components.
 1. The state affects how other headless state gets updated.
 
 The rationale is that each of these criteria violates the encapsulation
