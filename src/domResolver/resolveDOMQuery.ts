@@ -75,8 +75,6 @@ function removeSubscription(component: Component) {
   states.forEach(state => state.removeProjection(component));
 }
 
-const $resolution = Symbol("Subscription");
-
 /**
  * Creates a subscription
  * @param domQuery The state to subscribe to
@@ -88,16 +86,10 @@ function resolve<TDOMQuery extends DOMQuery>(
   resolution: InferDOMQueryAPI<TDOMQuery>
 ): DOMQueryResolutionMapping<TDOMQuery> {
   const result = { domQuery, resolution };
-  Object.defineProperty(result, $resolution, {
-    value: true,
-    enumerable: false,
-    configurable: false
-  });
   return result as DOMQueryResolutionMapping<TDOMQuery>;
 }
 
 export interface DOMQueryResolutionMapping<TDOMQuery extends DOMQuery> {
   domQuery: TDOMQuery;
   resolution: InferDOMQueryAPI<TDOMQuery>;
-  [$resolution]: true;
 }
