@@ -17,7 +17,7 @@ import deepEqual from "../utils/deepEqual";
  *
  * @typeparam ItemType The type of each item to be returned from the fetch.
  */
-export default class DataQuery<QueryType, ItemType> extends State {
+export default class DataQuery<QueryType = any, ItemType = any> extends State {
   /**
    * @param options Data Query-specific options
    */
@@ -69,8 +69,7 @@ export default class DataQuery<QueryType, ItemType> extends State {
   async fetchMore() {
     const fetchTask = this._fetchTask;
     if (fetchTask.isPending) return fetchTask.promise as Promise<void>;
-    if (this._lastSuccessfulResult && this._lastSuccessfulResult.stats.isDone)
-      return;
+    if (this._lastSuccessfulResult && this._lastSuccessfulResult.isDone) return;
 
     const query = this._lastAttemptedQuery;
     if (query === void 0) return;
@@ -114,7 +113,7 @@ export default class DataQuery<QueryType, ItemType> extends State {
    * If no successful fetch has ever happened with the last attempted query,
    * then this returns `null`.
    *
-   * @see [[FetchResult]]
+   * @see [[FetchResultWithStats]]
    */
   get hasMoreItems() {
     if (!this._fetchTask) return false;
@@ -122,7 +121,7 @@ export default class DataQuery<QueryType, ItemType> extends State {
     if (!result) return null;
     if (!deepEqual(this._lastAttemptedQuery, this._lastSuccessfulQuery))
       return null;
-    const { total, isDone } = result.stats;
+    const { total, isDone } = result;
 
     if (isDone) return false;
     if (total === void 0 || total <= this._items.length) return false;
@@ -131,7 +130,7 @@ export default class DataQuery<QueryType, ItemType> extends State {
 
   /**
    * Returns the number of total items, once this is known. If the fetch function
-   * returns either `isDone` or `total` (see [[FetchResult]]), the number will
+   * returns either `isDone` or `total` (see [[FetchResultWithStats]]), the number will
    * be respectively be the number of items so far, or the total number.
    *
    * In case the number is not known, this returns `null`.
@@ -140,7 +139,7 @@ export default class DataQuery<QueryType, ItemType> extends State {
     if (!this._fetchTask) return this._items.length;
     const result = this._lastSuccessfulResult;
     if (!result) return null;
-    const { total, isDone } = result.stats;
+    const { total, isDone } = result;
 
     if (isDone) return this._items.length;
     if (typeof total === "number") return total;
@@ -202,16 +201,17 @@ export default class DataQuery<QueryType, ItemType> extends State {
 
   @observable.ref
   private _lastSuccessfulQuery?: QueryType;
-  private _lastSuccessfulResult?: FetchResult<ItemType>;
+  private _lastSuccessfulResult?: FetchResultWithStats<ItemType>;
   private _fetchTask = new Task(
     async (q: FetchQuery<QueryType> & { append: boolean }, helpers) => {
       const result = await this.options.fetch(q, helpers);
       if (result && !helpers.isCanceled) {
         runInAction(() => {
-          this._items = q.append
-            ? [...this._items, ...result.items]
-            : result.items;
-          this._lastSuccessfulResult = result;
+          const items = Array.isArray(result) ? result : result.items;
+          this._items = q.append ? [...this._items, ...items] : items;
+          this._lastSuccessfulResult = Array.isArray(result)
+            ? { items }
+            : result;
           this._lastSuccessfulQuery = q.query;
         });
       }
@@ -227,11 +227,21 @@ export default class DataQuery<QueryType, ItemType> extends State {
  */
 export interface DataQueryOptions<QueryType, ItemType> extends StateDevOptions {
   /**
-   * Specfies the fetch logic, which is similar to a [[Task]] action. this should
-   * resolve to a standardized [[FetchResult]] structure, or a falsy value to
-   * indicate that the fetch encountered an error.
+   * Specfies the fetch logic, which is essentially a [[Task]] action. This should
+   * resolve to a standardized [[FetchResultWithStats]] structure, or a plain
+   * array of your items, or a falsy value to indicate that the fetch encountered
+   * an error.
+   *
+   * You should also take advantage of the [[TaskHelpers]] to cancel fetch
+   * attempts properly and not e.g. leave your AJAX request implementation hanging.
+   *
+   * Note that the fetch action cannot currently report progress.
    */
-  fetch: TaskAction<FetchQuery<QueryType>, FetchResult<ItemType> | Falsy, void>;
+  fetch: TaskAction<
+    FetchQuery<QueryType>,
+    FetchResultWithStats<ItemType> | ItemType[] | Falsy,
+    void
+  >;
 
   /**
    * Specifies the upper limit of items that should be fetched. This gets passed
@@ -276,7 +286,7 @@ export interface FetchQuery<QueryType> {
  *
  * @see [[DataQueryOptions]]
  */
-export interface FetchResult<ItemType> {
+export interface FetchResultWithStats<ItemType> {
   /**
    * The actual items that result from the fetch. Note that this should be the
    * items starting at the offset given in the [[FetchQuery]]. For instance,
@@ -286,20 +296,15 @@ export interface FetchResult<ItemType> {
   items: ItemType[];
 
   /**
-   * Specifies the statistics about the fetch.
+   * If true, this will tell the [[DataQuery]] not to ignore subsequent
+   * [[DataQuery.fetchMore]] calls until a new fresh fetch. This will also
+   * update [[DataQuery.totalItems]]
    */
-  stats: {
-    /**
-     * If true, this will tell the [[DataQuery]] not to ignore subsequent
-     * [[DataQuery.fetchMore]] calls until a new fresh fetch. This will also
-     * update [[DataQuery.totalItems]]
-     */
-    isDone?: boolean;
+  isDone?: boolean;
 
-    /**
-     * If specified, this will be updated in the [[DataQuery]] and will be used
-     * as the value of [[DataQuery.totalItems]].
-     */
-    total?: number;
-  };
+  /**
+   * If specified, this will be updated in the [[DataQuery]] and will be used
+   * as the value of [[DataQuery.totalItems]].
+   */
+  total?: number;
 }

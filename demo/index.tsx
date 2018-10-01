@@ -82,8 +82,8 @@ const fetchGithubRepos = new DataQuery({
     try {
       if (!query.query) {
         return {
-          items: [],
-          stats: { isDone: true }
+          items: [] as { id: number; name: string }[],
+          isDone: true
         };
       }
 
@@ -99,9 +99,7 @@ const fetchGithubRepos = new DataQuery({
       };
       return {
         items: result.data.items,
-        stats: {
-          total: result.data.total_count
-        }
+        total: result.data.total_count
       };
     } catch (ex) {
       return false;

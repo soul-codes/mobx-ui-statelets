@@ -11,7 +11,7 @@ export {
   default as DataQuery,
   DataQueryOptions,
   FetchQuery,
-  FetchResult
+  FetchResultWithStats
 } from "./state/DataQuery";
 export {
   default as InputGroup,
