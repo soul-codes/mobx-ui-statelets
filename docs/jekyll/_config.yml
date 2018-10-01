@@ -31,3 +31,5 @@ theme: jekyll-theme-cayman
 plugins:
   - jemoji
   - jekyll-relative-links
+
+google_analytics: UA-126202302-2

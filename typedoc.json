@@ -2,6 +2,7 @@
   "mode": "file",
   "out": "docs/jekyll/api",
   "theme": "docs/typedoc-theme/src/default",
+  "gaID": "UA-126202302-2",
   "ignoreCompilerErrors": false,
   "excludePrivate": true,
   "excludeNotExported": true,
