@@ -46,7 +46,11 @@ class InvokeInstance {
  * @typeparam TResult the task's result type
  * @typeparam TProgress the task's progress readout type
  */
-export default class Task<TArg, TResult, TProgress = void> extends State {
+export default class Task<
+  TArg = any,
+  TResult = any,
+  TProgress = any
+> extends State {
   /**
    * Instantiates the task state with an action.
    * @param action the task's action.
