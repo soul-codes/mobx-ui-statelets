@@ -12,7 +12,7 @@
     "start": "concurrently --kill-others \"yarn tsc-watch\" \"yarn demo-server\"",
     "doc:install": "cd docs/jekyll && bundler install",
     "doc:ts": "typedoc --options typedoc.json src/index.ts",
-    "doc:ts:watch": "nodemon --watch src --exec \"yarn doc:ts\" --delay 3 -e ts",
+    "doc:ts:watch": "nodemon --watch src --watch docs/typedoc-theme --exec \"rm -rf docs/jekyll/api && yarn doc:ts\" --delay 1 -e ts,hbs,css",
     "doc:jekyll": "jekyll build -s docs/jekyll -d docs/public",
     "doc:start": "concurrently --kill-others \"yarn doc:ts:watch\" \"yarn doc:jekyll --watch --baseurl /\" \"cd docs/public && python -m SimpleHTTPServer 8000\"",
     "doc:build": "yarn doc:install && yarn doc:ts && yarn doc:jekyll",

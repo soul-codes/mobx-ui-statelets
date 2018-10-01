@@ -1,0 +1,22 @@
+<header>
+    <div class="tsd-page-toolbar">
+        <div class="container">
+            <div class="table-wrap">
+                <div class="table-cell">
+                    <a href="{{relativeURL "index.html"}}" class="title">{{project.name}} API Reference</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tsd-page-title">
+        <div class="container">
+            <ul class="tsd-breadcrumb">
+                {{#with model}}{{> breadcrumb}}{{/with}}
+            </ul>
+            <h1>{{#compact}}
+                {{model.kindString}}&nbsp;
+                {{model.name}}
+                {{/compact}}</h1>
+        </div>
+    </div>
+</header>
