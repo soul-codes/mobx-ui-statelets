@@ -169,6 +169,16 @@ export default class Input<TValue = any> extends State {
   }
 
   /**
+   * Clears the current input value. This will make the current input value the
+   * same as the store value.
+   */
+  @action
+  clear() {
+    this._inputValue = void 0;
+    this.validate("input");
+  }
+
+  /**
    * Arbitrarily flag the input as having confirmed by the user.
    */
   @action
