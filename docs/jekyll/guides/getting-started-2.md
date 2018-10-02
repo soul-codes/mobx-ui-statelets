@@ -66,7 +66,7 @@ for input value applied to focus state**. Look at the parallel:
 | controlled inputs | `onChange` event sets state                         | `value` prop receives input value state |
 | controlled focus  | `onFocus`/`onBlur` calls `reportFocus`/`reportBlur` | `syncFocusState` decorator              |
 
-Let's now try to see how we can accurately read and manipualte the button focus
+Let's now try to see how we can accurately read and manipulate the button focus
 state from the headless state. For visual clarity, we'll style a focused button
 so that it looks blatantly different from an unfocused one.
 

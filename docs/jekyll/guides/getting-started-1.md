@@ -88,6 +88,6 @@ You can inspect the `appState` global that we exported in the iframe's context t
 ### What next?
 
 At this point, we don't yet see any real benefit of headless state management
-over in-component state management. In the [next](./getting-started-2.md), we will
+over in-component state management. In the [next part](./getting-started-2.md), we will
 begin to get glimpses of this as we try to control focus state of a component
 without from the headless state perspective.
