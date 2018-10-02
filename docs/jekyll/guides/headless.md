@@ -1,6 +1,5 @@
 ---
 layout: default
-title: Introduction to headless state management
 ---
 
 # Introduction to headless state management
@@ -165,3 +164,5 @@ lifting is appropriate.
 Typically, an application that involves form components will eventually reach
 the kind of UI state complexity that headless state can help simplify. This is
 especially true if you intend to refine form user experience.
+
+{% include_relative _toc.md %}

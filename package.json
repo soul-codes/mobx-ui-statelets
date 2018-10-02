@@ -14,18 +14,20 @@
     "doc:ts": "typedoc --options typedoc.json src/index.ts",
     "doc:ts:watch": "nodemon --watch src --watch docs/typedoc-theme --exec \"rm -rf docs/jekyll/api && yarn doc:ts\" --delay 1 -e ts,hbs,css",
     "doc:jekyll": "jekyll build -s docs/jekyll -d docs/public",
-    "doc:start": "concurrently --kill-others \"yarn doc:ts:watch\" \"yarn doc:jekyll --watch --baseurl /\" \"cd docs/public && python -m SimpleHTTPServer 8000\"",
-    "doc:build": "yarn doc:install && yarn doc:ts && yarn doc:jekyll",
+    "doc:start": "concurrently --raw --kill-others \"yarn doc:ts:watch\" \"yarn doc:demo --watch\" \"yarn doc:jekyll --watch --baseurl /\" \"cd docs/public && python -m SimpleHTTPServer 8000\"",
+    "doc:build": "yarn doc:install && rm -rf docs/public && yarn doc:ts && yarn doc:demo && yarn doc:jekyll",
     "doc:deploy": "gh-pages -d docs/public",
+    "doc:demo": "rm -rf ./docs/jekyll/demo && node ./demo/copy-index.js && webpack --config ./demo/webpack.config.js",
+    "test": "jest",
     "release": "release-it",
     "nightly": "yarn prepare && fluid-publish devTag=\"dev\"",
-    "tsc-watch": "rm -rf dist && tsc --watch",
-    "demo-server": "webpack-serve --config ./demo/webpack.config.js --content ./demo --port 9001"
+    "tsc-watch": "rm -rf dist && tsc --watch"
   },
   "peerDependencies": {
     "mobx": "^5.0.3"
   },
   "devDependencies": {
+    "@types/enzyme": "^3.1.14",
     "@types/jest": "^23.3.1",
     "@types/react": "^16.3.18",
     "@types/react-dom": "^16.0.6",
@@ -35,20 +37,25 @@
     "babel-loader": "^7.1.4",
     "babel-preset-react": "^6.24.1",
     "concurrently": "^3.5.1",
+    "enzyme": "^3.6.0",
+    "enzyme-adapter-react-16": "^1.5.0",
     "fluid-publish": "^2.2.0",
+    "fs-extra": "^7.0.0",
     "gh-pages": "^2.0.0",
     "gh-pages-deploy": "^0.5.0",
     "jekyll": "^3.0.0-beta1",
-    "jest": "^23.5.0",
+    "jest": "^23.6.0",
     "mobx": "^5.0.3",
     "mobx-react": "^5.2.3",
     "nodemon": "^1.18.4",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "release-it": "^7.4.7",
+    "ts-jest": "^23.10.3",
     "typedoc": "^0.12.0",
     "typescript": "^3.0.1",
     "webpack": "^4.12.0",
+    "webpack-cli": "^3.1.2",
     "webpack-serve": "^1.0.4"
   }
 }

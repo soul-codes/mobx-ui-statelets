@@ -5,13 +5,7 @@ title: mobx-ui-statelets
 description: Headless UI state essentials
 ---
 
+- :books: [Guides](./guides/index.md)
+- :books: [API documentation](./api/index.html)
+
 {% include_relative _includes/README.md %}
-
-## Getting started
-
-Follow the [getting started guide](./getting-started.md).
-
-## Documentation
-
-- [Introduction to headless state management](./headless.md)
-- [API documentation](./api/index.html)

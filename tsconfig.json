@@ -11,8 +11,12 @@
     "outDir": "./dist",
     "declaration": true,
     "esModuleInterop": true,
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
+    "baseUrl": "src",
+    "paths": {
+      "mobx-ui-statelets": ["."]
+    }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "demo/**/*"],
   "exclude": ["node_modules"]
 }
