@@ -37,6 +37,13 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Describes how the <a href="../classes/dataquery.html">DataQuery</a> is customized.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-type-parameters">
 				<h3>Type parameters</h3>
 				<table class="tsd-type-parameters">
@@ -52,13 +59,23 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td class="tsd-type-parameter-name">TQuery            </td>
+							<td class="tsd-type-parameter-name">QueryType            </td>
 							<td>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>see <a href="../classes/dataquery.html">DataQuery</a></p>
+									</div>
+								</div>
 							</td>
 						</tr>
 						<tr>
-							<td class="tsd-type-parameter-name">TItem            </td>
+							<td class="tsd-type-parameter-name">ItemType            </td>
 							<td>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>see <a href="../classes/dataquery.html">DataQuery</a></p>
+									</div>
+								</div>
 							</td>
 						</tr>
 					</tbody>
@@ -80,11 +97,29 @@
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 				<a name="fetch" class="tsd-anchor"></a>
 				<h3>fetch</h3>
-				<div class="tsd-signature tsd-kind-icon">fetch<span class="tsd-signature-symbol">:</span> <a href="../index.html#taskaction" class="tsd-signature-type">TaskAction</a><span class="tsd-signature-symbol">&lt;</span><a href="fetchquery.html" class="tsd-signature-type">FetchQuery</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TQuery</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="fetchresult.html" class="tsd-signature-type">FetchResult</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TItem</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="../index.html#falsy" class="tsd-signature-type">Falsy</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TItem</span><span class="tsd-signature-symbol">[]</span></div>
+				<div class="tsd-signature tsd-kind-icon">fetch<span class="tsd-signature-symbol">:</span> <a href="../index.html#taskaction" class="tsd-signature-type">TaskAction</a><span class="tsd-signature-symbol">&lt;</span><a href="fetchquery.html" class="tsd-signature-type">FetchQuery</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="fetchresultwithstats.html" class="tsd-signature-type">FetchResultWithStats</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ItemType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ItemType</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><a href="../index.html#falsy" class="tsd-signature-type">Falsy</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Specfies the fetch logic, which is essentially a <a href="../classes/task.html">Task</a> action. This should
+							resolve to a standardized <a href="fetchresultwithstats.html">FetchResultWithStats</a> structure, or a plain
+							array of your items, or a falsy value to indicate that the fetch encountered
+						an error.</p>
+					</div>
+					<p>You should also take advantage of the <a href="taskhelpers.html">TaskHelpers</a> to cancel fetch
+					attempts properly and not e.g. leave your AJAX request implementation hanging.</p>
+					<p>Note that the fetch action cannot currently report progress.</p>
+				</div>
 				</section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 				<a name="fetchlimit" class="tsd-anchor"></a>
 				<h3>fetch<wbr>Limit</h3>
 				<div class="tsd-signature tsd-kind-icon">fetch<wbr>Limit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Specifies the upper limit of items that should be fetched. This gets passed
+							back to the fetch as the query, but will also affect the behavior of
+						<a href="../classes/dataquery.html#fetchmore">fetchMore</a>.</p>
+					</div>
+				</div>
 				</section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 				<a name="name" class="tsd-anchor"></a>
 				<h3>name</h3>

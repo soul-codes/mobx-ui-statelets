@@ -37,6 +37,17 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Represents an incremental data query state such as that of infinite scrollers
+						or auto-complete dropdowns.</p>
+					</div>
+					<p>The class can fetch data using any arbitrary fetch function, depending on any
+						arbitrary fetch query. The pending state of the fetch, the last successful
+					fetch query and result, as well as the data total statistics are available.</p>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-type-parameters">
 				<h3>Type parameters</h3>
 				<table class="tsd-type-parameters">
@@ -52,13 +63,24 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td class="tsd-type-parameter-name">TQuery            </td>
+							<td class="tsd-type-parameter-name">QueryType            </td>
 							<td>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The type of the data fetch query, for instance,
+										search strings or filter crieteria.</p>
+									</div>
+								</div>
 							</td>
 						</tr>
 						<tr>
-							<td class="tsd-type-parameter-name">TItem            </td>
+							<td class="tsd-type-parameter-name">ItemType            </td>
 							<td>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The type of each item to be returned from the fetch.</p>
+									</div>
+								</div>
 							</td>
 						</tr>
 					</tbody>
@@ -77,12 +99,12 @@
 							</ul>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="dataquery.html#activequery" class="tsd-kind-icon">active<wbr>Query</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="dataquery.html#attemptedquery" class="tsd-kind-icon">attempted<wbr>Query</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="dataquery.html#hasmoreitems" class="tsd-kind-icon">has<wbr>More<wbr>Items</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="dataquery.html#iserror" class="tsd-kind-icon">is<wbr>Error</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="dataquery.html#isfetching" class="tsd-kind-icon">is<wbr>Fetching</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="dataquery.html#items" class="tsd-kind-icon">items</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="dataquery.html#name" class="tsd-kind-icon">name</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="dataquery.html#pendingquery" class="tsd-kind-icon">pending<wbr>Query</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="dataquery.html#totalitems" class="tsd-kind-icon">total<wbr>Items</a></li>
 							</ul>
 							<ul class="tsd-index-list">
@@ -99,14 +121,21 @@
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures ">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Data<wbr>Query<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/dataqueryoptions.html" class="tsd-signature-type">DataQueryOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TQuery</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TItem</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="dataquery.html" class="tsd-signature-type">DataQuery</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Data<wbr>Query<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/dataqueryoptions.html" class="tsd-signature-type">DataQueryOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryType</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ItemType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="dataquery.html" class="tsd-signature-type">DataQuery</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
+						<div class="tsd-comment tsd-typography">
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>options: <a href="../interfaces/dataqueryoptions.html" class="tsd-signature-type">DataQueryOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TQuery</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TItem</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5>options: <a href="../interfaces/dataqueryoptions.html" class="tsd-signature-type">DataQueryOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryType</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ItemType</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Data Query-specific options</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="dataquery.html" class="tsd-signature-type">DataQuery</a></h4>
@@ -124,23 +153,51 @@
 				</section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 				<a name="options" class="tsd-anchor"></a>
 				<h3>options</h3>
-				<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/dataqueryoptions.html" class="tsd-signature-type">DataQueryOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TQuery</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TItem</span><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/dataqueryoptions.html" class="tsd-signature-type">DataQueryOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">QueryType</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ItemType</span><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Data Query-specific options</p>
+					</div>
+				</div>
 				</section>        <section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 				<a name="activequery" class="tsd-anchor"></a>
 				<h3>active<wbr>Query</h3>
 				<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> activeQuery<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TQuery</span></li>
+					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> activeQuery<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">QueryType</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
-								<p>Returns the query whose current results are from.</p>
+								<p>Returns the last successful query whose current results are based on. For
+									the query used in the most recent fetch attempt, including failed fetches,
+								use <a href="dataquery.html#attemptedquery">attemptedQuery</a>.</p>
 							</div>
 						</div>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span>
 							<span class="tsd-signature-symbol"> | </span>
-							<span class="tsd-signature-type">TQuery</span>
+							<span class="tsd-signature-type">QueryType</span>
+						</h4>
+					</li>
+				</ul>
+				</section><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+				<a name="attemptedquery" class="tsd-anchor"></a>
+				<h3>attempted<wbr>Query</h3>
+				<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> attemptedQuery<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">QueryType</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Returns the query of the last attempted fetch. If the fetch is pending,
+									this would be the pending query. If the fetch is complete and successful,
+								this is the same as <a href="dataquery.html#activequery">activeQuery</a>.</p>
+							</div>
+						</div>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span>
+							<span class="tsd-signature-symbol"> | </span>
+							<span class="tsd-signature-type">QueryType</span>
 						</h4>
 					</li>
 				</ul>
@@ -154,8 +211,21 @@
 					<li class="tsd-description">
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
-								<p>Only has meaning once query is stable</p>
+								<p>Returns true if there are more items to fetch, which means one of the
+								following:</p>
+								<ul>
+									<li>The most recent fetch returned <code>isDone</code>.</li>
+									<li>The current number of items is the same as or exceeds the the most
+									recent <code>total</code> returned from a fetch.</li>
+								</ul>
 							</div>
+							<p>If no successful fetch has ever happened with the last attempted query,
+							then this returns <code>null</code>.</p>
+							<dl class="tsd-comment-tags">
+								<dt>see</dt>
+								<dd><p><a href="../interfaces/fetchresultwithstats.html">FetchResultWithStats</a></p>
+								</dd>
+							</dl>
 						</div>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span>
 							<span class="tsd-signature-symbol"> | </span>
@@ -175,7 +245,7 @@
 					<li class="tsd-description">
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
-								<p>Returns true if the last fetch encountered an error.</p>
+								<p>Returns true if the last completed fetch encountered an error.</p>
 							</div>
 						</div>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -201,11 +271,19 @@
 				<a name="items" class="tsd-anchor"></a>
 				<h3>items</h3>
 				<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> items<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TItem</span><span class="tsd-signature-symbol">[]</span></li>
+					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> items<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ItemType</span><span class="tsd-signature-symbol">[]</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TItem</span><span class="tsd-signature-symbol">[]</span></h4>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Gets the items of the most recent successful fetch. This is an empty array
+									if no successful fetch has ever happened. Note that if the most recent
+									failed fetch is of a different query, this still holds data from the
+								successful fetch that may be from a different query.</p>
+							</div>
+						</div>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ItemType</span><span class="tsd-signature-symbol">[]</span></h4>
 					</li>
 				</ul>
 				</section><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external">
@@ -228,25 +306,6 @@
 					</li>
 				</ul>
 				</section><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-				<a name="pendingquery" class="tsd-anchor"></a>
-				<h3>pending<wbr>Query</h3>
-				<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> pendingQuery<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TQuery</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<div class="tsd-comment tsd-typography">
-							<div class="lead">
-								<p>Returns the query whose pending fetch is based.</p>
-							</div>
-						</div>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span>
-							<span class="tsd-signature-symbol"> | </span>
-							<span class="tsd-signature-type">TQuery</span>
-						</h4>
-					</li>
-				</ul>
-				</section><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 				<a name="totalitems" class="tsd-anchor"></a>
 				<h3>total<wbr>Items</h3>
 				<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
@@ -256,8 +315,11 @@
 					<li class="tsd-description">
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
-								<p>Returns the number of total items once known.</p>
+								<p>Returns the number of total items, once this is known. If the fetch function
+									returns either <code>isDone</code> or <code>total</code> (see <a href="../interfaces/fetchresultwithstats.html">FetchResultWithStats</a>), the number will
+								be respectively be the number of items so far, or the total number.</p>
 							</div>
+							<p>In case the number is not known, this returns <code>null</code>.</p>
 						</div>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span>
 							<span class="tsd-signature-symbol"> | </span>
@@ -269,14 +331,17 @@
 				<a name="cancel" class="tsd-anchor"></a>
 				<h3>cancel</h3>
 				<ul class="tsd-signatures ">
-					<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span>
-							<span class="tsd-signature-symbol"> | </span>
-							<span class="tsd-signature-type">void</span>
-						</h4>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Cancel any on-going data fetch. This will cause the fetch to fail. If the
+								current fetch is a new query, the <a href="dataquery.html#items">items</a> will not clear.</p>
+							</div>
+						</div>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 					</li>
 				</ul>
 				</section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
@@ -287,6 +352,12 @@
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Cancels any pending fetch, and restores the data query into the initial
+								state. This forgets all of the previous results and queries.</p>
+							</div>
+						</div>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 					</li>
 				</ul>
@@ -294,17 +365,31 @@
 				<a name="fetch" class="tsd-anchor"></a>
 				<h3>fetch</h3>
 				<ul class="tsd-signatures ">
-					<li class="tsd-signature tsd-kind-icon">fetch<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TQuery</span>, fetchOptions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">fetch<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryType</span>, fetchOptions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Starts fetchin data. The supplied query will be the attempted query and the
+								fetch will start from offset zero always.</p>
+							</div>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>query: <span class="tsd-signature-type">TQuery</span></h5>
+								<h5>query: <span class="tsd-signature-type">QueryType</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>The query to fetch with.</p>
+								</div>
 							</li>
 							<li>
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> fetchOptions: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>If <code>force</code> is given, any pending fetch will be canceled
+										and a new one started even if the given query is identical to that of the
+									pending fetch.</p>
+								</div>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -318,6 +403,17 @@
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Fetches more items using the current query. The fetch function configured
+									in <a href="../interfaces/dataqueryoptions.html">DataQueryOptions</a> will receive an offset that is the number of items
+								currently.</p>
+							</div>
+							<p>The method can also be used for retrying a failed fetch of a new query. In
+								this case, the offset will be zero (rather than the count of the results
+							from a different query).</p>
+							<p>This method is no-op if there has never been an attempted query.</p>
+						</div>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					</li>
 				</ul>
@@ -344,6 +440,9 @@
 								<a href="dataquery.html#activequery" class="tsd-kind-icon">active<wbr>Query</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+								<a href="dataquery.html#attemptedquery" class="tsd-kind-icon">attempted<wbr>Query</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 								<a href="dataquery.html#hasmoreitems" class="tsd-kind-icon">has<wbr>More<wbr>Items</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
@@ -357,9 +456,6 @@
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="dataquery.html#name" class="tsd-kind-icon">name</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-								<a href="dataquery.html#pendingquery" class="tsd-kind-icon">pending<wbr>Query</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 								<a href="dataquery.html#totalitems" class="tsd-kind-icon">total<wbr>Items</a>

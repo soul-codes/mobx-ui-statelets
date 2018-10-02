@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126202302-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'UA-126202302-2');
+    </script>
+    
+    <meta charset="UTF-8">
+
+    <!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>mobx-ui-statelets | Headless state essentials for MobX</title>
+<meta name="generator" content="Jekyll v3.8.4" />
+<meta property="og:title" content="mobx-ui-statelets" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Headless state essentials for MobX" />
+<meta property="og:description" content="Headless state essentials for MobX" />
+<link rel="canonical" href="/mobx-ui-statelets/guides/getting-started-1.html" />
+<meta property="og:url" content="/mobx-ui-statelets/guides/getting-started-1.html" />
+<meta property="og:site_name" content="mobx-ui-statelets" />
+<script type="application/ld+json">
+{"@type":"WebPage","url":"/mobx-ui-statelets/guides/getting-started-1.html","headline":"mobx-ui-statelets","description":"Headless state essentials for MobX","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="/mobx-ui-statelets/assets/css/style.css?v=">
+</head>
+
+<body>
+    <header class="page-header top-header">
+        <a class="repo-name" href="/mobx-ui-statelets"> mobx-ui-statelets </a>
+    </header>
+    
+
+    <main id="content" class="main-content" role="main">
+        <h1 id="getting-started-guide-part-1-first-application-state">Getting Started Guide Part 1: First Application State</h1>
+
+<p>In this guide, we will write a very minimal application with
+mobx-ui-statelets that does the following:</p>
+
+<ul>
+  <li>show a text input</li>
+  <li>lets you confirm an input on blur or on hitting enter</li>
+  <li>shows the last confirmed value of your input.</li>
+</ul>
+
+<p>Since mobx-ui-statelets is a TypeScript-first package, all examples
+will be in TypeScript. You can of course choose to ignore the type annotations
+and use the package in plain JavaScript.</p>
+
+<p>The guide assumes that you already have a minimal MobX/React environment with
+some kind of bundler like Webpack set up. If not, google around for tutorials
+such as <a href="https://medium.com/teachable/getting-started-with-react-typescript-mobx-and-webpack-4-8c680517c030">this one</a>,
+or just use some boilerplates (here’s one for
+<a href="https://github.com/mobxjs/mobx-react-boilerplate">JavaScript</a>
+and here for <a href="https://github.com/rokoroku/react-mobx-typescript-boilerplate">TypeScript</a>)</p>
+
+<h3 id="install-the-package">Install the package</h3>
+
+<p>mobx-ui-statelets will be using <code class="highlighter-rouge">mobx</code> and <code class="highlighter-rouge">mobx-react</code> that you
+should already have set up.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yarn add -D mobx-ui-statelets
+</code></pre></div></div>
+
+<h3 id="first-application-state">First application state</h3>
+
+<p>We will explore the first headless state class that’s offered by
+mobx-ui-statelets, namely <code class="highlighter-rouge">Input</code>. This represents a single
+form input. For simplicity we will not actually create a form yet. The code
+below creates a single <code class="highlighter-rouge">Input</code> state with the default value being an empty
+string.</p>
+
+<p>So go ahead and create <code class="highlighter-rouge">AppState.ts</code> as follows:</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// AppState.ts</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Input</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-ui-statelets"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">AppState</span> <span class="p">{</span>
+  <span class="nx">myInputState</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Input</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s2">""</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>What we’re creating here is just an arbitrary state class that has an <code class="highlighter-rouge">Input</code>
+state as one of it’s properties. <code class="highlighter-rouge">Input</code> not only acts as state store for our
+input state, but it also has a few action methods that our React components
+can use directly. We will let a React component talk to it in the next step.</p>
+
+<h3 id="app-component">App component</h3>
+
+<p>We will create <code class="highlighter-rouge">App.tsx</code> that exports our application component. This will accept
+an instance of our <code class="highlighter-rouge">AppState</code>, extracts our <code class="highlighter-rouge">Input</code> state from it and wire it to
+an <code class="highlighter-rouge">&lt;input /&gt;</code> element.</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// App.tsx</span>
+<span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">observer</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">AppState</span> <span class="k">from</span> <span class="s2">"./AppState"</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">observer</span>
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">App</span> <span class="kd">extends</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="p">{</span> <span class="na">appState</span><span class="p">:</span> <span class="nx">AppState</span> <span class="p">}</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">appState</span> <span class="p">}</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">myInputState</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">appState</span><span class="p">;</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        Last confirmed value: <span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">myInputState</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span>
+          <span class="na">type=</span><span class="s2">"text"</span>
+          <span class="na">value=</span><span class="si">{</span><span class="nx">myInputState</span><span class="p">.</span><span class="nx">inputValue</span><span class="si">}</span>
+          <span class="na">onChange=</span><span class="si">{</span><span class="nx">ev</span> <span class="o">=&gt;</span> <span class="nx">myInputState</span><span class="p">.</span><span class="nx">input</span><span class="p">(</span><span class="nx">ev</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span><span class="si">}</span>
+          <span class="na">onBlur=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">myInputState</span><span class="p">.</span><span class="nx">confirm</span><span class="p">()</span><span class="si">}</span>
+          <span class="na">onKeyPress=</span><span class="si">{</span><span class="nx">ev</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">ev</span><span class="p">.</span><span class="nx">which</span> <span class="o">===</span> <span class="mi">13</span><span class="p">)</span> <span class="p">{</span>
+              <span class="nx">myInputState</span><span class="p">.</span><span class="nx">confirm</span><span class="p">();</span>
+            <span class="p">}</span>
+          <span class="p">}</span><span class="si">}</span>
+        <span class="p">/&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>Let’s look at a few details here:</p>
+
+<ul>
+  <li>The <code class="highlighter-rouge">Input</code> class has the property <code class="highlighter-rouge">inputValue</code> that updates whenever you
+call the <code class="highlighter-rouge">input()</code> method. By hooking this property to the <code class="highlighter-rouge">value</code> props and
+updating it through <code class="highlighter-rouge">onChange</code> event, this essentially makes our <code class="highlighter-rouge">&lt;input /&gt;</code>
+a <a href="https://reactjs.org/docs/forms.html#controlled-components">controlled component</a>.</li>
+  <li>As per the requirement we set for this guide, we want the user’s input value
+to be confirmed on blur and on hitting enter. So we hook to <code class="highlighter-rouge">onBlur</code> and
+<code class="highlighter-rouge">onKeyPress</code> to do this accordingly. <code class="highlighter-rouge">Input</code>’s <code class="highlighter-rouge">confirm()</code> method tells the
+class to store the input value into its own internal store.</li>
+  <li>For debugging, we show the last saved input value. This demonstrates that
+<code class="highlighter-rouge">Input</code> acts in kind as a domain store.</li>
+</ul>
+
+<h3 id="putting-everything-together">Putting everything together</h3>
+
+<p>With the application’s state and the application component itself, we can put
+them together via ReactDOM’s <code class="highlighter-rouge">render</code> method. We’re also going to export the
+application state as a global for ease of inspection.</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// index.tsx</span>
+<span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="s2">"react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">render</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"react-dom"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">App</span> <span class="k">from</span> <span class="s2">"./App"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">AppState</span> <span class="k">from</span> <span class="s2">"./AppState"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">appState</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AppState</span><span class="p">();</span>
+<span class="nx">render</span><span class="p">(&lt;</span><span class="nc">App</span> <span class="na">appState=</span><span class="si">{</span><span class="nx">appState</span><span class="si">}</span> <span class="p">/&gt;,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"react-root"</span><span class="p">));</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span><span class="nb">window</span><span class="p">,</span> <span class="p">{</span> <span class="nx">appState</span> <span class="p">});</span>
+
+</code></pre></div></div>
+
+<p>You can inspect the <code class="highlighter-rouge">appState</code> global that we exported in the iframe’s context through
+<a href="https://allthingscraig.com/blog/2013/03/13/chrome-console-and-iframes/">the console</a>.</p>
+
+<iframe id="mobx-ui-statelets demo" src="../demo/input-1-intro/index.html" width="100%">
+</iframe>
+
+<h3 id="what-next">What next?</h3>
+
+<p>At this point, we don’t yet see any real benefit of headless state management
+over in-component state management. In the <a href="/mobx-ui-statelets/guides/getting-started-2.html">next</a>, we will
+begin to get glimpses of this as we try to control focus state of a component
+without from the headless state perspective.</p>
+
+
+        <footer class="site-footer">
+            
+            <span class="site-footer-owner"><a href="https://github.com/soul-codes/mobx-ui-statelets">mobx-ui-statelets</a> is maintained by <a href="https://github.com/soul-codes">Soul Codes Webentwicklung</a>.</span>
+            
+        </footer>
+    </main>
+</body>
+
+</html>

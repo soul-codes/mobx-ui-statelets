@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>FetchResult | mobx-ui-statelets</title>
+	<title>FetchResultWithStats | mobx-ui-statelets</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -27,16 +27,32 @@
 					<a href="../index.html">(package)</a>
 				</li>
 				<li>
-					<a href="fetchresult.html">FetchResult</a>
+					<a href="fetchresultwithstats.html">FetchResultWithStats</a>
 				</li>
 			</ul>
-			<h1>Interface FetchResult</h1>
+			<h1>Interface FetchResultWithStats</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Describes the fetch result, which should be the resolve value of the fetch
+						function.</p>
+					</div>
+					<dl class="tsd-comment-tags">
+						<dt>typeparam</dt>
+						<dd><p>see [[ItemType]]</p>
+						</dd>
+						<dt>see</dt>
+						<dd><p><a href="dataqueryoptions.html">DataQueryOptions</a></p>
+						</dd>
+					</dl>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-type-parameters">
 				<h3>Type parameters</h3>
 				<table class="tsd-type-parameters">
@@ -52,7 +68,7 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td class="tsd-type-parameter-name">TItem            </td>
+							<td class="tsd-type-parameter-name">ItemType            </td>
 							<td>
 							</td>
 						</tr>
@@ -64,24 +80,46 @@
 					<div class="tsd-index-content">
 						<section class="tsd-index-section tsd-kind-interface tsd-has-type-parameter tsd-is-external">
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="fetchresult.html#items" class="tsd-kind-icon">items</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="fetchresult.html#stats" class="tsd-kind-icon">stats</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="fetchresultwithstats.html#isdone" class="tsd-kind-icon">is<wbr>Done</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="fetchresultwithstats.html#items" class="tsd-kind-icon">items</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="fetchresultwithstats.html#total" class="tsd-kind-icon">total</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+				<a name="isdone" class="tsd-anchor"></a>
+				<h3>is<wbr>Done</h3>
+				<div class="tsd-signature tsd-kind-icon">is<wbr>Done<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>If true, this will tell the <a href="../classes/dataquery.html">DataQuery</a> not to ignore subsequent
+							<a href="../classes/dataquery.html#fetchmore">DataQuery.fetchMore</a> calls until a new fresh fetch. This will also
+						update <a href="../classes/dataquery.html#totalitems">DataQuery.totalItems</a></p>
+					</div>
+				</div>
+				</section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 				<a name="items" class="tsd-anchor"></a>
 				<h3>items</h3>
-				<div class="tsd-signature tsd-kind-icon">items<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TItem</span><span class="tsd-signature-symbol">[]</span></div>
+				<div class="tsd-signature tsd-kind-icon">items<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ItemType</span><span class="tsd-signature-symbol">[]</span></div>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>The actual items that result from the fetch. Note that this should be the
+							items starting at the offset given in the <a href="fetchquery.html">FetchQuery</a>. For instance,
+							if the query wants items starting from offset <code>20</code>, the first element
+						of the item should be the item at offset <code>20</code>.</p>
+					</div>
+				</div>
 				</section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-				<a name="stats" class="tsd-anchor"></a>
-				<h3>stats</h3>
-				<div class="tsd-signature tsd-kind-icon">stats<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
-				<div class="tsd-type-declaration">
-					<ul class="tsd-parameters">
-					</ul>
+				<a name="total" class="tsd-anchor"></a>
+				<h3>total</h3>
+				<div class="tsd-signature tsd-kind-icon">total<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>If specified, this will be updated in the <a href="../classes/dataquery.html">DataQuery</a> and will be used
+						as the value of <a href="../classes/dataquery.html#totalitems">DataQuery.totalItems</a>.</p>
+					</div>
 				</div>
 			</section>
 		</div>
@@ -91,13 +129,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-has-type-parameter tsd-is-external">
-						<a href="fetchresult.html" class="tsd-kind-icon">Fetch<wbr>Result</a>
+						<a href="fetchresultwithstats.html" class="tsd-kind-icon">Fetch<wbr>Result<wbr>With<wbr>Stats</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="fetchresult.html#items" class="tsd-kind-icon">items</a>
+								<a href="fetchresultwithstats.html#isdone" class="tsd-kind-icon">is<wbr>Done</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="fetchresult.html#stats" class="tsd-kind-icon">stats</a>
+								<a href="fetchresultwithstats.html#items" class="tsd-kind-icon">items</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="fetchresultwithstats.html#total" class="tsd-kind-icon">total</a>
 							</li>
 						</ul>
 					</li>

@@ -37,6 +37,21 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Describes the query information that is sent to the fetch function.</p>
+					</div>
+					<dl class="tsd-comment-tags">
+						<dt>typeparam</dt>
+						<dd><p>see <a href="../classes/dataquery.html">DataQuery</a></p>
+						</dd>
+						<dt>see</dt>
+						<dd><p><a href="dataqueryoptions.html">DataQueryOptions</a></p>
+						</dd>
+					</dl>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-type-parameters">
 				<h3>Type parameters</h3>
 				<table class="tsd-type-parameters">
@@ -52,7 +67,7 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td class="tsd-type-parameter-name">TQuery            </td>
+							<td class="tsd-type-parameter-name">QueryType            </td>
 							<td>
 							</td>
 						</tr>
@@ -76,14 +91,34 @@
 				<a name="limit" class="tsd-anchor"></a>
 				<h3>limit</h3>
 				<div class="tsd-signature tsd-kind-icon">limit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>The limit of items to fetch, which is the same as <code>fetchLimit</code> in
+							<a href="dataqueryoptions.html">DataQueryOptions</a>. Note that this is <code>Infinity</code> if the limit is not
+						set.</p>
+					</div>
+					<p>You do not need to obey this limit, but it serves as a guide for you not
+					to query too many at once.</p>
+				</div>
 				</section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 				<a name="offset" class="tsd-anchor"></a>
 				<h3>offset</h3>
 				<div class="tsd-signature tsd-kind-icon">offset<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>The offset that the fetch function should begin fetching.</p>
+					</div>
+				</div>
 				</section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 				<a name="query" class="tsd-anchor"></a>
 				<h3>query</h3>
-				<div class="tsd-signature tsd-kind-icon">query<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TQuery</span></div>
+				<div class="tsd-signature tsd-kind-icon">query<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">QueryType</span></div>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>The actual fetch query that is passed from <a href="../classes/dataquery.html#fetch">DataQuery.fetch</a> or saved
+						when using <a href="../classes/dataquery.html#fetchmore">DataQuery.fetchMore</a>.</p>
+					</div>
+				</div>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">

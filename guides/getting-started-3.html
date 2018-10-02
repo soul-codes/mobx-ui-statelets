@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126202302-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'UA-126202302-2');
+    </script>
+    
+    <meta charset="UTF-8">
+
+    <!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>mobx-ui-statelets | Headless state essentials for MobX</title>
+<meta name="generator" content="Jekyll v3.8.4" />
+<meta property="og:title" content="mobx-ui-statelets" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Headless state essentials for MobX" />
+<meta property="og:description" content="Headless state essentials for MobX" />
+<link rel="canonical" href="/mobx-ui-statelets/guides/getting-started-3.html" />
+<meta property="og:url" content="/mobx-ui-statelets/guides/getting-started-3.html" />
+<meta property="og:site_name" content="mobx-ui-statelets" />
+<script type="application/ld+json">
+{"@type":"WebPage","url":"/mobx-ui-statelets/guides/getting-started-3.html","headline":"mobx-ui-statelets","description":"Headless state essentials for MobX","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="/mobx-ui-statelets/assets/css/style.css?v=">
+</head>
+
+<body>
+    <header class="page-header top-header">
+        <a class="repo-name" href="/mobx-ui-statelets"> mobx-ui-statelets </a>
+    </header>
+    
+
+    <main id="content" class="main-content" role="main">
+        <h1 id="getting-started-guide-part-3-computing-over-headless-state">Getting Started Guide Part 3: Computing over Headless State</h1>
+
+<p>In <a href="/mobx-ui-statelets/guides/getting-started-2.html">the previous guide</a>, we showed how to manipulate focus
+state headlessly while ensuring real DOM consequence. We also showed how easy it
+was to access a focus state because it was uncoupled from the React component
+hierarchy.</p>
+
+<p>In this guide we will fully exploit this uncoupled nature. We will build a simple
+set of inputs, and a common place to show assisting text depending on which
+input is hovered or focused.</p>
+
+<h3 id="reporting-hover-state">Reporting hover state</h3>
+
+<p>Just as we explored focus state manipulation in isolation in the previous part,
+we will explore hover state reporting in isolation. mobx-ui-statelets
+provides a simple <a href="/mobx-ui-statelets/api/classes/hoverstate.html"><code class="highlighter-rouge">HoverState</code></a> class. An
+important difference between hover state and focus state is that you cannot
+<em>force</em> the user to hover on something. So all we need to do is report back
+accordingly.</p>
+
+<p>A hover state is so easy to create, so let’s create two:</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// AppState.ts</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">HoverState</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-ui-statelets"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">AppState</span> <span class="p">{</span>
+  <span class="nx">hoverState1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">HoverState</span><span class="p">();</span>
+  <span class="nx">hoverState2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">HoverState</span><span class="p">();</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>And let our App component report to and read from them:</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// App.tsx</span>
+<span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">observer</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">AppState</span> <span class="k">from</span> <span class="s2">"./AppState"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">style</span> <span class="o">=</span> <span class="s2">`
+.hoverable {
+  flex: 1;
+  border:1px solid red;
+  padding: 30px;
+  margin: 30px;
+}
+
+.hover_flex {
+  display: flex;
+}
+`</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">observer</span>
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">App</span> <span class="kd">extends</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="p">{</span> <span class="na">appState</span><span class="p">:</span> <span class="nx">AppState</span> <span class="p">}</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">appState</span> <span class="p">}</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">hoveredContent</span> <span class="o">=</span> <span class="nx">appState</span><span class="p">.</span><span class="nx">hoverState1</span><span class="p">.</span><span class="nx">isHovered</span>
+      <span class="p">?</span> <span class="s2">"A"</span>
+      <span class="p">:</span> <span class="nx">appState</span><span class="p">.</span><span class="nx">hoverState2</span><span class="p">.</span><span class="nx">isHovered</span>
+        <span class="p">?</span> <span class="s2">"B"</span>
+        <span class="p">:</span> <span class="s2">"nothing"</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">styleContent</span> <span class="o">=</span> <span class="p">{</span> <span class="na">__html</span><span class="p">:</span> <span class="nx">style</span> <span class="p">};</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className=</span><span class="s2">"hover_flex"</span><span class="p">&gt;</span>
+          <span class="si">{</span><span class="s2">" "</span><span class="si">}</span>
+          <span class="p">&lt;</span><span class="nt">div</span>
+            <span class="na">className=</span><span class="s2">"hoverable"</span>
+            <span class="na">onMouseEnter=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">appState</span><span class="p">.</span><span class="nx">hoverState1</span><span class="p">.</span><span class="nx">reportHover</span><span class="p">()</span><span class="si">}</span>
+            <span class="na">onMouseLeave=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">appState</span><span class="p">.</span><span class="nx">hoverState1</span><span class="p">.</span><span class="nx">reportUnhover</span><span class="p">()</span><span class="si">}</span>
+          <span class="p">&gt;</span>
+            I'm A. Hover on me.
+          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">div</span>
+            <span class="na">className=</span><span class="s2">"hoverable"</span>
+            <span class="na">onMouseEnter=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">appState</span><span class="p">.</span><span class="nx">hoverState2</span><span class="p">.</span><span class="nx">reportHover</span><span class="p">()</span><span class="si">}</span>
+            <span class="na">onMouseLeave=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">appState</span><span class="p">.</span><span class="nx">hoverState2</span><span class="p">.</span><span class="nx">reportUnhover</span><span class="p">()</span><span class="si">}</span>
+          <span class="p">&gt;</span>
+            I'm B. Hover on me.
+          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+        <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Hovering on <span class="si">{</span><span class="nx">hoveredContent</span><span class="si">}</span>.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">style</span> <span class="na">dangerouslySetInnerHTML=</span><span class="si">{</span><span class="nx">styleContent</span><span class="si">}</span> <span class="p">/&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<iframe id="mobx-ui-statelets hover state reporting demo" src="../demo/hover-1/index.html" width="100%" height="200px"></iframe>
+
+<p>So far so good, so let’s proceed to building some text inputs that report
+hover state!</p>
+
+<h3 id="adding-hover-state-reporting-to-text-inputs">Adding hover state reporting to text inputs</h3>
+
+<p>We’ll now build a pretend flight check-in form, where we show assisting
+instruction when the user hovers or focuses on an input. For clarity of
+illustration we won’t wire any validation or submit action or even pretend these
+inputs belong to a form yet.</p>
+
+<p>First, let us upgrade our <code class="highlighter-rouge">TextInput</code> component so that it has a label to
+distinguish between inputs. In addition, we’ll also let the component report
+hover state. Just as with focus state, the <code class="highlighter-rouge">Input</code> state class has its own
+hover state that we use.</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// TextInput.tsx</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">observer</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">syncFocusState</span><span class="p">,</span> <span class="nx">Input</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-ui-statelets"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"react"</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">observer</span>
+<span class="p">@</span><span class="nd">syncFocusState</span><span class="p">((</span><span class="nx">component</span><span class="p">:</span> <span class="nx">TextInput</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">({</span>
+  <span class="na">el</span><span class="p">:</span> <span class="nx">component</span><span class="p">.</span><span class="nx">el</span><span class="p">,</span>
+  <span class="na">state</span><span class="p">:</span> <span class="nx">component</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">inputState</span><span class="p">.</span><span class="nx">focusState</span>
+<span class="p">}))</span>
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">TextInput</span> <span class="kd">extends</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="p">{</span>
+  <span class="na">inputState</span><span class="p">:</span> <span class="nx">Input</span><span class="p">;</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+<span class="p">}</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="na">el</span><span class="p">:</span> <span class="nx">HTMLInputElement</span> <span class="o">|</span> <span class="kc">null</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">inputState</span><span class="p">,</span> <span class="nx">name</span> <span class="p">}</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">;</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="p">&lt;</span><span class="nt">div</span>
+        <span class="na">onMouseEnter=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">inputState</span><span class="p">.</span><span class="nx">hoverState</span><span class="p">.</span><span class="nx">reportHover</span><span class="p">()</span><span class="si">}</span>
+        <span class="na">onMouseLeave=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">inputState</span><span class="p">.</span><span class="nx">hoverState</span><span class="p">.</span><span class="nx">reportUnhover</span><span class="p">()</span><span class="si">}</span>
+      <span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">label</span> <span class="na">htmlFor=</span><span class="si">{</span><span class="nx">name</span><span class="si">}</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">name</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span>
+          <span class="na">ref=</span><span class="si">{</span><span class="nx">el</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">el</span> <span class="o">=</span> <span class="nx">el</span><span class="p">)</span><span class="si">}</span>
+          <span class="na">id=</span><span class="si">{</span><span class="nx">name</span><span class="si">}</span>
+          <span class="na">type=</span><span class="s2">"text"</span>
+          <span class="na">value=</span><span class="si">{</span><span class="nx">inputState</span><span class="p">.</span><span class="nx">inputValue</span><span class="si">}</span>
+          <span class="na">onChange=</span><span class="si">{</span><span class="nx">ev</span> <span class="o">=&gt;</span> <span class="nx">inputState</span><span class="p">.</span><span class="nx">input</span><span class="p">(</span><span class="nx">ev</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span><span class="si">}</span>
+          <span class="na">onFocus=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">inputState</span><span class="p">.</span><span class="nx">focusState</span><span class="p">.</span><span class="nx">reportFocus</span><span class="p">()</span><span class="si">}</span>
+          <span class="na">onBlur=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">inputState</span><span class="p">.</span><span class="nx">confirm</span><span class="p">();</span>
+            <span class="nx">inputState</span><span class="p">.</span><span class="nx">focusState</span><span class="p">.</span><span class="nx">reportBlur</span><span class="p">();</span>
+          <span class="p">}</span><span class="si">}</span>
+          <span class="na">onKeyPress=</span><span class="si">{</span><span class="nx">ev</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">ev</span><span class="p">.</span><span class="nx">which</span> <span class="o">===</span> <span class="mi">13</span><span class="p">)</span> <span class="p">{</span>
+              <span class="nx">inputState</span><span class="p">.</span><span class="nx">confirm</span><span class="p">();</span>
+            <span class="p">}</span>
+          <span class="p">}</span><span class="si">}</span>
+          <span class="na">onKeyDown=</span><span class="si">{</span><span class="nx">ev</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">ev</span><span class="p">.</span><span class="nx">which</span> <span class="o">===</span> <span class="mi">27</span><span class="p">)</span> <span class="p">{</span>
+              <span class="nx">inputState</span><span class="p">.</span><span class="nx">clear</span><span class="p">();</span>
+              <span class="nx">inputState</span><span class="p">.</span><span class="nx">focusState</span><span class="p">.</span><span class="nx">blur</span><span class="p">();</span>
+            <span class="p">}</span>
+          <span class="p">}</span><span class="si">}</span>
+        <span class="p">/&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>Now let us turn our attention to the application state, which now consists of
+three inputs. What we’ll also do is to create a getter that tells us which input
+is currently “active”. Let’s make it so that the focused input has priority in
+being considered active. If the user hovers, say, on the email but is focused
+on the name, then the name input is considered active.</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// AppState.ts</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Input</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-ui-statelets"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">AppState</span> <span class="p">{</span>
+  <span class="nx">name</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Input</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s2">""</span><span class="p">);</span>
+  <span class="nx">email</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Input</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s2">""</span><span class="p">);</span>
+  <span class="nx">flightNumber</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Input</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s2">""</span><span class="p">);</span>
+
+  <span class="kd">get</span> <span class="nx">activeInput</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">email</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">flightNumber</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">];</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="nx">inputs</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">input</span> <span class="o">=&gt;</span> <span class="nx">input</span><span class="p">.</span><span class="nx">focusState</span><span class="p">.</span><span class="nx">isFocused</span><span class="p">)</span> <span class="o">||</span>
+      <span class="nx">inputs</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">input</span> <span class="o">=&gt;</span> <span class="nx">input</span><span class="p">.</span><span class="nx">hoverState</span><span class="p">.</span><span class="nx">isHovered</span><span class="p">)</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>Finally, we wire everything up, and we use the <code class="highlighter-rouge">activeInput</code> as the discriminant
+on which text to show:</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// App.tsx</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">observer</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">AppState</span> <span class="k">from</span> <span class="s2">"./AppState"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">TextInput</span> <span class="k">from</span> <span class="s2">"./TextInput"</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">observer</span>
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">App</span> <span class="kd">extends</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="p">{</span> <span class="na">appState</span><span class="p">:</span> <span class="nx">AppState</span> <span class="p">}</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">appState</span> <span class="p">}</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">;</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Check into your flight<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">name=</span><span class="s2">"name"</span> <span class="na">inputState=</span><span class="si">{</span><span class="nx">appState</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">name=</span><span class="s2">"email"</span> <span class="na">inputState=</span><span class="si">{</span><span class="nx">appState</span><span class="p">.</span><span class="nx">email</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">name=</span><span class="s2">"flight"</span> <span class="na">inputState=</span><span class="si">{</span><span class="nx">appState</span><span class="p">.</span><span class="nx">flightNumber</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id=</span><span class="s2">"help"</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">getHelp</span><span class="p">(</span><span class="nx">appState</span><span class="p">)</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">getHelp</span><span class="p">(</span><span class="na">appState</span><span class="p">:</span> <span class="nx">AppState</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="nx">activeInput</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">appState</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">activeInput</span> <span class="o">===</span> <span class="nx">appState</span><span class="p">.</span><span class="nx">email</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s2">"The e-mail you used to book the flight"</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">activeInput</span> <span class="o">===</span> <span class="nx">appState</span><span class="p">.</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s2">"Your last name"</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">activeInput</span> <span class="o">===</span> <span class="nx">appState</span><span class="p">.</span><span class="nx">flightNumber</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s2">"The flight you want to check-in"</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="s2">""</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<iframe id="mobx-ui-statelets hover state reporting demo" src="../demo/input-3-hover/index.html" width="100%" height="200px"></iframe>
+
+<h3 id="comparison-with-in-component-state-management">Comparison with in-component state management</h3>
+
+<p>As with the <a href="/mobx-ui-statelets/guides/getting-started-2.html#comparison-with-in-component-state-management">previous part’s comparison</a>, with
+headless state we save ourselves from worrying about where the components that
+report or consume our UI state live.</p>
+
+<p>When it comes to computing over application state (like we did in finding out
+what the “active” input is), if we keep all the state in the component hierarchy,
+the computation will need to be lifted as high as the higest common ancestor
+of all the components reporting that state change. Again, with headless state
+management, we relieve ourselves from large component prop API changes just because
+components contributing to a computed state move around.</p>
+
+<h3 id="the-meaning-of-state-is-what-you-give-it">The meaning of state is what you give it.</h3>
+
+<blockquote>
+  <p><em>“To invent your own life’s meaning is not easy, but it’s still allowed, and I think you’ll be happier for the trouble.”</em> – Bill Watterson</p>
+</blockquote>
+
+<p>There is one important point here: notice that we hook to the mouse events on
+the <code class="highlighter-rouge">div</code> that includes both the input and the label, and not the input itself.
+It should again be emphasized that <strong>the headless state has no meaning unless
+you give it some</strong>. If you take the <code class="highlighter-rouge">hoverState</code> of the input to mean the entire
+input area, rather than the input itself, that’s up to you. If you don’t need
+hover state tracking, then that state has no meaning. If you need several hover
+states on a single input, you might want to consider deriving your own <code class="highlighter-rouge">Input</code>
+class that has multiple <code class="highlighter-rouge">HoverState</code>s.</p>
+
+<p>The freedom is yours. This package only encourages you to use the headless
+pattern by providing reasonable defaults for the most common use cases.</p>
+
+<h3 id="what-next">What next?</h3>
+
+<p>In this part we saw how easy it is to make computations over an application state
+when we have access to all the information that we need without worrying about
+where they live on the React components. In the <a href="/mobx-ui-statelets/guides/getting-started-4.html">next</a>
+part, we will further exploit this property of headless state management in the
+realm of writing tests.</p>
+
+
+        <footer class="site-footer">
+            
+            <span class="site-footer-owner"><a href="https://github.com/soul-codes/mobx-ui-statelets">mobx-ui-statelets</a> is maintained by <a href="https://github.com/soul-codes">Soul Codes Webentwicklung</a>.</span>
+            
+        </footer>
+    </main>
+</body>
+
+</html>

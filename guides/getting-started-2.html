@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126202302-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'UA-126202302-2');
+    </script>
+    
+    <meta charset="UTF-8">
+
+    <!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>mobx-ui-statelets | Headless state essentials for MobX</title>
+<meta name="generator" content="Jekyll v3.8.4" />
+<meta property="og:title" content="mobx-ui-statelets" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Headless state essentials for MobX" />
+<meta property="og:description" content="Headless state essentials for MobX" />
+<link rel="canonical" href="/mobx-ui-statelets/guides/getting-started-2.html" />
+<meta property="og:url" content="/mobx-ui-statelets/guides/getting-started-2.html" />
+<meta property="og:site_name" content="mobx-ui-statelets" />
+<script type="application/ld+json">
+{"@type":"WebPage","url":"/mobx-ui-statelets/guides/getting-started-2.html","headline":"mobx-ui-statelets","description":"Headless state essentials for MobX","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="/mobx-ui-statelets/assets/css/style.css?v=">
+</head>
+
+<body>
+    <header class="page-header top-header">
+        <a class="repo-name" href="/mobx-ui-statelets"> mobx-ui-statelets </a>
+    </header>
+    
+
+    <main id="content" class="main-content" role="main">
+        <h1 id="getting-started-guide-part-2-manipulating-dom-state-agnostically">Getting Started Guide Part 2: Manipulating DOM State Agnostically</h1>
+
+<p>in this guide, we will explore a key benefit of headless state management:
+controlling physical DOM state without knowing about the components that present
+them.</p>
+
+<p>In <a href="/mobx-ui-statelets/guides/getting-started-1.html">the previous guide</a>, we built a minimal application
+with a single text input. in this guide, we will first do a quick detour of how
+to control focus state on a DOM element with fewer states: a button. We will then
+come back to the text input and add the following functionality:</p>
+
+<ul>
+  <li>The input is automatically focused when the application loads.</li>
+  <li>Hitting escape while the input is focused reverts unsaved changes and blurs
+out of the input.</li>
+  <li>Clicking on a button focuses on the input.</li>
+</ul>
+
+<h3 id="controlled-focus-with-focusstate">Controlled focus with <code class="highlighter-rouge">FocusState</code></h3>
+
+<p>Before we dive back into our input application, let’s consider how our headless
+state can be informed of <em>and</em> manipulate focus state while not knowing anything
+about the components.</p>
+
+<p>To do this, we’ll create an App state that contains a single <code class="highlighter-rouge">FocusState</code>, another
+handy state class offered by mobx-ui-statelets.</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// AppState.ts</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">FocusState</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-ui-statelets"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">AppState</span> <span class="p">{</span>
+  <span class="nx">myFocusState</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FocusState</span><span class="p">();</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>As a headless state, <code class="highlighter-rouge">FocusState</code> doesn’t know anything about the DOM elements
+that will get focused. Without a React component talking to it, its state has
+no practical consequence. So what we’ll do is creating a component that talks
+to a <code class="highlighter-rouge">FocusState</code>. We’ll use a <code class="highlighter-rouge">&lt;button /&gt;</code> element as the subject of our
+experiment.</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Button.tsx</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">observer</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">syncFocusState</span><span class="p">,</span> <span class="nx">FocusState</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-ui-statelets"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"react"</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">observer</span>
+<span class="p">@</span><span class="nd">syncFocusState</span><span class="p">((</span><span class="nx">component</span><span class="p">:</span> <span class="nx">Button</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">({</span>
+  <span class="na">el</span><span class="p">:</span> <span class="nx">component</span><span class="p">.</span><span class="nx">el</span><span class="p">,</span>
+  <span class="na">state</span><span class="p">:</span> <span class="nx">component</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">focusState</span>
+<span class="p">}))</span>
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">Button</span> <span class="kd">extends</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="p">{</span>
+  <span class="na">focusState</span><span class="p">:</span> <span class="nx">FocusState</span><span class="p">;</span>
+  <span class="nl">onClick</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="na">el</span><span class="p">:</span> <span class="nx">HTMLButtonElement</span> <span class="o">|</span> <span class="kc">null</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">focusState</span><span class="p">,</span> <span class="nx">onClick</span><span class="p">,</span> <span class="nx">children</span> <span class="p">}</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">;</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="p">&lt;</span><span class="nt">button</span>
+        <span class="na">ref=</span><span class="si">{</span><span class="nx">el</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">el</span> <span class="o">=</span> <span class="nx">el</span><span class="p">)</span><span class="si">}</span>
+        <span class="na">type=</span><span class="s2">"button"</span>
+        <span class="na">onFocus=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">focusState</span><span class="p">.</span><span class="nx">reportFocus</span><span class="p">()</span><span class="si">}</span>
+        <span class="na">onBlur=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">focusState</span><span class="p">.</span><span class="nx">reportBlur</span><span class="p">()</span><span class="si">}</span>
+        <span class="na">onClick=</span><span class="si">{</span><span class="nx">onClick</span><span class="si">}</span>
+      <span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">children</span><span class="si">}</span>
+      <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>Let’s break this down:</p>
+
+<ul>
+  <li>The <code class="highlighter-rouge">Button</code> component wraps a <code class="highlighter-rouge">&lt;button /&gt;</code> DOM element, whose <code class="highlighter-rouge">ref</code> we capture
+in a class property.</li>
+  <li>We listen to the button’s <code class="highlighter-rouge">onFocus</code> and <code class="highlighter-rouge">onBlur</code> and report such happenings to
+our <code class="highlighter-rouge">FocusState</code> via <a href="/mobx-ui-statelets/api/classes/focusstate.html#reportfocus"><code class="highlighter-rouge">reportFocus</code></a>
+and <a href="/mobx-ui-statelets/api/classes/focusstate.html#reportfocus"><code class="highlighter-rouge">reportBlur</code></a> respectively. This
+makes sure that any user-driven change in focus state gets communicated to our
+headless state.</li>
+  <li>We use the <a href="/mobx-ui-statelets/api/index.html#syncfocusstate"><code class="highlighter-rouge">syncFocusState</code></a> decorator
+to select the DOM element whose focus state should be synced if the headless
+state changes. This makes sure that a programmatic call to focus from the
+headless state side is projected to a real presentational consequence.</li>
+</ul>
+
+<p>Essentially, what <strong>we are doing here is the same as React’s
+<a href="https://reactjs.org/docs/forms.html#controlled-components">controlled component pattern</a>
+for input value applied to focus state</strong>. Look at the parallel:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>pattern</th>
+      <th>how DOM reports back</th>
+      <th>how DOM is controlled</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>controlled inputs</td>
+      <td><code class="highlighter-rouge">onChange</code> event sets state</td>
+      <td><code class="highlighter-rouge">value</code> prop receives input value state</td>
+    </tr>
+    <tr>
+      <td>controlled focus</td>
+      <td><code class="highlighter-rouge">onFocus</code>/<code class="highlighter-rouge">onBlur</code> calls <code class="highlighter-rouge">reportFocus</code>/<code class="highlighter-rouge">reportBlur</code></td>
+      <td><code class="highlighter-rouge">syncFocusState</code> decorator</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Let’s now try to see how we can accurately read and manipualte the button focus
+state from the headless state. For visual clarity, we’ll style a focused button
+so that it looks blatantly different from an unfocused one.</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// App.tsx</span>
+<span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">observer</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">AppState</span> <span class="k">from</span> <span class="s2">"./AppState"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Button</span> <span class="k">from</span> <span class="s2">"./Button"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">style</span> <span class="o">=</span> <span class="s2">`
+button:focus {
+  color:red;
+  border:1px solid red;
+}
+`</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">observer</span>
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">App</span> <span class="kd">extends</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="p">{</span> <span class="na">appState</span><span class="p">:</span> <span class="nx">AppState</span> <span class="p">}</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">appState</span> <span class="p">}</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">styleContent</span> <span class="o">=</span> <span class="p">{</span> <span class="na">__html</span><span class="p">:</span> <span class="nx">style</span> <span class="p">};</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Button</span>
+          <span class="na">focusState=</span><span class="si">{</span><span class="nx">appState</span><span class="p">.</span><span class="nx">myFocusState</span><span class="si">}</span>
+          <span class="na">onClick=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">appState</span><span class="p">.</span><span class="nx">myFocusState</span><span class="p">.</span><span class="nx">blur</span><span class="p">()</span><span class="si">}</span>
+        <span class="p">&gt;</span>
+          Click to blur myself
+        <span class="p">&lt;/</span><span class="nc">Button</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type=</span><span class="s2">"button"</span> <span class="na">onClick=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">appState</span><span class="p">.</span><span class="nx">myFocusState</span><span class="p">.</span><span class="nx">focus</span><span class="p">()</span><span class="si">}</span><span class="p">&gt;</span>
+          Focus on my neighbour
+        <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">appState</span><span class="p">.</span><span class="nx">myFocusState</span><span class="p">.</span><span class="nx">isFocused</span> <span class="p">?</span> <span class="s2">"(focused)"</span> <span class="p">:</span> <span class="s2">"(blurred)"</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">style</span> <span class="na">dangerouslySetInnerHTML=</span><span class="si">{</span><span class="nx">styleContent</span><span class="si">}</span> <span class="p">/&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<iframe id="mobx-ui-statelets focus-controlled button demo" src="../demo/focus-1/index.html" width="100%"></iframe>
+
+<p>Remarkably, once the <code class="highlighter-rouge">Button</code> component wires up the nececssary linkage,
+the readout and manipulation of focus state simply with the headless state API.
+The beauty here is that the <code class="highlighter-rouge">Button</code> component doesn’t need to know who’s controlling
+it’s focus, and the headless state doesn’t need to know where that focus state
+is exactly presented. In fact, we actually have <em>two</em> presentations: one as the
+DOM state itself, and we are showing whether the button is focused or not.
+This uncoupling of application state from the React component hierarchy lets us
+use any state wherever, and is the foundational idea of headless state management.</p>
+
+<h3 id="focus-controlling-the-input-element">Focus-controlling the input element.</h3>
+
+<p>Now that we figured out how to headlessly control focus state on a button, we will
+pick up from where we left off in the <a href="/mobx-ui-statelets/guides/getting-started-1.html">previous guide</a> and
+do the same for our text input element.</p>
+
+<p>Let’s revisit our application state:</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// App.tsx</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Input</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-ui-statelets"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">AppState</span> <span class="p">{</span>
+  <span class="nx">myInputState</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Input</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s2">""</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>Our <code class="highlighter-rouge">InputState</code> actually already contains an instance of <code class="highlighter-rouge">FocusState</code> in the
+<a href="/mobx-ui-statelets/api/classes/input.html#focusstate"><code class="highlighter-rouge">focusState</code></a> property, so we won’t
+be anything here.
+mobx-ui-statelets bakes this in on the assumption that an input
+state usually will be presented in some DOM element that can receive focus.</p>
+
+<p>However, it’s totally up to you to give meaning to this focus state: We will do
+this now by creating a focus-controlled input from our input state.</p>
+
+<p>For clarity of illustration we’ll create an isolated <code class="highlighter-rouge">TextInput</code> component that
+has the requirements we set out earlier: hitting escape while focused cancels
+pending input and blurs it. Now we have an input that is both value-controlled
+and focus-controlled.</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// TextInput.tsx</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">observer</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">syncFocusState</span><span class="p">,</span> <span class="nx">Input</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-ui-statelets"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"react"</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">observer</span>
+<span class="p">@</span><span class="nd">syncFocusState</span><span class="p">((</span><span class="nx">component</span><span class="p">:</span> <span class="nx">TextInput</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">({</span>
+  <span class="na">el</span><span class="p">:</span> <span class="nx">component</span><span class="p">.</span><span class="nx">el</span><span class="p">,</span>
+  <span class="na">state</span><span class="p">:</span> <span class="nx">component</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">inputState</span><span class="p">.</span><span class="nx">focusState</span>
+<span class="p">}))</span>
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">TextInput</span> <span class="kd">extends</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="p">{</span> <span class="na">inputState</span><span class="p">:</span> <span class="nx">Input</span> <span class="p">}</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="na">el</span><span class="p">:</span> <span class="nx">HTMLInputElement</span> <span class="o">|</span> <span class="kc">null</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">inputState</span> <span class="p">}</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">;</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="p">&lt;</span><span class="nt">input</span>
+        <span class="na">ref=</span><span class="si">{</span><span class="nx">el</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">el</span> <span class="o">=</span> <span class="nx">el</span><span class="p">)</span><span class="si">}</span>
+        <span class="na">type=</span><span class="s2">"text"</span>
+        <span class="na">value=</span><span class="si">{</span><span class="nx">inputState</span><span class="p">.</span><span class="nx">inputValue</span><span class="si">}</span>
+        <span class="na">onChange=</span><span class="si">{</span><span class="nx">ev</span> <span class="o">=&gt;</span> <span class="nx">inputState</span><span class="p">.</span><span class="nx">input</span><span class="p">(</span><span class="nx">ev</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span><span class="si">}</span>
+        <span class="na">onFocus=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">inputState</span><span class="p">.</span><span class="nx">focusState</span><span class="p">.</span><span class="nx">reportFocus</span><span class="p">()</span><span class="si">}</span>
+        <span class="na">onBlur=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">inputState</span><span class="p">.</span><span class="nx">confirm</span><span class="p">();</span>
+          <span class="nx">inputState</span><span class="p">.</span><span class="nx">focusState</span><span class="p">.</span><span class="nx">reportBlur</span><span class="p">();</span>
+        <span class="p">}</span><span class="si">}</span>
+        <span class="na">onKeyPress=</span><span class="si">{</span><span class="nx">ev</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">ev</span><span class="p">.</span><span class="nx">which</span> <span class="o">===</span> <span class="mi">13</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">inputState</span><span class="p">.</span><span class="nx">confirm</span><span class="p">();</span>
+          <span class="p">}</span>
+        <span class="p">}</span><span class="si">}</span>
+        <span class="na">onKeyDown=</span><span class="si">{</span><span class="nx">ev</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">ev</span><span class="p">.</span><span class="nx">which</span> <span class="o">===</span> <span class="mi">27</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">inputState</span><span class="p">.</span><span class="nx">clear</span><span class="p">();</span>
+            <span class="nx">inputState</span><span class="p">.</span><span class="nx">focusState</span><span class="p">.</span><span class="nx">blur</span><span class="p">();</span>
+          <span class="p">}</span>
+        <span class="p">}</span><span class="si">}</span>
+      <span class="p">/&gt;</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>Now we’ll switch out the ad-hoc input in our App component with the <code class="highlighter-rouge">TextInput</code>
+component we just created. We’ll also add a button that will focus on the
+input programmatically as per our requirement:</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// App.tsx</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">observer</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"mobx-react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">AppState</span> <span class="k">from</span> <span class="s2">"./AppState"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">TextInput</span> <span class="k">from</span> <span class="s2">"./TextInput"</span><span class="p">;</span>
+
+<span class="p">@</span><span class="nd">observer</span>
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">App</span> <span class="kd">extends</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="p">{</span> <span class="na">appState</span><span class="p">:</span> <span class="nx">AppState</span> <span class="p">}</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">appState</span> <span class="p">}</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">myInputState</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">appState</span><span class="p">;</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        Last confirmed value: <span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">myInputState</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">TextInput</span> <span class="na">inputState=</span><span class="si">{</span><span class="nx">appState</span><span class="p">.</span><span class="nx">myInputState</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type=</span><span class="s2">"button"</span> <span class="na">onClick=</span><span class="si">{</span><span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">myInputState</span><span class="p">.</span><span class="nx">focusState</span><span class="p">.</span><span class="nx">focus</span><span class="p">()</span><span class="si">}</span><span class="p">&gt;</span>
+          Focus
+        <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>Our last requirement is that when the application loads up, we assign focus to
+the input right away. We can do this using our headless state.</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// index.tsx</span>
+<span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="s2">"react"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">render</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"react-dom"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">App</span> <span class="k">from</span> <span class="s2">"./App"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">AppState</span> <span class="k">from</span> <span class="s2">"./AppState"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">appState</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AppState</span><span class="p">();</span>
+<span class="nx">appState</span><span class="p">.</span><span class="nx">myInputState</span><span class="p">.</span><span class="nx">focusState</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span>
+<span class="nx">render</span><span class="p">(&lt;</span><span class="nc">App</span> <span class="na">appState=</span><span class="si">{</span><span class="nx">appState</span><span class="si">}</span> <span class="p">/&gt;,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"react-root"</span><span class="p">));</span>
+
+<span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span><span class="nb">window</span><span class="p">,</span> <span class="p">{</span> <span class="nx">appState</span> <span class="p">});</span>
+
+</code></pre></div></div>
+
+<p>Now we behold the result. Once the demo loads, the input should be focused
+right away.</p>
+
+<div>
+  <button id="load-demo">Click to load demo</button>
+  <iframe id="mobx-ui-statelets focus-controlled input demo" width="100%" style="display:none">
+  </iframe>
+  <script>
+    document.getElementById('load-demo').addEventListener('click', function(ev)
+    {
+      var iframeId = "mobx-ui-statelets focus-controlled input demo";
+      var iframeElement = document.getElementById(iframeId);
+      iframeElement.src="../demo/input-2-focus/index.html";
+      iframeElement.style.display = "block";
+      ev.target.style.display = "none";
+    });
+  </script>
+</div>
+
+<h3 id="comparison-with-in-component-state-management">Comparison with in-component state management</h3>
+
+<p>Let’s imagine how we would have implemented the examples above without headless
+state management, that is, keeping all the state within the component hierarchy.</p>
+
+<p>Take the <code class="highlighter-rouge">Button</code> focus example, in terms of tracking the focus state, we would
+let <code class="highlighter-rouge">Button</code> component expose <code class="highlighter-rouge">onFocus</code>/<code class="highlighter-rouge">onBlur</code> hooks that the <code class="highlighter-rouge">App</code> component
+could handle by setting its own component state to track the focus state.
+Something like this:</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Somewhere in App.tsx</span>
+<span class="o">&lt;</span><span class="nx">Button</span>
+  <span class="nx">onFocus</span><span class="o">=</span><span class="p">{</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">(</span> <span class="p">{</span> <span class="na">isButtonFocused</span> <span class="p">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">)}</span>
+  <span class="nx">onBlur</span><span class="o">=</span><span class="p">{</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">(</span> <span class="p">{</span> <span class="na">isButtonFocused</span> <span class="p">:</span> <span class="kc">false</span> <span class="p">}</span> <span class="p">)}</span>
+  <span class="sr">/</span><span class="err">&gt;
+</span><span class="cm">/* ... */</span>
+<span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">{</span> <span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">isButtonFocused</span> <span class="p">?</span> <span class="s1">'focused'</span> <span class="p">:</span> <span class="s1">'blurred'</span> <span class="p">}&lt;</span><span class="err">/</span><span class="nt">p</span><span class="p">&gt;</span>
+</code></pre></div></div>
+
+<p>This is essentially the <a href="https://reactjs.org/docs/lifting-state-up.html">state lifting pattern</a>.</p>
+
+<p>As for programmatically focusing the button, the <code class="highlighter-rouge">Button</code> component would pass
+the ref (either manually, or using <a href="https://reactjs.org/docs/forwarding-refs.html">ref forwarding</a>;
+the example below forwards ref manually):</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Somewhere in App.tsx</span>
+<span class="o">&lt;</span><span class="nx">Button</span>
+  <span class="nx">buttonRef</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">el</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">buttonEl</span> <span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>
+<span class="cm">/* ... */</span>
+<span class="o">&lt;</span><span class="nx">button</span> <span class="nx">onClick</span> <span class="o">=</span> <span class="p">{</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">buttonEl</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">buttonEl</span><span class="p">.</span><span class="nx">focus</span><span class="p">()</span> <span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span></code></pre></div></div>
+
+<p>Now considering the text input autofocus example, we would probably use something
+like <code class="highlighter-rouge">componentDidMount</code> hook:</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">componentDidMount</span><span class="p">();</span>
+<span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">buttonEl</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">buttonEl</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>All this might a take little more technical footprint, but it works fine. Everything
+lives inside the component hierarchy so you don’t need have two layers of
+information. And we have good encapsulation: state is accessible strictly to
+only the components that consume it So what is there to complain about?</p>
+
+<p>Answer: <strong>it’s fine <em>as long as your requirements are locked down.</em></strong></p>
+
+<p>As soon as you realize that the <code class="highlighter-rouge">Button</code> needs to live somewhere <em>else</em> in the
+React component hierarchy, you will need to re-wire the state lifting/ref forwarding
+to that new destination. Each level that you need to do this incurs a couple of
+prop changes along the way.</p>
+
+<p>If the source of the focus state and its consumer are three generations apart,
+you do the lifting/forwarding three times. Or you exploit
+<a href="https://reactjs.org/docs/context.html">context</a> to shortcut things.</p>
+
+<p>Because state lifting, ref forwarding and context leave technical footprint – dilulting the
+fraction of your code that actually expresses your application logic – you would
+want to use the pattern as much as you absolutely need. Depending on the need
+to keep a project clean, you would optimize your code more often to reduce the
+technical footprint. But this in itself is a potentially substantial refactor each time.</p>
+
+<p>All is this is for <em>one</em> focus state.</p>
+
+<p>If you want really streamlined UX, maintaining fifty in a medium sized application
+isn’t hard to imagine. Things also get messier if you want to reuse <code class="highlighter-rouge">Button</code> in
+such a way that some has shared states and others don’t.</p>
+
+<p>With headless state management, you pre-emptively accept that <em>any</em> state that
+can be <em>reasonably expected</em> to be consumed by <em>anybody</em> on the React component
+hierarchy will just be taken out of the component hierarchy. This way,
+your code is much, much more resilient to requirement changes.</p>
+
+<p>React components become <em>really simple</em>: their jobs are simply:</p>
+
+<ul>
+  <li>Present the headless state</li>
+  <li>Translate user actions to mutations on the headless state.</li>
+  <li>Report DOM state changes to the headless state.</li>
+  <li>Reflect headless state changes to the DOM state.</li>
+</ul>
+
+<p>They do not contain state logic, except for some microstate that has absolutely
+no good reason to be consumed elsewhere. So if it’s the application logic that
+changes, to a very large extent you will not touch the React components.</p>
+
+<h3 id="no-magic-here">No magic here</h3>
+
+<p>It’s also worth emphasizing here that there’s nothing magical about
+<code class="highlighter-rouge">FocusState</code>. mobx-ui-statelets provides it for convenience, but
+if you explore the <a href="https://github.com/soul-codes/mobx-ui-statelets/blob/master/src/state/Focus.ts">code</a>
+you will see that it is nothing but a few getters and setters. Likewise
+the <a href="https://github.com/soul-codes/mobx-ui-statelets/blob/master/src/sync/syncFocusState.ts">code</a>
+for <code class="highlighter-rouge">syncFocusState</code> is a simple bootstrapping of the DOM state powered by
+<a href="https://github.com/soul-codes/mobx-ui-statelets/blob/master/src/sync/syncDOMState.ts">a reusable decorator</a>.</p>
+
+<p>You could just as well create your own headless state class.</p>
+
+<p>The real work agent is a different way of separating concerns that lets you have
+access to the application’s granular state from one place.</p>
+
+<h3 id="what-next">What next?</h3>
+
+<p>The ability to control focus programmatically is a big plus if we want to refine
+form behavior. If you’re interested in this, you can head over to the
+“<a href="./form-1.md">forms with mobx-ui-statelets</a>” series.</p>
+
+<p>Otherwise we will
+proceed to exploring another benefit of headless statement that we touched on
+briefly: the ability for us to use any state anywhere. <a href="/mobx-ui-statelets/guides/getting-started-3.html">Let’s go</a>!</p>
+
+
+        <footer class="site-footer">
+            
+            <span class="site-footer-owner"><a href="https://github.com/soul-codes/mobx-ui-statelets">mobx-ui-statelets</a> is maintained by <a href="https://github.com/soul-codes">Soul Codes Webentwicklung</a>.</span>
+            
+        </footer>
+    </main>
+</body>
+
+</html>
