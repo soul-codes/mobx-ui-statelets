@@ -3,7 +3,7 @@ import { Input } from "mobx-ui-statelets";
 import TextInput from "../TextInput";
 import { mount } from "enzyme";
 
-test("focusing on input should report focus state", () => {
+test("focusing/blurring on input should report focus state", () => {
   const input = new Input<string>("");
   const wrapper = mount(<TextInput name="" inputState={input} />);
   wrapper.find("input").simulate("focus");
@@ -13,7 +13,7 @@ test("focusing on input should report focus state", () => {
   expect(input.focusState.isFocused).toBe(false);
 });
 
-test("focus state should be correct projected", () => {
+test("focus state should be correctly projected", () => {
   const input = new Input<string>("");
   const wrapper = mount(<TextInput name="" inputState={input} />);
   const el = (wrapper.instance() as TextInput).el as HTMLInputElement;

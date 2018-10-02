@@ -3,7 +3,7 @@ import App from "../App";
 import AppState from "../AppState";
 import { mount } from "enzyme";
 
-test("presents help for name input", () => {
+test("presents correct help depending on active input", () => {
   const appState = new AppState();
   const wrapper = mount(<App appState={appState} />);
 

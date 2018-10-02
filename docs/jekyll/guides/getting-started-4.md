@@ -24,7 +24,7 @@ There are a few things that we can test when using headless state management:
 - Testing a component's interaction with generic headless state (in abstract context).
 - Testing a component receiving the right state (in application/feature context).
 
-Let's look at this one in turn.
+Let's look at each one in turn.
 
 ### Testing the headless state in isolation
 
@@ -42,18 +42,18 @@ this stage that the "report" methods represent the points of user interaction.
 ```
 
 With full access to the entire application's state and its actions, we can
-"integration"-test complex user scenario spanning what would be presented in different
-parts of the React component hierarchy. The test can be much more comprehensive that
-the small sample given above.
+"integration"-test complex user scenario, spanning state that could be presented
+in different parts of the React component hierarchy. The test can be much more
+comprehensive than the small sample given above.
 
-We assume the state action API to represent the user's "entry point" of interactions.
-which we can validate when we unit-test the components. We will explore this next.
+We assume the "report" methods to represent the user's "entry point" of interactions.
+This we can validate when we unit-test the components, which we will explore next.
 
 ### Testing a component's interaction with the headless state.
 
 Here we test that, given a state, the component is behaving in the expected way.
-We also test the converse: a user interaction will cause the expected state
-mutation.
+We also test the converse: a user interaction will mutate the state in the
+expected way.
 
 The example below tests how the `TextInput` component generically interacts with
 the `Input` state given to it when considering its nestd focus state.
@@ -65,10 +65,9 @@ the `Input` state given to it when considering its nestd focus state.
 When we were testing the headless state in isolation, we assumed that the "report"
 methods represent the user actions. In the tests directly above, we could alternatively
 spy on the "report" methods to see that they are called in response to our simulation
-of user events (`"focus"` and `"blur"`). What we have here instead is assertion
-over the immediate consequence of those report methods (e.g. asserting
-`isFocused`), that reasonably imply that the report methods were used as a consequence
-to the user events.
+of user events (`"focus"` and `"blur"`). What we have chosen instead is asserting
+the immediate consequences of those report methods (e.g. asserting `isFocused`), which
+reasonably imply that the report methods fired in response to the user events.
 
 Similar tests could be written for hover state reporting.
 
@@ -79,7 +78,7 @@ on the active input. We can test how our `App` component handles this:
 {% include_relative demo-code/input-3-hover/__tests__/App.message.test.tsx %}
 ```
 
-(Note: in reality you probably wouldn't be hard-coding these string constants.)
+_(Note: in reality you probably wouldn't be hard-coding these string constants.)_
 
 Since we would already test the headless state quite comprehensively, here it
 should suffice to use whatever easiest way to put the application state into the
@@ -137,11 +136,11 @@ test("setting the active input changes the text", () => {
 
 Just like in-component state lifting, requirement changes that cause state to be
 lifted to different places in the component hierarchy will also affect tests.
-In case of Enzyme, state access is prohibited except for at the root component,
+In Enzyme, [state access beyond the root component is prohibited](https://airbnb.io/enzyme/docs/api/ReactWrapper/state.html),
 a restriction aimed at encouraging more unit tests. Depending on how state is
 lifted, some tests may need to be completely re-written.
 
-As for a headless state architecture, presentational requirement changes will
+With a headless state architecture, presentational requirement changes will
 generally not affect headless state tests, even when the change includes significant
 reshuffling of the React component hierarchy. Application logic changes will only
 affect React component tests if the changes result in different components
@@ -149,8 +148,8 @@ receiving different state.
 
 Headless UI state testing in isolation will usually be more "to the point" in the
 way that testing domain state logic in isolation is. Both are free from finding
-the correct entry of mutation as this task is delegated to other tests as we
-have demonstrated above.
+the correct entry of mutation: This task is delegated to other, much simpler tests
+that generally are agnostic of the application state logic.
 
 ### What next?
 
