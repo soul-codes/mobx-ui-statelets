@@ -65,7 +65,7 @@ The ideas should be easily adopted using other tools.</p>
   <li>Testing a component receiving the right state (in application/feature context).</li>
 </ul>
 
-<p>Let’s look at this one in turn.</p>
+<p>Let’s look at each one in turn.</p>
 
 <h3 id="testing-the-headless-state-in-isolation">Testing the headless state in isolation</h3>
 
@@ -107,18 +107,18 @@ this stage that the “report” methods represent the points of user interactio
 </code></pre></div></div>
 
 <p>With full access to the entire application’s state and its actions, we can
-“integration”-test complex user scenario spanning what would be presented in different
-parts of the React component hierarchy. The test can be much more comprehensive that
-the small sample given above.</p>
+“integration”-test complex user scenario, spanning state that could be presented
+in different parts of the React component hierarchy. The test can be much more
+comprehensive than the small sample given above.</p>
 
-<p>We assume the state action API to represent the user’s “entry point” of interactions.
-which we can validate when we unit-test the components. We will explore this next.</p>
+<p>We assume the “report” methods to represent the user’s “entry point” of interactions.
+This we can validate when we unit-test the components, which we will explore next.</p>
 
 <h3 id="testing-a-components-interaction-with-the-headless-state">Testing a component’s interaction with the headless state.</h3>
 
 <p>Here we test that, given a state, the component is behaving in the expected way.
-We also test the converse: a user interaction will cause the expected state
-mutation.</p>
+We also test the converse: a user interaction will mutate the state in the
+expected way.</p>
 
 <p>The example below tests how the <code class="highlighter-rouge">TextInput</code> component generically interacts with
 the <code class="highlighter-rouge">Input</code> state given to it when considering its nestd focus state.</p>
@@ -128,7 +128,7 @@ the <code class="highlighter-rouge">Input</code> state given to it when consider
 <span class="k">import</span> <span class="nx">TextInput</span> <span class="k">from</span> <span class="s2">"../TextInput"</span><span class="p">;</span>
 <span class="k">import</span> <span class="p">{</span> <span class="nx">mount</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"enzyme"</span><span class="p">;</span>
 
-<span class="nx">test</span><span class="p">(</span><span class="s2">"focusing on input should report focus state"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<span class="nx">test</span><span class="p">(</span><span class="s2">"focusing/blurring on input should report focus state"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
   <span class="kd">const</span> <span class="nx">input</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Input</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s2">""</span><span class="p">);</span>
   <span class="kd">const</span> <span class="nx">wrapper</span> <span class="o">=</span> <span class="nx">mount</span><span class="p">(&lt;</span><span class="nc">TextInput</span> <span class="na">name=</span><span class="s2">""</span> <span class="na">inputState=</span><span class="si">{</span><span class="nx">input</span><span class="si">}</span> <span class="p">/&gt;);</span>
   <span class="nx">wrapper</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">"input"</span><span class="p">).</span><span class="nx">simulate</span><span class="p">(</span><span class="s2">"focus"</span><span class="p">);</span>
@@ -138,7 +138,7 @@ the <code class="highlighter-rouge">Input</code> state given to it when consider
   <span class="nx">expect</span><span class="p">(</span><span class="nx">input</span><span class="p">.</span><span class="nx">focusState</span><span class="p">.</span><span class="nx">isFocused</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
 <span class="p">});</span>
 
-<span class="nx">test</span><span class="p">(</span><span class="s2">"focus state should be correct projected"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<span class="nx">test</span><span class="p">(</span><span class="s2">"focus state should be correctly projected"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
   <span class="kd">const</span> <span class="nx">input</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Input</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s2">""</span><span class="p">);</span>
   <span class="kd">const</span> <span class="nx">wrapper</span> <span class="o">=</span> <span class="nx">mount</span><span class="p">(&lt;</span><span class="nc">TextInput</span> <span class="na">name=</span><span class="s2">""</span> <span class="na">inputState=</span><span class="si">{</span><span class="nx">input</span><span class="si">}</span> <span class="p">/&gt;);</span>
   <span class="kd">const</span> <span class="nx">el</span> <span class="o">=</span> <span class="p">(</span><span class="nx">wrapper</span><span class="p">.</span><span class="nx">instance</span><span class="p">()</span> <span class="k">as</span> <span class="nx">TextInput</span><span class="p">).</span><span class="nx">el</span> <span class="k">as</span> <span class="nx">HTMLInputElement</span><span class="p">;</span>
@@ -156,10 +156,9 @@ the <code class="highlighter-rouge">Input</code> state given to it when consider
 <p>When we were testing the headless state in isolation, we assumed that the “report”
 methods represent the user actions. In the tests directly above, we could alternatively
 spy on the “report” methods to see that they are called in response to our simulation
-of user events (<code class="highlighter-rouge">"focus"</code> and <code class="highlighter-rouge">"blur"</code>). What we have here instead is assertion
-over the immediate consequence of those report methods (e.g. asserting
-<code class="highlighter-rouge">isFocused</code>), that reasonably imply that the report methods were used as a consequence
-to the user events.</p>
+of user events (<code class="highlighter-rouge">"focus"</code> and <code class="highlighter-rouge">"blur"</code>). What we have chosen instead is asserting
+the immediate consequences of those report methods (e.g. asserting <code class="highlighter-rouge">isFocused</code>), which
+reasonably imply that the report methods fired in response to the user events.</p>
 
 <p>Similar tests could be written for hover state reporting.</p>
 
@@ -171,7 +170,7 @@ on the active input. We can test how our <code class="highlighter-rouge">App</co
 <span class="k">import</span> <span class="nx">AppState</span> <span class="k">from</span> <span class="s2">"../AppState"</span><span class="p">;</span>
 <span class="k">import</span> <span class="p">{</span> <span class="nx">mount</span> <span class="p">}</span> <span class="k">from</span> <span class="s2">"enzyme"</span><span class="p">;</span>
 
-<span class="nx">test</span><span class="p">(</span><span class="s2">"presents help for name input"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<span class="nx">test</span><span class="p">(</span><span class="s2">"presents correct help depending on active input"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
   <span class="kd">const</span> <span class="nx">appState</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AppState</span><span class="p">();</span>
   <span class="kd">const</span> <span class="nx">wrapper</span> <span class="o">=</span> <span class="nx">mount</span><span class="p">(&lt;</span><span class="nc">App</span> <span class="na">appState=</span><span class="si">{</span><span class="nx">appState</span><span class="si">}</span> <span class="p">/&gt;);</span>
 
@@ -192,7 +191,7 @@ on the active input. We can test how our <code class="highlighter-rouge">App</co
 
 </code></pre></div></div>
 
-<p>(Note: in reality you probably wouldn’t be hard-coding these string constants.)</p>
+<p><em>(Note: in reality you probably wouldn’t be hard-coding these string constants.)</em></p>
 
 <p>Since we would already test the headless state quite comprehensively, here it
 should suffice to use whatever easiest way to put the application state into the
@@ -270,11 +269,11 @@ instance, something like this:</p>
 
 <p>Just like in-component state lifting, requirement changes that cause state to be
 lifted to different places in the component hierarchy will also affect tests.
-In case of Enzyme, state access is prohibited except for at the root component,
+In Enzyme, <a href="https://airbnb.io/enzyme/docs/api/ReactWrapper/state.html">state access beyond the root component is prohibited</a>,
 a restriction aimed at encouraging more unit tests. Depending on how state is
 lifted, some tests may need to be completely re-written.</p>
 
-<p>As for a headless state architecture, presentational requirement changes will
+<p>With a headless state architecture, presentational requirement changes will
 generally not affect headless state tests, even when the change includes significant
 reshuffling of the React component hierarchy. Application logic changes will only
 affect React component tests if the changes result in different components
@@ -282,8 +281,8 @@ receiving different state.</p>
 
 <p>Headless UI state testing in isolation will usually be more “to the point” in the
 way that testing domain state logic in isolation is. Both are free from finding
-the correct entry of mutation as this task is delegated to other tests as we
-have demonstrated above.</p>
+the correct entry of mutation: This task is delegated to other, much simpler tests
+that generally are agnostic of the application state logic.</p>
 
 <h3 id="what-next">What next?</h3>
 
