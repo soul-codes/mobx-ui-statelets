@@ -80,7 +80,9 @@ so that it looks blatantly different from an unfocused one.
     src="../demo/focus-1/index.html" width="100%"></iframe>
 
 Remarkably, once the `Button` component wires up the nececssary linkage,
-the readout and manipulation of focus state simply with the headless state API.
+the readout and manipulation of focus state are simply achieved through the headless state API.
+React component and DOM element refs get out of the way of our application logic.
+
 The beauty here is that the `Button` component doesn't need to know who's controlling
 it's focus, and the headless state doesn't need to know where that focus state
 is exactly presented. In fact, we actually have _two_ presentations: one as the
