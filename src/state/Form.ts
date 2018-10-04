@@ -29,8 +29,8 @@ export const privateInputForms = createWeakProperty(
  */
 export default class Form<
   TInputs extends InputGroupContent,
-  TActionResult,
-  TActionProgress
+  TActionResult = any,
+  TActionProgress = any
 > extends InputGroup<TInputs> {
   /**
    *

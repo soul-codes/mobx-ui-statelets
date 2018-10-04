@@ -12,8 +12,8 @@ import { computed } from "mobx";
 export default class ValidatedInput<
   TInputValue,
   TDomainValue = TInputValue,
-  TParseError = true,
-  TDomainError = true
+  TParseError = any,
+  TDomainError = any
 > extends Input<TInputValue> {
   /**
    * Instantiates a validated input.

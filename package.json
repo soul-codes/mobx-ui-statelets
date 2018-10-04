@@ -8,7 +8,7 @@
   "author": "soul-codes <reach.soul.codes@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "prepare": "rm -rf dist && tsc",
+    "prepare": "rm -rf dist && tsc -p ./tsconfig.release.json",
     "start": "concurrently --kill-others \"yarn tsc-watch\" \"yarn demo-server\"",
     "doc:install": "cd docs/jekyll && bundler install",
     "doc:ts": "typedoc --options typedoc.json src/index.ts",
