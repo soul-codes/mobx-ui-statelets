@@ -42,9 +42,9 @@ class InvokeInstance {
  *
  * The task itself can accept one arbitrarily-typed argument.
  *
- * @typeparam TArg the task's argument type
- * @typeparam TResult the task's result type
- * @typeparam TProgress the task's progress readout type
+ * @template TArg the task's argument type
+ * @template TResult the task's result type
+ * @template TProgress the task's progress readout type
  */
 export default class Task<
   TArg = any,

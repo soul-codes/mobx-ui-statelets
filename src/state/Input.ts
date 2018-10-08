@@ -17,7 +17,7 @@ let validationCandidates: Input<any>[] = [];
  * Represents an input UI state. It acts as a domain store but also provides
  * a separate input value state and state for querying assistive input choices.
  *
- * @typeparam TValue the input's value type.
+ * @template TValue the input's value type.
  */
 export default class Input<TValue = any> extends State {
   /**
@@ -357,7 +357,7 @@ function defaultShouldValidate<TValue>(value: TValue, oldValue: TValue) {
 
 /**
  * Describes options customizing an input UI state.
- * @typeparam TValue the input's value type
+ * @template TValue the input's value type
  */
 export interface InputOptions<TValue = any> extends StateDevOptions {
   /**

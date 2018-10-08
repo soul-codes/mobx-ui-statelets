@@ -12,8 +12,8 @@ const domQuerySources = new WeakMap<Component, Set<DOMQuery>>();
  * This method will automatically be called on component mount as well as on
  * component update.
  *
- * @typeparam TComponent The type of the component that will resolve the DOM query.
- * @typeparam TMapping The type of the resolution mapping.
+ * @template TComponent The type of the component that will resolve the DOM query.
+ * @template TMapping The type of the resolution mapping.
  */
 export function resolveDOMQuery<
   TComponent extends Component<any, any, any>,

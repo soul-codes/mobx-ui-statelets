@@ -71,8 +71,8 @@ export function createDOMStateSync<TElement extends HTMLElement, TState>(
  * A DOM state sync function that can be used as an imperative update method
  * from within a DOM state sync callback, but also as a decorator factory.
 
- * @typeparam TElement the kind of HTML element that can be synced.
- * @typeparam TState the shape of the DOM state that is needed to sync.
+ * @template TElement the kind of HTML element that can be synced.
+ * @template TState the shape of the DOM state that is needed to sync.
  * 
  * @see [[syncDOMState]]
  */

@@ -23,17 +23,17 @@ export const privateInputValidators = createWeakProperty(
  * the validation has ever happened, what the most recent validation result was,
  * and whether asynchronous validation is happening on right now.
  *
- * @typeparam TInputs the type of the "input shape". This can be an input type,
+ * @template TInputs the type of the "input shape". This can be an input type,
  * an object of inputs, an array of inputs, or a nested structure thereof, or
  * a function returning such a structure.
  *
- * @typeparam TDomainValue the type of the domain value that is extracted from the
+ * @template TDomainValue the type of the domain value that is extracted from the
  * input value for domain validation.
  *
- * @typeparam TParseError the type that describes the error when trying to parse
+ * @template TParseError the type that describes the error when trying to parse
  * the input value into a domain value.
  *
- * @typeparam TDomainError the type that describes the error resulting from
+ * @template TDomainError the type that describes the error resulting from
  * validating the domain value.
  */
 export default class Validator<
@@ -420,9 +420,9 @@ export interface ValidationFailure<TError, TCorrection> {
 
 /**
  * Describes the result of parsing an input value.
- * @typeparam TInputValue the input value
- * @typeparam TParseError the parse error
- * @typeparam TDomainValue the resulting domain value the from parsing
+ * @template TInputValue the input value
+ * @template TParseError the parse error
+ * @template TDomainValue the resulting domain value the from parsing
  */
 export type ParseResult<TInputValue, TParseError, TDomainValue> =
   | ParseFailure<TInputValue, TParseError>
@@ -526,12 +526,12 @@ export type ValidationError<TValue, TDomainValue, TParseError, TDomainError> =
 
 /**
  * Describes the settings of a validator.
- * @typeparam TInputs the type of the validator's input structure.
- * @typeparam TDomainValue the type of the validator's domain interpretation of the
+ * @template TInputs the type of the validator's input structure.
+ * @template TDomainValue the type of the validator's domain interpretation of the
  * inputs.
- * @typeparam TParseError the type of the validator's description of input format
+ * @template TParseError the type of the validator's description of input format
  * error.
- * @typeparam TDomainError the type of the validator's description of the domain
+ * @template TDomainError the type of the validator's description of the domain
  * value error.
  */
 export interface ValidatorOptions<

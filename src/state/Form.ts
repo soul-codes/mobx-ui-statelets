@@ -24,7 +24,7 @@ export const privateInputForms = createWeakProperty(
  * over its member inputs before performing a form-specific action.
  *
  * @see [[InputGroup]] Input Group
- * @typeparam TInputs content of an input group. This is typically inferred
+ * @template TInputs content of an input group. This is typically inferred
  *            at instantiation time from the [[constructor]].
  */
 export default class Form<

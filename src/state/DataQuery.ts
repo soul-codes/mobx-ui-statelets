@@ -12,10 +12,10 @@ import deepEqual from "../utils/deepEqual";
  * arbitrary fetch query. The pending state of the fetch, the last successful
  * fetch query and result, as well as the data total statistics are available.
  *
- * @typeparam QueryType The type of the data fetch query, for instance,
+ * @template QueryType The type of the data fetch query, for instance,
  * search strings or filter crieteria.
  *
- * @typeparam ItemType The type of each item to be returned from the fetch.
+ * @template ItemType The type of each item to be returned from the fetch.
  */
 export default class DataQuery<QueryType = any, ItemType = any> extends State {
   /**
@@ -222,8 +222,8 @@ export default class DataQuery<QueryType = any, ItemType = any> extends State {
 
 /**
  * Describes how the [[DataQuery]] is customized.
- * @typeparam QueryType see [[DataQuery]]
- * @typeparam ItemType see [[DataQuery]]
+ * @template QueryType see [[DataQuery]]
+ * @template ItemType see [[DataQuery]]
  */
 export interface DataQueryOptions<QueryType, ItemType> extends StateDevOptions {
   /**
@@ -253,7 +253,7 @@ export interface DataQueryOptions<QueryType, ItemType> extends StateDevOptions {
 
 /**
  * Describes the query information that is sent to the fetch function.
- * @typeparam [[QueryType]] see [[DataQuery]]
+ * @template [[QueryType]] see [[DataQuery]]
  * @see [[DataQueryOptions]]
  */
 export interface FetchQuery<QueryType> {
@@ -282,7 +282,7 @@ export interface FetchQuery<QueryType> {
 /**
  * Describes the fetch result, which should be the resolve value of the fetch
  * function.
- * @typeparam [[QueryType]] see [[ItemType]]
+ * @template [[QueryType]] see [[ItemType]]
  *
  * @see [[DataQueryOptions]]
  */
