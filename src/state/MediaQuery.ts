@@ -1,4 +1,4 @@
-import { action, observable, IObservableValue } from "mobx";
+import { observable, IObservableValue, runInAction } from "mobx";
 import State, { StateDevOptions } from "../state/State";
 
 /**
@@ -22,9 +22,11 @@ export default class MediaQueryState<
       const queryObservable = (this._queryValues[key] = observable.box(
         mediaQueryList.matches
       ));
-      mediaQueryList.addListener(
-        action((ev: MediaQueryList) => queryObservable.set(ev.matches))
-      );
+      mediaQueryList.addListener(ev => {
+        runInAction(() => {
+          queryObservable.set(ev.matches);
+        });
+      });
     });
   }
 
