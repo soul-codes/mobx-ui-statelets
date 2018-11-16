@@ -9,7 +9,7 @@
   "license": "MIT",
   "scripts": {
     "prepare": "rm -rf dist && tsc -p ./tsconfig.release.json",
-    "start": "concurrently --kill-others \"yarn tsc-watch\" \"yarn demo-server\"",
+    "start": "concurrently --kill-others \"yarn tsc-watch\" \"yarn doc:start\"",
     "doc:install": "cd docs/jekyll && bundler install",
     "doc:ts": "typedoc --options typedoc.json src/index.ts",
     "doc:ts:watch": "nodemon --watch src --watch docs/typedoc-theme --exec \"rm -rf docs/jekyll/api && yarn doc:ts\" --delay 1 -e ts,hbs,css",
@@ -53,7 +53,7 @@
     "release-it": "^7.4.7",
     "ts-jest": "^23.10.3",
     "typedoc": "git+ssh://git@github.com:soul-codes/typedoc.git#template",
-    "typescript": "^3.0.1",
+    "typescript": "^3.1.6",
     "webpack": "^4.12.0",
     "webpack-cli": "^3.1.2",
     "webpack-serve": "^1.0.4"
