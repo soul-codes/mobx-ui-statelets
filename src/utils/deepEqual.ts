@@ -4,7 +4,8 @@ const hasOwnProperty = (obj: Object, prop: string) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
 /**
- * @ignore
+ * Performs a deep-equal comparison for pure JSON-encodable objects (primitives,
+ * arrays, objects).
  * @param a
  * @param b
  */

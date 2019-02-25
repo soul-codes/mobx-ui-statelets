@@ -43,3 +43,5 @@ export {
 } from "./domResolver/resolveDOMQuery";
 export { syncDOMState } from "./sync/syncDOMState";
 export { syncFocusState } from "./sync/syncFocusState";
+
+export * from "./utils/deepEqual";
