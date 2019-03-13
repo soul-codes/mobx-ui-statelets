@@ -78,6 +78,14 @@ export default class Task<
   }
 
   /**
+   * Returns the argument of the last task, regardless of whether that task
+   * actually completed.
+   */
+  get args() {
+    return this._lastArg && this._lastArg.args;
+  }
+
+  /**
    * Returns the last reported progress of the pending task. Has no meaning if
    * the task is not in pending state.
    */
@@ -102,6 +110,7 @@ export default class Task<
       const invokeInstance = this._invokeInstance as InvokeInstance;
       invokeInstance.cancel();
     }
+    this._lastArg = { args };
 
     const invokeInstance = (this._invokeInstance = new InvokeInstance());
     const reportProgress = (progress: TProgress) => {
@@ -146,6 +155,20 @@ export default class Task<
     }
   }
 
+  @action reinvoke(required: boolean): Promise<void> {
+    if (this._lastArg) {
+      return this.invoke(this._lastArg.args);
+    }
+    if (required) {
+      throw Error(
+        `Attempted to call reinvoke() on action \`${
+          this.name
+        }\` but it was never invoked and \`required\` flag was on.`
+      );
+    }
+    return Promise.resolve();
+  }
+
   /**
    * Cancels the pending task. If there isn't one, this call is no-op.
    */
@@ -162,6 +185,9 @@ export default class Task<
 
   @observable.ref
   private _result: TResult | void = void 0;
+
+  @observable.ref
+  private _lastArg: { args: TArg } | void = void 0;
 
   @observable.ref
   private _progress?: TProgress;
