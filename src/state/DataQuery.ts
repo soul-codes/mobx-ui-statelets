@@ -17,11 +17,17 @@ import deepEqual from "../utils/deepEqual";
  *
  * @template ItemType The type of each item to be returned from the fetch.
  */
-export default class DataQuery<QueryType = any, ItemType = any> extends State {
+export default class DataQuery<
+  QueryType = any,
+  ItemType = any,
+  ErrorType = any
+> extends State {
   /**
    * @param options Data Query-specific options
    */
-  constructor(readonly options: DataQueryOptions<QueryType, ItemType>) {
+  constructor(
+    readonly options: DataQueryOptions<QueryType, ItemType, ErrorType>
+  ) {
     super(options);
   }
 
@@ -30,12 +36,23 @@ export default class DataQuery<QueryType = any, ItemType = any> extends State {
    * fetch will start from offset zero always.
    *
    * @param query The query to fetch with.
-   * @param fetchOptions If `force` is given, any pending fetch will be canceled
-   * and a new one started even if the given query is identical to that of the
-   * pending fetch.
+   * @param fetchOptions
+   * @param fetchOptions.force
+   *    If `force` is given, any pending fetch will be canceled
+   *    and a new one started even if the given query is identical to that of the
+   *    pending fetch.
+   * @param fetchOptions.debounce
+   *    If given, the fetch will be debounced by the specified number of
+   *    milliseconds (and therefore may be overridden by subsequent fetches).
    */
   @action
-  async fetch(query: QueryType, fetchOptions?: { force?: true }) {
+  async fetch(
+    query: QueryType,
+    fetchOptions?: { force?: true; debounce?: number }
+  ) {
+    clearTimeout(this._debounceTimer);
+    this._debounceTimer = 0;
+
     const fetchTask = this._fetchTask;
     if (
       deepEqual(this._lastAttemptedQuery, query) &&
@@ -43,9 +60,23 @@ export default class DataQuery<QueryType = any, ItemType = any> extends State {
     )
       return fetchTask.promise || void 0;
 
+    if (fetchOptions && fetchOptions.debounce) {
+      const debounceTimeout = new Promise(
+        resolve =>
+          (this._debounceTimer = setTimeout(resolve, fetchOptions.debounce))
+      );
+
+      return (async (): Promise<void> => {
+        await debounceTimeout;
+        this._debounceTimer = 0;
+        return this.fetch(query, { ...fetchOptions, debounce: 0 });
+      })();
+    }
+
     const { options } = this;
     const fetchLimit = options && options.fetchLimit;
     this._lastAttemptedQuery = query;
+    this._isIncrementalFetch = false;
     await fetchTask.invoke({
       query,
       limit: fetchLimit === void 0 ? Infinity : fetchLimit,
@@ -67,6 +98,7 @@ export default class DataQuery<QueryType = any, ItemType = any> extends State {
    */
   @action
   async fetchMore() {
+    clearTimeout(this._debounceTimer);
     const fetchTask = this._fetchTask;
     if (fetchTask.isPending) return fetchTask.promise as Promise<void>;
     if (this._lastSuccessfulResult && this._lastSuccessfulResult.isDone) return;
@@ -77,6 +109,7 @@ export default class DataQuery<QueryType = any, ItemType = any> extends State {
     const isSameAsSuccessfulQuery = deepEqual(this._lastSuccessfulQuery, query);
     const { options } = this;
     const fetchLimit = options && options.fetchLimit;
+    this._isIncrementalFetch = true;
     await fetchTask.invoke({
       query,
       limit: fetchLimit === void 0 ? Infinity : fetchLimit,
@@ -154,6 +187,21 @@ export default class DataQuery<QueryType = any, ItemType = any> extends State {
   }
 
   /**
+   * Returns true if the most recent fetch (regardless of its state: success,
+   * pending, or error) is incremental.
+   */
+  get isLastFetchIncremental() {
+    return Boolean(this._fetchTask && this._isIncrementalFetch);
+  }
+
+  /**
+   * Returns true if there is a debounced fetch coming up.
+   */
+  get isDebounced() {
+    return this._debounceTimer > 0;
+  }
+
+  /**
    * Returns the query of the last attempted fetch. If the fetch is pending,
    * this would be the pending query. If the fetch is complete and successful,
    * this is the same as [[activeQuery]].
@@ -175,7 +223,22 @@ export default class DataQuery<QueryType = any, ItemType = any> extends State {
    * Returns true if the last completed fetch encountered an error.
    */
   get isError() {
-    return Boolean(this._fetchTask && this._fetchTask.result === false);
+    return Boolean(
+      this._fetchTask &&
+        (this._fetchTask.result === false ||
+          (this._fetchTask.result && "error" in this._fetchTask.result))
+    );
+  }
+
+  /**
+   * Returns the specific error value that the last fetch encountered. Note that
+   * this may still be `null` if the fetch task simply returned `false` or the
+   * user canceled the fetch.
+   */
+  get error() {
+    return this._fetchTask.result && "error" in this._fetchTask.result
+      ? this._fetchTask.result.error
+      : null;
   }
 
   /**
@@ -194,10 +257,16 @@ export default class DataQuery<QueryType = any, ItemType = any> extends State {
   }
 
   @observable.ref
+  private _debounceTimer: number = 0;
+
+  @observable.ref
   private _items: ItemType[] = [];
 
   @observable.ref
   private _lastAttemptedQuery?: QueryType;
+
+  @observable.ref
+  private _isIncrementalFetch: boolean = false;
 
   @observable.ref
   private _lastSuccessfulQuery?: QueryType;
@@ -205,7 +274,7 @@ export default class DataQuery<QueryType = any, ItemType = any> extends State {
   private _fetchTask = new Task(
     async (q: FetchQuery<QueryType> & { append: boolean }, helpers) => {
       const result = await this.options.fetch(q, helpers);
-      if (result && !helpers.isCanceled) {
+      if (result && !("error" in result) && !helpers.isCanceled) {
         runInAction(() => {
           const items = Array.isArray(result) ? result : result.items;
           this._items = q.append ? [...this._items, ...items] : items;
@@ -225,7 +294,8 @@ export default class DataQuery<QueryType = any, ItemType = any> extends State {
  * @template QueryType see [[DataQuery]]
  * @template ItemType see [[DataQuery]]
  */
-export interface DataQueryOptions<QueryType, ItemType> extends StateDevOptions {
+export interface DataQueryOptions<QueryType, ItemType, ErrorType = any>
+  extends StateDevOptions {
   /**
    * Specfies the fetch logic, which is essentially a [[Task]] action. This should
    * resolve to a standardized [[FetchResultWithStats]] structure, or a plain
@@ -239,7 +309,7 @@ export interface DataQueryOptions<QueryType, ItemType> extends StateDevOptions {
    */
   fetch: TaskAction<
     FetchQuery<QueryType>,
-    FetchResultWithStats<ItemType> | ItemType[] | Falsy,
+    FetchResultWithStats<ItemType> | ItemType[] | Falsy | { error: ErrorType },
     void
   >;
 
