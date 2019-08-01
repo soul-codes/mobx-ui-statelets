@@ -157,7 +157,7 @@ export default class DataQuery<
     const { total, isDone } = result;
 
     if (isDone) return false;
-    if (total === void 0 || total <= this._items.length) return false;
+    if (total != null && total <= this._items.length) return false;
     return true;
   }
 
